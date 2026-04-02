@@ -2,21 +2,27 @@ package com.marinov.colegioetapa
 
 import android.annotation.SuppressLint
 import android.app.DownloadManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
-import androidx.core.net.toUri
+import androidx.core.app.NotificationCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,15 +35,21 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import java.io.BufferedReader
-import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
+import java.net.URLEncoder
+import java.util.concurrent.atomic.AtomicInteger
 
 class ProvasFragment : Fragment() {
 
     private companion object {
         const val TAG = "ProvasFragment"
+        const val PROJECT_PATH = "etapa.app%2Fschooltests"
+        const val BRANCH = "main"
+        const val API_BASE = "https://gitlab.com/api/v4/projects/$PROJECT_PATH/repository"
+        const val CHANNEL_ID = "provas_download_channel"
+        val notifIdCounter = AtomicInteger(1000)
     }
 
     private lateinit var searchView: SearchView
@@ -50,6 +62,8 @@ class ProvasFragment : Fragment() {
     private lateinit var layoutSemInternet: LinearLayout
     private lateinit var btnTentarNovamente: MaterialButton
 
+    // ─── Lifecycle ────────────────────────────────────────────────────────────
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -61,6 +75,8 @@ class ProvasFragment : Fragment() {
         searchView = view.findViewById(R.id.search_view)
         recyclerProvas = view.findViewById(R.id.recyclerProvas)
         progressBar = view.findViewById(R.id.progress_circular)
+
+        createNotificationChannel()
 
         searchView.queryHint = "Buscar provas..."
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -90,24 +106,15 @@ class ProvasFragment : Fragment() {
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (currentPath.isNotEmpty()) {
-                    // Ainda há subpastas: navega para o pai
                     currentPath = getParentPath(currentPath)
                     startFetch()
                 } else {
-                    // Raiz do repositório: desabilita o callback e deixa o sistema
-                    // fazer pop da back stack normalmente. Assim o fragmento anterior
-                    // (HomeFragment em safe mode, ou MoreFragment via menu) é restaurado
-                    // sem criar entradas extras na pilha.
                     isEnabled = false
                     requireActivity().onBackPressedDispatcher.onBackPressed()
                 }
             }
         }
-
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            onBackPressedCallback
-        )
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressedCallback)
     }
 
     override fun onDestroyView() {
@@ -115,16 +122,19 @@ class ProvasFragment : Fragment() {
         fetchJob?.cancel()
     }
 
-    private fun getParentPath(path: String): String {
-        val lastSlash = path.lastIndexOf('/')
-        return if (lastSlash == -1) "" else path.substring(0, lastSlash)
+    // ─── Internet / UI ────────────────────────────────────────────────────────
+
+    private fun hasInternetConnection(): Boolean {
+        val cm = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+            ?: return false
+        val caps = cm.getNetworkCapabilities(cm.activeNetwork ?: return false) ?: return false
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun showNoInternetUI() {
         recyclerProvas.visibility = View.GONE
         searchView.visibility = View.GONE
         layoutSemInternet.visibility = View.VISIBLE
-
         btnTentarNovamente.setOnClickListener {
             if (hasInternetConnection()) {
                 layoutSemInternet.visibility = View.GONE
@@ -133,31 +143,24 @@ class ProvasFragment : Fragment() {
         }
     }
 
-    private fun hasInternetConnection(): Boolean {
-        val cm = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager?
-            ?: return false
-        val network = cm.activeNetwork ?: return false
-        val caps = cm.getNetworkCapabilities(network) ?: return false
-        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    private fun getParentPath(path: String): String {
+        val lastSlash = path.lastIndexOf('/')
+        return if (lastSlash == -1) "" else path.substring(0, lastSlash)
     }
+
+    // ─── Listagem GitLab ──────────────────────────────────────────────────────
 
     private fun startFetch() {
         recyclerProvas.visibility = View.VISIBLE
         searchView.visibility = View.VISIBLE
         fetchJob?.cancel()
-        fetchJob = lifecycleScope.launch {
-            fetchFiles(currentPath)
-        }
+        fetchJob = lifecycleScope.launch { fetchFiles(currentPath) }
     }
 
     private suspend fun fetchFiles(path: String) {
-        withContext(Dispatchers.Main) {
-            progressBar.visibility = View.VISIBLE
-        }
+        withContext(Dispatchers.Main) { progressBar.visibility = View.VISIBLE }
 
-        val results = withContext(Dispatchers.IO) {
-            fetchFilesFromGitHub(path)
-        }
+        val results = withContext(Dispatchers.IO) { fetchFilesFromGitLab(path) }
 
         withContext(Dispatchers.Main) {
             progressBar.visibility = View.GONE
@@ -167,76 +170,245 @@ class ProvasFragment : Fragment() {
         }
     }
 
-    private fun fetchFilesFromGitHub(path: String): List<RepoItem> {
+    private fun fetchFilesFromGitLab(path: String): List<RepoItem> {
         val list = mutableListOf<RepoItem>()
-        var conn: HttpURLConnection? = null
+        var page = 1
 
-        try {
-            val api = "https://api.github.com/repos/etapaapp/schooltests/contents" +
-                    if (path.isEmpty()) "" else "/$path"
-            val url = URL(api)
-            conn = url.openConnection() as HttpURLConnection
-            conn.requestMethod = "GET"
-            conn.setRequestProperty("Accept", "application/vnd.github.v3+json")
-            conn.setRequestProperty("User-Agent", "EtapaApp")
-            conn.setRequestProperty("Authorization", "token ${BuildConfig.GITHUB_PAT}")
+        while (true) {
+            var conn: HttpURLConnection? = null
+            try {
+                val params = StringBuilder("?ref=$BRANCH&per_page=100&page=$page")
+                if (path.isNotEmpty()) params.append("&path=${URLEncoder.encode(path, "UTF-8")}")
 
-            if (conn.responseCode != HttpURLConnection.HTTP_OK) return list
+                val url = URL("$API_BASE/tree$params")
+                conn = url.openConnection() as HttpURLConnection
+                conn.requestMethod = "GET"
+                conn.setRequestProperty("PRIVATE-TOKEN", BuildConfig.GITLAB_PAT)
 
-            val inputStream: InputStream = conn.inputStream
-            val reader = BufferedReader(InputStreamReader(inputStream))
-            val sb = StringBuilder()
-            var line: String?
-            while (reader.readLine().also { line = it } != null) {
-                sb.append(line)
+                if (conn.responseCode != HttpURLConnection.HTTP_OK) {
+                    Log.e(TAG, "Erro HTTP ${conn.responseCode} na página $page")
+                    break
+                }
+
+                val sb = StringBuilder()
+                BufferedReader(InputStreamReader(conn.inputStream)).use { reader ->
+                    var line: String?
+                    while (reader.readLine().also { line = it } != null) sb.append(line)
+                }
+
+                val arr = JSONArray(sb.toString())
+                for (i in 0 until arr.length()) {
+                    val o = arr.getJSONObject(i)
+                    val gitlabType = o.getString("type") // "tree" = pasta, "blob" = arquivo
+                    val itemPath = o.getString("path")
+                    val normalizedType = if (gitlabType == "tree") "dir" else "file"
+                    val downloadUrl = if (gitlabType == "blob") {
+                        val encodedPath = URLEncoder.encode(itemPath, "UTF-8").replace("+", "%20")
+                        "$API_BASE/files/$encodedPath/raw?ref=$BRANCH"
+                    } else ""
+
+                    list.add(RepoItem(o.getString("name"), normalizedType, itemPath, downloadUrl))
+                }
+
+                val nextPage = conn.getHeaderField("X-Next-Page")
+                if (nextPage.isNullOrEmpty()) break
+                page = nextPage.toIntOrNull() ?: break
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Erro ao buscar arquivos (página $page)", e)
+                break
+            } finally {
+                conn?.disconnect()
             }
-            reader.close()
-
-            val arr = JSONArray(sb.toString())
-            for (i in 0 until arr.length()) {
-                val o = arr.getJSONObject(i)
-                list.add(
-                    RepoItem(
-                        o.getString("name"),
-                        o.getString("type"),
-                        o.getString("path"),
-                        o.optString("download_url", "")
-                    )
-                )
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Erro ao buscar arquivos", e)
-        } finally {
-            conn?.disconnect()
         }
 
         return list
     }
+
+    // ─── Download com notificação ─────────────────────────────────────────────
 
     private fun onItemClick(item: RepoItem) {
         if (item.type == "dir") {
             currentPath = item.path
             startFetch()
         } else {
-            val request = DownloadManager.Request(item.downloadUrl.toUri()).apply {
-                setMimeType("*/*")
-                addRequestHeader("User-Agent", "EtapaApp")
-                setTitle(item.name)
-                setDescription("Baixando arquivo...")
-                setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, item.name)
-            }
-
-            val dm = requireContext().getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
-            dm?.enqueue(request)
+            lifecycleScope.launch { downloadFile(item.downloadUrl, item.name) }
         }
     }
 
+    private fun createNotificationChannel() {
+        // Evitando o crash do TODO("VERSION.SDK_INT < O") para APIs mais antigas
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Downloads de Provas",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Progresso de download das provas"
+            }
+            val nm = requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            nm.createNotificationChannel(channel)
+        }
+    }
+
+    private suspend fun downloadFile(downloadUrl: String, filename: String) {
+        // Usando o contexto da aplicação para evitar vazamentos/erros se o Fragment for destruído durante o download
+        val appContext = requireContext().applicationContext
+        val notifId = notifIdCounter.getAndIncrement()
+        val nm = appContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Notificação de progresso
+        val progressBuilder = NotificationCompat.Builder(appContext, CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.stat_sys_download)
+            .setContentTitle(filename)
+            .setContentText("Baixando...")
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
+            .setProgress(0, 0, true) // indeterminate enquanto não temos tamanho
+
+        nm.notify(notifId, progressBuilder.build())
+
+        withContext(Dispatchers.IO) {
+            try {
+                Log.d(TAG, "Iniciando download: $downloadUrl")
+                var url = URL(downloadUrl)
+                var conn: HttpURLConnection
+                var redirectCount = 0
+
+                // Segue redirects mantendo o header de autenticação
+                while (true) {
+                    Log.d(TAG, "Conectando em: $url")
+                    conn = url.openConnection() as HttpURLConnection
+                    conn.setRequestProperty("PRIVATE-TOKEN", BuildConfig.GITLAB_PAT)
+                    conn.instanceFollowRedirects = false
+                    conn.connectTimeout = 15000
+                    conn.readTimeout = 60000
+                    conn.connect()
+
+                    val code = conn.responseCode
+                    Log.d(TAG, "Resposta HTTP: $code")
+
+                    if (code in 301..308) {
+                        val location = conn.getHeaderField("Location")
+                        conn.disconnect()
+                        if (location.isNullOrEmpty() || redirectCount > 10) {
+                            Log.e(TAG, "Redirect inválido ou loop")
+                            notifyFailure(appContext, nm, notifId, filename)
+                            return@withContext
+                        }
+                        url = URL(location)
+                        redirectCount++
+                        continue
+                    }
+
+                    if (code != HttpURLConnection.HTTP_OK) {
+                        Log.e(TAG, "Erro HTTP final: $code")
+                        conn.disconnect()
+                        notifyFailure(appContext, nm, notifId, filename)
+                        return@withContext
+                    }
+
+                    // HTTP 200 — grava o arquivo com progresso
+                    val totalBytes = conn.contentLengthLong
+                    val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    downloadsDir.mkdirs()
+                    val outputFile = java.io.File(downloadsDir, filename)
+
+                    conn.inputStream.use { input ->
+                        outputFile.outputStream().use { output ->
+                            val buffer = ByteArray(8192)
+                            var bytesRead: Int
+                            var totalRead = 0L
+
+                            while (input.read(buffer).also { bytesRead = it } != -1) {
+                                output.write(buffer, 0, bytesRead)
+                                totalRead += bytesRead
+
+                                // Atualiza progresso se soubermos o tamanho total
+                                if (totalBytes > 0) {
+                                    val percent = (totalRead * 100 / totalBytes).toInt()
+                                    progressBuilder
+                                        .setProgress(100, percent, false)
+                                        .setContentText("$percent%")
+                                    nm.notify(notifId, progressBuilder.build())
+                                }
+                            }
+                        }
+                    }
+                    conn.disconnect()
+
+                    Log.d(TAG, "Arquivo gravado em: ${outputFile.absolutePath}")
+
+                    // O MediaScanner nos devolve uma URI content:// válida (no callback) para abrirmos o arquivo.
+                    android.media.MediaScannerConnection.scanFile(
+                        appContext,
+                        arrayOf(outputFile.absolutePath),
+                        null
+                    ) { path, uri ->
+
+                        val intent = if (uri != null) {
+                            val extension = java.io.File(path).extension.lowercase()
+                            val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) ?: "*/*"
+
+                            Intent(Intent.ACTION_VIEW).apply {
+                                setDataAndType(uri, mimeType)
+                                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+                            }
+                        } else {
+                            // Fallback seguro caso a conversão de URI falhe (Abre a pasta de Downloads)
+                            Intent(DownloadManager.ACTION_VIEW_DOWNLOADS).apply {
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            }
+                        }
+
+                        val pendingIntent = PendingIntent.getActivity(
+                            appContext,
+                            notifId,
+                            intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                        )
+
+                        // Notificação de conclusão
+                        val doneNotif = NotificationCompat.Builder(appContext, CHANNEL_ID)
+                            .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                            .setContentTitle(filename)
+                            .setContentText("Download concluído")
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setContentIntent(pendingIntent) // Vincula a ação de abrir o arquivo!
+                            .setAutoCancel(true)
+                            .build()
+
+                        nm.notify(notifId, doneNotif)
+                    }
+                    break
+                }
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Exceção no download de $filename", e)
+                notifyFailure(appContext, nm, notifId, filename)
+            }
+        }
+    }
+
+    private fun notifyFailure(context: Context, nm: NotificationManager, notifId: Int, filename: String) {
+        val failNotif = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.stat_notify_error)
+            .setContentTitle(filename)
+            .setContentText("Falha no download")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .build()
+        nm.notify(notifId, failNotif)
+    }
+
+    // ─── Filtro ───────────────────────────────────────────────────────────────
+
     private fun filterList(query: String?) {
         val lower = query?.lowercase() ?: ""
-        val filtered = allItems.filter { it.name.lowercase().contains(lower) }
-        adapter.updateData(filtered)
+        adapter.updateData(allItems.filter { it.name.lowercase().contains(lower) })
     }
+
+    // ─── Modelos e Adapter ────────────────────────────────────────────────────
 
     data class RepoItem(
         val name: String,
@@ -264,7 +436,7 @@ class ProvasFragment : Fragment() {
             holder.itemView.setOnClickListener { listener(item) }
         }
 
-        override fun getItemCount(): Int = items.size
+        override fun getItemCount() = items.size
 
         @SuppressLint("NotifyDataSetChanged")
         fun updateData(newItems: List<RepoItem>) {

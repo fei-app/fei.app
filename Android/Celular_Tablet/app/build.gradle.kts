@@ -11,7 +11,7 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "40.0"
-        buildConfigField("String", "GITHUB_PAT", "\"${project.properties["GITHUB_PAT"]}\"")
+        buildConfigField("String", "GITLAB_PAT", "\"${project.findProperty("GITLAB_PAT") ?: ""}\"")
     }
 
     buildTypes {
