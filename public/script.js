@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadAllBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Preparando download...';
 
         try {
-            const archiveUrl = `${API_BASE}/archive?sha=${BRANCH}&format=zip`;
+            const archiveUrl = `${API_BASE}/archive.zip?sha=${BRANCH}`;
             const response = await fetch(archiveUrl, { headers: gitlabHeaders() });
 
             if (!response.ok) {
