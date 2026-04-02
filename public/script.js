@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ─── Utilitários ─────────────────────────────────────────────────────────
 
     function gitlabHeaders() {
-        const h = { 'Content-Type': 'application/json' };
+        const h = {};
         if (GITLAB_TOKEN) h['PRIVATE-TOKEN'] = GITLAB_TOKEN;
         return h;
     }
