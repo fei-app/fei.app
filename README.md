@@ -26,12 +26,11 @@ Meu cliente alternativo para acessar https://areaexclusiva.colegioetapa.com.br/ 
 6. Interface Material You;
 7. Tema escuro;
 8. Download de provas anteriores;
-9. Acesso a EADs antigos;
-10. Cálculo da média;
-11. Cache offline das notas, calendário, matérias de provas e horário de aula;
-12. Notificação quando novas notas são cadastradas (funcional, mas apenas enquanto o app continuar logado);
-13. Resumos com IA (ChatGPT, Claude, Perplexity);
-14. Todas as funções do site....
+9. Cálculo da média;
+10. Cache offline das notas, calendário, matérias de provas e horário de aula;
+11. Notificação quando novas notas são cadastradas (funcional, mas apenas enquanto o app continuar logado);
+12. Resumos com IA (ChatGPT, Claude, Perplexity);
+13. Todas as funções do site....
 
 🚫 A SER IMPLEMENTADO NO FUTURO:
 1. Login persistente (parcialmente corrigido, ainda é preciso logar novamente após algumas horas);
