@@ -21,6 +21,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.NotificationCompat
 import androidx.fragment.app.Fragment
@@ -61,6 +62,24 @@ class ProvasFragment : Fragment() {
     private var fetchJob: Job? = null
     private lateinit var layoutSemInternet: LinearLayout
     private lateinit var btnTentarNovamente: MaterialButton
+
+    private var pendingDownload: Pair<String, String>? = null
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                pendingDownload?.let { (url, name) ->
+                    lifecycleScope.launch { downloadFile(url, name) }
+                }
+            } else {
+                android.widget.Toast.makeText(
+                    requireContext(),
+                    "Permissão negada. Não é possível salvar o arquivo.",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+            }
+            pendingDownload = null
+        }
 
     // ─── Lifecycle ────────────────────────────────────────────────────────────
 
@@ -232,10 +251,17 @@ class ProvasFragment : Fragment() {
             currentPath = item.path
             startFetch()
         } else {
-            lifecycleScope.launch { downloadFile(item.downloadUrl, item.name) }
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
+                requireContext().checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != android.content.pm.PackageManager.PERMISSION_GRANTED
+            ) {
+                pendingDownload = Pair(item.downloadUrl, item.name)
+                requestPermissionLauncher.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            } else {
+                lifecycleScope.launch { downloadFile(item.downloadUrl, item.name) }
+            }
         }
     }
-
     private fun createNotificationChannel() {
         // Evitando o crash do TODO("VERSION.SDK_INT < O") para APIs mais antigas
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
     companion object {
         private const val REQUEST_NOTIFICATION_PERMISSION = 100
         private const val TAG = "MainActivity"
+        private const val KEY_CURRENT_FRAGMENT_ID = "current_fragment_id"
 
         private val REFRESHABLE_FRAGMENTS = setOf(
             R.id.navigation_notas,
@@ -62,14 +63,12 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
         private const val PREF_KEY_BATTERY_REQUESTED = "battery_request_done"
         const val KEY_SAFE_MODE = "safe_mode"
 
-        // IDs de navegação bloqueados no modo de segurança
         private val SAFE_MODE_BLOCKED_NAV = setOf(
             R.id.navigation_notas,
             R.id.option_horarios_aula,
             R.id.option_calendario_provas
         )
 
-        // Alpha padrão Material Design para elementos desabilitados
         private const val ALPHA_DISABLED = 0.38f
     }
 
@@ -94,6 +93,15 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
             Color.BLACK
         )
         setContentView(R.layout.activity_main)
+
+        // ── Restaura estado após morte do processo ──────────────────────────
+        // O FragmentManager já restaura o fragment automaticamente;
+        // só precisamos recuperar o ID para que a navegação não force a Home.
+        if (savedInstanceState != null) {
+            currentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID, View.NO_ID)
+            currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+        }
+        // ───────────────────────────────────────────────────────────────────
 
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
 
@@ -136,23 +144,25 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
         iniciarUpdateWorker()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(KEY_CURRENT_FRAGMENT_ID, currentFragmentId)
+    }
+
     override fun onResume() {
         super.onResume()
-        // Garante a interrupção/ativação de recursos de acordo com as alterações de configuração recentes
         verificarModoSeguranca()
     }
 
     private fun verificarModoSeguranca() {
         val safeMode = isSafeMode()
 
-        // 1. Gerencia o Worker de Notas e previne execução indesejada em modo restrito
         if (safeMode) {
             WorkManager.getInstance(this).cancelUniqueWork("NotasWorkerTask")
         } else {
             iniciarNotasWorker()
         }
 
-        // 2. Bloqueia a navegação se usuário estava na tela recém bloqueada e redireciona à Home
         if (safeMode) {
             val blockedFragments = SAFE_MODE_BLOCKED_NAV + R.id.action_profile
             if (blockedFragments.contains(currentFragmentId)) {
@@ -160,10 +170,9 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
             }
         }
 
-        // 3. Atualiza componentes visuais (caso a tela já tenha sido carregada)
         if (isLayoutReady) {
             configureNavigationForDevice()
-            invalidateOptionsMenu() // Atualiza os botões do Top App Bar
+            invalidateOptionsMenu()
         }
     }
 
@@ -201,7 +210,13 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
 
     private fun handleIntent(intent: Intent?) {
         val destination = intent?.getStringExtra("destination") ?: run {
-            if (currentFragment == null) openFragment(R.id.navigation_home)
+            // ── CORREÇÃO: verifica o FragmentManager, não a variável em memória ──
+            // Assim, se o processo foi morto e o FM já restaurou o fragment,
+            // não abrimos a Home por cima do que estava aberto.
+            val hasRestoredFragment = supportFragmentManager
+                .findFragmentById(R.id.nav_host_fragment) != null
+            if (!hasRestoredFragment) openFragment(R.id.navigation_home)
+            // ──────────────────────────────────────────────────────────────────
             return
         }
         Log.d(TAG, "Handling intent with destination: $destination")
@@ -215,7 +230,6 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
     private fun openFragment(fragmentId: Int) {
         if (isFinishing || isDestroyed) return
 
-        // Bloqueia navegação para fragmentos protegidos em modo de segurança
         val blockedIds = SAFE_MODE_BLOCKED_NAV + R.id.action_profile
         if (isSafeMode() && blockedIds.contains(fragmentId)) return
 
@@ -223,12 +237,12 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
         Log.d(TAG, "Opening fragment: $fragmentId")
 
         val fragment = when (fragmentId) {
-            R.id.navigation_home         -> HomeFragment()
+            R.id.navigation_home          -> HomeFragment()
             R.id.option_calendario_provas -> CalendarioProvas()
-            R.id.navigation_notas        -> NotasFragment()
-            R.id.option_horarios_aula    -> HorariosAula()
-            R.id.action_profile          -> ProfileFragment()
-            R.id.navigation_more         -> MoreFragment()
+            R.id.navigation_notas         -> NotasFragment()
+            R.id.option_horarios_aula     -> HorariosAula()
+            R.id.action_profile           -> ProfileFragment()
+            R.id.navigation_more          -> MoreFragment()
             else -> return
         }
         currentFragment = fragment
@@ -270,7 +284,6 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
             SAFE_MODE_BLOCKED_NAV.forEach { id ->
                 navRail.menu.findItem(id)?.isEnabled = !safeMode
             }
-            // Aplica alpha visual após o layout estar pronto (restaura o 1.0f ou diminui)
             navRail.post { updateNavItemsAlpha(navRail, navRail.menu, safeMode) }
 
             navRail.setOnItemSelectedListener { item ->
@@ -278,7 +291,6 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
                 if (!isUpdatingSelection) openFragment(item.itemId)
                 true
             }
-            if (currentFragmentId == View.NO_ID) navRail.selectedItemId = R.id.navigation_home
 
         } else {
             navRail.visibility = View.GONE
@@ -287,7 +299,6 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
             SAFE_MODE_BLOCKED_NAV.forEach { id ->
                 bottomNav.menu.findItem(id)?.isEnabled = !safeMode
             }
-            // Aplica alpha visual após o layout estar pronto (restaura o 1.0f ou diminui)
             bottomNav.post { updateNavItemsAlpha(bottomNav, bottomNav.menu, safeMode) }
 
             bottomNav.setOnItemSelectedListener { item ->
@@ -295,7 +306,6 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
                 if (!isUpdatingSelection) openFragment(item.itemId)
                 true
             }
-            if (currentFragmentId == View.NO_ID) bottomNav.selectedItemId = R.id.navigation_home
 
             if (!isKeypadListenerAdded) {
                 val rootView: View = findViewById(R.id.main)
@@ -311,10 +321,6 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
         }
     }
 
-    /**
-     * Atualiza o visual Alpha (transparência) dos itens de navegação
-     * usando 0.38f para desabilitado ou 1.0f para habilitado.
-     */
     private fun updateNavItemsAlpha(navView: ViewGroup, menu: Menu, safeMode: Boolean) {
         val menuSize = menu.size
         if (menuSize == 0) return
@@ -329,18 +335,11 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
         }
     }
 
-    /**
-     * Localiza o ViewGroup interno que contém exatamente [menuSize] filhos (os item views).
-     * Busca em até 2 níveis de profundidade para cobrir as diferenças entre
-     * BottomNavigationView (1 nível) e NavigationRailView (pode ter wrapper de header).
-     */
     private fun findNavMenuContainer(parent: ViewGroup, menuSize: Int): ViewGroup? {
-        // Nível 1: filhos diretos
         for (i in 0 until parent.childCount) {
             val child = parent.getChildAt(i) as? ViewGroup ?: continue
             if (child.childCount == menuSize) return child
         }
-        // Nível 2: netos (NavigationRailView tem header + menu view)
         for (i in 0 until parent.childCount) {
             val child = parent.getChildAt(i) as? ViewGroup ?: continue
             for (j in 0 until child.childCount) {
@@ -514,7 +513,6 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.top_app_bar_menu, menu)
 
-        // Bloqueia e desbota o botão de perfil visualmente sem ocultá-lo se no modo de segurança
         val profileItem = menu.findItem(R.id.action_profile)
         if (isSafeMode()) {
             profileItem?.isEnabled = false
