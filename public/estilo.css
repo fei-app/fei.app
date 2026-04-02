@@ -394,11 +394,6 @@ footer {
         min-width: 100%;
         margin-bottom: 4px;
     }
-    .tooltip-text {
-        white-space: normal;
-        width: 200px;
-        text-align: center;
-    }
     .item-card {
         padding: 10px 12px;
     }
@@ -406,4 +401,19 @@ footer {
         width: 32px;
         font-size: 1.4rem;
     }
+
+    /* Tooltip alinhado à direita no mobile */
+  .tooltip-text {
+      left: 0;
+      right: auto;
+      transform: none;
+      white-space: normal;
+      width: 200px;
+      text-align: left;
+  }
+  .tooltip-text::after {
+      left: 10px;
+      right: auto;
+      margin-left: 0;
+  }
 }

@@ -166,30 +166,19 @@ document.addEventListener('DOMContentLoaded', () => {
         downloadAllBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Preparando download...';
 
         try {
-            const archiveUrl = `${API_BASE}/archive.zip?sha=${BRANCH}`;
-            const response = await fetch(archiveUrl, { headers: gitlabHeaders() });
-
-            if (!response.ok) {
-                throw new Error(`Erro ${response.status} ao gerar arquivo ZIP.`);
-            }
-
-            downloadAllBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Baixando ZIP...';
-
-            const blob = await response.blob();
-            const blobUrl = URL.createObjectURL(blob);
+            const archiveUrl = `${API_BASE}/archive.zip?sha=${BRANCH}&private_token=${GITLAB_TOKEN}`;
             const link = document.createElement('a');
-            link.href = blobUrl;
+            link.href = archiveUrl;
             link.download = `${REPO_NAME}-completo.zip`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            URL.revokeObjectURL(blobUrl);
 
-            downloadAllBtn.innerHTML = '<i class="fas fa-check"></i> Download concluído!';
+            downloadAllBtn.innerHTML = '<i class="fas fa-check"></i> Download iniciado!';
             setTimeout(() => {
-                downloadAllBtn.innerHTML = originalHTML;
-                downloadAllBtn.disabled = false;
-            }, 3000);
+            downloadAllBtn.innerHTML = originalHTML;
+            downloadAllBtn.disabled = false;
+        }, 3000);
 
         } catch (err) {
             console.error('Erro no download completo:', err);
