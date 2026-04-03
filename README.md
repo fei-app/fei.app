@@ -8,11 +8,9 @@ Meu cliente alternativo para acessar https://areaexclusiva.colegioetapa.com.br/ 
 
 <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/tablet_3.png?ref_type=heads" width="300"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/tablet_4.png?ref_type=heads" width="300"/>
 
-<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_1.jpg?ref_type=heads" width="180"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_2.jpg?ref_type=heads" width="180"/> 
+<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_1.jpg?ref_type=heads" width="180"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_2.jpg?ref_type=heads" width="180"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_3.jpg?ref_type=heads" width="180"/> 
 
-<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_3.jpg?ref_type=heads" width="180"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_8.jpg?ref_type=heads" width="180"/>
-
-<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_9.jpg?ref_type=heads" width="180"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_10.jpg?ref_type=heads" width="180"/>
+<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_8.jpg?ref_type=heads" width="180"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_9.jpg?ref_type=heads" width="180"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_10.jpg?ref_type=heads" width="180"/>
 
 ✅ FUNCIONALIDADES:
 1. Acesso ao Etapa Digital;
