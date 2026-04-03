@@ -4,18 +4,13 @@
 
 Meu cliente alternativo para acessar https://areaexclusiva.colegioetapa.com.br/ , com funcionalidades extras ao aplicativo original.
 
-<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/tablet_1.png?ref_type=heads" width="300"/> 
-<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/tablet_2.png?ref_type=heads" width="300"/>
-<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/tablet_3.png?ref_type=heads" width="300"/> 
-<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/tablet_4.png?ref_type=heads" width="300"/>
+<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/tablet_1.png?ref_type=heads" width="300"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/tablet_2.png?ref_type=heads" width="300"/>
 
-<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_1.jpg?ref_type=heads" width="180"/> 
-<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_2.jpg?ref_type=heads" width="180"/> 
-<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_3.jpg?ref_type=heads" width="180"/>
+<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/tablet_3.png?ref_type=heads" width="300"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/tablet_4.png?ref_type=heads" width="300"/>
 
-<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_8.jpg?ref_type=heads" width="180"/> 
-<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_9.jpg?ref_type=heads" width="180"/> 
-<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_10.jpg?ref_type=heads" width="180"/>
+<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_1.jpg?ref_type=heads" width="180"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_2.jpg?ref_type=heads" width="180"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_3.jpg?ref_type=heads" width="180"/> 
+
+<img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_8.jpg?ref_type=heads" width="180"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_9.jpg?ref_type=heads" width="180"/> <img src="https://gitlab.com/etapa.app/EtapaApp/-/raw/master/Android/Celular_Tablet/app/imagens/phone_10.jpg?ref_type=heads" width="180"/>
 
 ✅ FUNCIONALIDADES:
 1. Acesso ao Etapa Digital;
@@ -44,7 +39,7 @@ Android:
       1. Android 7.0 ou superior (o suporte para Android 6.0 ou inferior foi removido pois é impossível fazer login);
       2. Android System Webview na versão mais recente possível.
 
-  Baixe o apk aqui (baixe a versão mais recente disponível, identificada em verde com "Latest"): (LINK EM MIGRAÇÃO)
+  Baixe o apk aqui (baixe a versão mais recente disponível): https://gitlab.com/etapa.app/EtapaApp/-/releases
   
   Para smartwatches baixe aqui: (LINK EM MIGRAÇÃO)
 
