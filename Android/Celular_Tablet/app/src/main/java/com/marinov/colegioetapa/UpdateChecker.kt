@@ -28,7 +28,7 @@ object UpdateChecker {
         Thread {
             runCatching {
                 // A API do GitLab exige que o namespace e o projeto sejam separados por %2F
-                val url = URL("https://gitlab.com/api/v4/projects/etapa.app%2FEtapaApp/releases")
+                val url = URL("https://gitlab.com/api/v4/projects/etapa.app%2Fetapa.app/releases")
                 val conn = url.openConnection() as HttpURLConnection
                 conn.apply {
                     requestMethod = "GET"

@@ -10,7 +10,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "50.0"
+        versionName = "50.1"
         buildConfigField("String", "GITLAB_PAT", "\"${project.findProperty("GITLAB_PAT") ?: ""}\"")
     }
 
