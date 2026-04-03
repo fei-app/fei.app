@@ -21,10 +21,10 @@ class UpdateCheckWorker(context: Context, params: WorkerParameters) : CoroutineW
     }
 
     override suspend fun doWork(): Result {
-        UpdateChecker.checkForUpdate(applicationContext, object : UpdateChecker.UpdateListener {
+        UpdateChecker.checkForUpdate(applicationContext, false, object : UpdateChecker.UpdateListener {
             @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-            override fun onUpdateAvailable(url: String) {
-                showNotification()
+            override fun onUpdateAvailable(url: String, version: String, releaseNotes: String) {
+                showNotification(version)
             }
 
             override fun onUpToDate() {
@@ -39,7 +39,7 @@ class UpdateCheckWorker(context: Context, params: WorkerParameters) : CoroutineW
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    private fun showNotification() {
+    private fun showNotification(version: String) {
         createNotificationChannel()
 
         val intent = Intent(applicationContext, SettingsActivity::class.java).apply {
@@ -59,8 +59,8 @@ class UpdateCheckWorker(context: Context, params: WorkerParameters) : CoroutineW
 
         val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_update)
-            .setContentTitle("Atualização do software disponível!")
-            .setContentText("Clique aqui para atualizar")
+            .setContentTitle("Atualização Disponível (v$version)")
+            .setContentText("Clique aqui para baixar a nova versão do aplicativo.")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)

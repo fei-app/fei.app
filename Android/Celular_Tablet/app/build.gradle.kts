@@ -48,7 +48,6 @@ dependencies {
     implementation (libs.jsoup)
     implementation (libs.gson)
     implementation (libs.work.runtime.ktx)
-    implementation (libs.converter.gson)
     implementation (libs.guava)
     implementation (libs.glide)
     annotationProcessor (libs.compiler)

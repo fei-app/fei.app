@@ -31,12 +31,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
-import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -61,6 +57,7 @@ class SettingsActivity : AppCompatActivity() {
 
         setupToolbar()
         setupUI()
+
         if (intent.getBooleanExtra("open_update_directly", false)) {
             checkUpdate()
         }
@@ -148,11 +145,9 @@ class SettingsActivity : AppCompatActivity() {
         val btnClearPassword = findViewById<Button>(R.id.btn_clear_password)
         val btnGitlab = findViewById<Button>(R.id.btn_gitlab)
 
-        // GitHub e Verificar atualizações: sempre habilitados
         btnGitlab.setOnClickListener { openUrl("https://gitlab.com/etapa.app/") }
         btnCheck.setOnClickListener { checkUpdate() }
 
-        // Limpar dados e senhas: bloqueados no modo de segurança
         if (safeModeActive) {
             btnClear.isEnabled = false
             btnClear.alpha = 0.38f
@@ -180,7 +175,6 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        // Toggle de funcionalidade total
         val switchFullFeature = findViewById<SwitchMaterial>(R.id.switch_full_feature)
         val rowFullFeature = findViewById<View>(R.id.row_total_feature)
         switchFullFeature.isChecked = !safeModeActive
@@ -194,7 +188,6 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    /** Diálogo Material 3 para ATIVAR funcionalidade total */
     private fun showActivateFullFeatureDialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle("Ativar funcionalidade total")
@@ -214,7 +207,6 @@ class SettingsActivity : AppCompatActivity() {
             .show()
     }
 
-    /** Diálogo Material 3 para DESATIVAR funcionalidade total (voltar ao modo seguro) */
     private fun showDeactivateFullFeatureDialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle("Desativar funcionalidade total")
@@ -270,69 +262,29 @@ class SettingsActivity : AppCompatActivity() {
         return true
     }
 
-    private fun checkUpdate() = coroutineScope.launch {
-        try {
-            val (json, responseCode) = withContext(Dispatchers.IO) {
-                val url = URL("https://api.github.com/repos/etapaapp/EtapaApp/releases/latest")
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
-                connection.setRequestProperty("Accept", "application/vnd.github.v3+json")
-                connection.setRequestProperty("User-Agent", "EtapaApp-Android")
-                connection.connectTimeout = 10000
-                connection.connect()
-                try {
-                    if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-                        connection.inputStream.use { input ->
-                            JSONObject(input.readText()) to connection.responseCode
-                        }
-                    } else {
-                        null to connection.responseCode
-                    }
-                } finally {
-                    connection.disconnect()
-                }
+    private fun checkUpdate() {
+        UpdateChecker.checkForUpdate(this, true, object : UpdateChecker.UpdateListener {
+            override fun onUpdateAvailable(url: String, version: String, releaseNotes: String) {
+                runOnUiThread { promptForUpdate(url, version, releaseNotes) }
             }
-            if (json != null) processReleaseData(json)
-            else showError("Erro na conexão: Código $responseCode")
-        } catch (e: Exception) {
-            Log.e(tag, "Erro na verificação", e)
-            showError("Erro: ${e.message}")
-        }
+
+            override fun onUpToDate() {
+                runOnUiThread { showMessage() }
+            }
+
+            override fun onError(message: String) {
+                runOnUiThread { showError(message) }
+            }
+        })
     }
 
-    private fun InputStream.readText(): String =
-        BufferedReader(InputStreamReader(this)).use { it.readText() }
-
-    private fun processReleaseData(release: JSONObject) {
-        runOnUiThread {
-            val latest = release.getString("tag_name")
-            val current = BuildConfig.VERSION_NAME
-            if (UpdateChecker.isVersionGreater(latest, current)) {
-                val assets = release.getJSONArray("assets")
-                var apkUrl: String? = null
-                for (i in 0 until assets.length()) {
-                    val asset = assets.getJSONObject(i)
-                    if (asset.getString("name").endsWith(".apk")) {
-                        apkUrl = asset.getString("browser_download_url")
-                        break
-                    }
-                }
-                apkUrl?.let { promptForUpdate(it) } ?: showError("Arquivo APK não encontrado no release.")
-            } else {
-                showMessage()
-            }
-        }
-    }
-
-    private fun promptForUpdate(url: String) {
-        runOnUiThread {
-            MaterialAlertDialogBuilder(this)
-                .setTitle("Atualização Disponível")
-                .setMessage("Deseja baixar e instalar a versão mais recente?")
-                .setPositiveButton("Sim") { _, _ -> startManualDownload(url) }
-                .setNegativeButton("Não", null)
-                .show()
-        }
+    private fun promptForUpdate(url: String, version: String, releaseNotes: String) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Atualização Disponível ($version)")
+            .setMessage("O que há de novo:\n\n$releaseNotes\n\nDeseja baixar e instalar agora?")
+            .setPositiveButton("Sim") { _, _ -> startManualDownload(url) }
+            .setNegativeButton("Não", null)
+            .show()
     }
 
     private fun startManualDownload(apkUrl: String) {
@@ -355,7 +307,6 @@ class SettingsActivity : AppCompatActivity() {
         val view = layoutInflater.inflate(R.layout.dialog_download_progress, null)
         progressBar = view.findViewById(R.id.progress_bar)
 
-        // Use o MaterialAlertDialogBuilder para consistência visual
         return MaterialAlertDialogBuilder(this)
             .setView(view)
             .setCancelable(false)
@@ -366,12 +317,16 @@ class SettingsActivity : AppCompatActivity() {
         try {
             val connection = URL(apkUrl).openConnection() as HttpURLConnection
             connection.connect()
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val outputDir = File(downloadsDir, "EtapaApp").apply {
-                if (exists()) deleteRecursively()
+
+            // CORREÇÃO: Usando a pasta de downloads interna do app para não precisar de permissões
+            val downloadsDir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+            val outputDir = File(downloadsDir, "Update").apply {
+                if (exists()) deleteRecursively() // Limpa atualizações antigas
                 mkdirs()
             }
+
             val outputFile = File(outputDir, "app_release.apk")
+
             connection.inputStream.use { input ->
                 FileOutputStream(outputFile).use { output ->
                     val buffer = ByteArray(4096)
@@ -426,22 +381,18 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun showMessage() {
-        runOnUiThread {
-            MaterialAlertDialogBuilder(this)
-                .setMessage("Você já está na versão mais recente")
-                .setPositiveButton("OK", null)
-                .show()
-        }
+        MaterialAlertDialogBuilder(this)
+            .setMessage("Você já está na versão mais recente")
+            .setPositiveButton("OK", null)
+            .show()
     }
 
     private fun showError(msg: String) {
-        runOnUiThread {
-            MaterialAlertDialogBuilder(this)
-                .setTitle("Erro")
-                .setMessage(msg)
-                .setPositiveButton("OK", null)
-                .show()
-        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Erro")
+            .setMessage(msg)
+            .setPositiveButton("OK", null)
+            .show()
     }
 
     override fun onDestroy() {

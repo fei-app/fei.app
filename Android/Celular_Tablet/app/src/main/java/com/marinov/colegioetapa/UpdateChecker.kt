@@ -3,7 +3,7 @@ package com.marinov.colegioetapa
 import android.content.Context
 import android.util.Log
 import androidx.core.content.edit
-import org.json.JSONObject
+import org.json.JSONArray
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
@@ -16,19 +16,23 @@ object UpdateChecker {
     private const val KEY_LAST_VERSION = "last_version"
 
     interface UpdateListener {
-        fun onUpdateAvailable(url: String)
+        fun onUpdateAvailable(url: String, version: String, releaseNotes: String)
         fun onUpToDate()
         fun onError(message: String)
     }
 
-    fun checkForUpdate(context: Context, listener: UpdateListener) {
+    /**
+     * @param isManualCheck Se true, ignora a verificação de "versão já notificada" e sempre avisa se houver update.
+     */
+    fun checkForUpdate(context: Context, isManualCheck: Boolean, listener: UpdateListener) {
         Thread {
             runCatching {
-                val url = URL("https://api.github.com/repos/etapaapp/EtapaApp/releases/latest")
+                // A API do GitLab exige que o namespace e o projeto sejam separados por %2F
+                val url = URL("https://gitlab.com/api/v4/projects/etapa.app%2FEtapaApp/releases")
                 val conn = url.openConnection() as HttpURLConnection
                 conn.apply {
                     requestMethod = "GET"
-                    setRequestProperty("Accept", "application/vnd.github.v3+json")
+                    setRequestProperty("Accept", "application/json")
                     setRequestProperty("User-Agent", "EtapaApp-Android")
                     connectTimeout = 10000
                 }
@@ -36,17 +40,56 @@ object UpdateChecker {
                 when (conn.responseCode) {
                     HttpURLConnection.HTTP_OK -> {
                         val json = readResponseStream(conn)
-                        val release = JSONObject(json)
-                        val latestVersion = release.getString("tag_name")
+                        // GitLab retorna um Array de releases, a primeira (índice 0) é a mais recente
+                        val jsonArray = JSONArray(json)
+                        if (jsonArray.length() == 0) {
+                            listener.onError("Nenhuma release encontrada no repositório.")
+                            return@runCatching
+                        }
+
+                        val latestRelease = jsonArray.getJSONObject(0)
+                        val latestVersion = latestRelease.getString("tag_name")
+                        // Extrai as notas de lançamento (pode ser null ou não existir, então usamos optString)
+                        val releaseNotes = latestRelease.optString("description", "Sem notas de lançamento.")
                         val currentVersion = BuildConfig.VERSION_NAME
 
                         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                         val lastNotifiedVersion = prefs.getString(KEY_LAST_VERSION, "") ?: ""
 
                         if (isVersionGreater(latestVersion, currentVersion)) {
-                            if (latestVersion != lastNotifiedVersion) {
-                                prefs.edit { putString(KEY_LAST_VERSION, latestVersion) }
-                                listener.onUpdateAvailable(release.getString("html_url"))
+                            // Verifica se deve avisar (sempre avisa se for manual, ou se for uma versão nova não notificada)
+                            if (isManualCheck || latestVersion != lastNotifiedVersion) {
+
+                                var apkUrl: String? = null
+
+                                // Pega o link dos assets da release do GitLab
+                                if (latestRelease.has("assets")) {
+                                    val assets = latestRelease.getJSONObject("assets")
+                                    if (assets.has("links")) {
+                                        val links = assets.getJSONArray("links")
+                                        for (i in 0 until links.length()) {
+                                            val link = links.getJSONObject(i)
+                                            val linkUrl = link.optString("url", "")
+                                            val linkName = link.optString("name", "")
+                                            if (linkUrl.endsWith(".apk") || linkName.endsWith(".apk")) {
+                                                apkUrl = linkUrl
+                                                break
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (apkUrl.isNullOrEmpty()) {
+                                    listener.onError("Arquivo APK não foi encontrado nos assets da release da versão $latestVersion.")
+                                    return@runCatching
+                                }
+
+                                // Salva que já notificamos sobre essa versão (apenas em background)
+                                if (!isManualCheck) {
+                                    prefs.edit { putString(KEY_LAST_VERSION, latestVersion) }
+                                }
+
+                                listener.onUpdateAvailable(apkUrl, latestVersion, releaseNotes)
                             } else {
                                 listener.onUpToDate()
                             }
