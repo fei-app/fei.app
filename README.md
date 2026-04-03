@@ -27,10 +27,9 @@ Meu cliente alternativo para acessar https://areaexclusiva.colegioetapa.com.br/ 
 12. Resumos com IA (ChatGPT, Claude, Perplexity);
 13. Todas as funções do site....
 
-🚫 A SER IMPLEMENTADO NO FUTURO:
-1. Login persistente (parcialmente corrigido, ainda é preciso logar novamente após algumas horas);
-
 Bom proveito!
+# Acessar na Web #
+Para acessar a versão web do aplicativo, acesse o seguinte link: https://etapaapp-5bace8.gitlab.io/
 
 # Como instalar? #
 Android:
@@ -41,16 +40,7 @@ Android:
 
   Baixe o apk aqui (baixe a versão mais recente disponível): https://gitlab.com/etapa.app/EtapaApp/-/releases
   
-  Para smartwatches baixe aqui: (LINK EM MIGRAÇÃO)
-
-Windows:
-
-    Requisitos mínimos:
-      1. Windows 10 1809 ou superior;
-      2. EdgeWebview.
-  Baixe a última versão aqui: (LINK EM MIGRAÇÃO)
-  
-  Tutorial de instalação aqui: (LINK EM MIGRAÇÃO)
+⚠️ Atenção: devido a limitações técnicas, as versões do aplicativo para Windows e smartwatches Android foram descontinuadas, sendo a versão Windows parcialmente substituída pelo webapp.
   
 # Algumas observações! #
 
