@@ -35,20 +35,15 @@ android {
 
 dependencies {
 
-    implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.webkit)
     implementation(libs.core.ktx)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
     implementation (libs.jsoup)
     implementation (libs.gson)
     implementation (libs.work.runtime.ktx)
-    implementation (libs.guava)
     implementation (libs.glide)
     annotationProcessor (libs.compiler)
     implementation (libs.swiperefreshlayout)
