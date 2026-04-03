@@ -146,10 +146,10 @@ class SettingsActivity : AppCompatActivity() {
         val btnCheck = findViewById<Button>(R.id.btn_check_update)
         val btnClear = findViewById<Button>(R.id.btn_clear_data)
         val btnClearPassword = findViewById<Button>(R.id.btn_clear_password)
-        val btnGithub = findViewById<Button>(R.id.btn_github)
+        val btnGitlab = findViewById<Button>(R.id.btn_gitlab)
 
         // GitHub e Verificar atualizações: sempre habilitados
-        btnGithub.setOnClickListener { openUrl("https://github.com/etapaapp/") }
+        btnGitlab.setOnClickListener { openUrl("https://gitlab.com/etapa.app/") }
         btnCheck.setOnClickListener { checkUpdate() }
 
         // Limpar dados e senhas: bloqueados no modo de segurança
