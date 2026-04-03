@@ -298,7 +298,7 @@ class MaterialFragment : Fragment() {
                 val connection = (URL(currentUrl).openConnection() as HttpURLConnection).apply {
                     instanceFollowRedirects = false
                     requestMethod = "HEAD"
-                    setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_7_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Safari/605.1.15")
+                    setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 16; sdk_gphone64_x86_64 Build/BE2A.250530.026.D1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/133.0.6943.137 Mobile Safari/537.36")
                     if (!sessionCookies.isNullOrEmpty()) {
                         setRequestProperty("Cookie", sessionCookies)
                     }
@@ -372,7 +372,7 @@ class MaterialFragment : Fragment() {
                     .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, nomeArquivo)
                     .setAllowedOverMetered(true)
                     .setAllowedOverRoaming(true)
-                    .addRequestHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_7_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Safari/605.1.15")
+                    .addRequestHeader("User-Agent", "Mozilla/5.0 (Linux; Android 16; sdk_gphone64_x86_64 Build/BE2A.250530.026.D1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/133.0.6943.137 Mobile Safari/537.36")
 
                 // Adiciona cookie pelo header para garantir
                 if (!sessionCookies.isNullOrEmpty()) {

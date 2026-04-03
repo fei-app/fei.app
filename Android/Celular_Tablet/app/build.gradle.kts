@@ -48,8 +48,6 @@ dependencies {
     implementation (libs.jsoup)
     implementation (libs.gson)
     implementation (libs.work.runtime.ktx)
-    implementation (libs.listenablefuture)
-    implementation (libs.retrofit)
     implementation (libs.converter.gson)
     implementation (libs.logging.interceptor)
     implementation (libs.guava)
