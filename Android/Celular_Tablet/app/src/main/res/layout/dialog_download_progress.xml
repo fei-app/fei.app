@@ -9,8 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Baixando atualização..."
-        android:textSize="18sp"
-        android:layout_gravity="center"/>
+        android:textSize="18sp" />
 
     <ProgressBar
         android:id="@+id/progress_bar"

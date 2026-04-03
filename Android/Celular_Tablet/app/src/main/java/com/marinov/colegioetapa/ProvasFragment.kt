@@ -124,6 +124,7 @@ class ProvasFragment : Fragment() {
 
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                (activity as? MainActivity)?.showBottomNavigation()
                 if (currentPath.isNotEmpty()) {
                     currentPath = getParentPath(currentPath)
                     startFetch()
@@ -247,6 +248,7 @@ class ProvasFragment : Fragment() {
     // ─── Download com notificação ─────────────────────────────────────────────
 
     private fun onItemClick(item: RepoItem) {
+        (activity as? MainActivity)?.showBottomNavigation()
         if (item.type == "dir") {
             currentPath = item.path
             startFetch()

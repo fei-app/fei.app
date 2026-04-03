@@ -21,6 +21,7 @@ import android.view.ViewTreeObserver
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
@@ -34,6 +35,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.navigationrail.NavigationRailView
@@ -74,6 +76,7 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
 
     private var currentFragment: Fragment? = null
     private lateinit var bottomNav: BottomNavigationView
+    private lateinit var bottomNavContainer: View
     private lateinit var navRail: NavigationRailView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private var isLayoutReady = false
@@ -94,14 +97,11 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
         )
         setContentView(R.layout.activity_main)
 
-        // ── Restaura estado após morte do processo ──────────────────────────
-        // O FragmentManager já restaura o fragment automaticamente;
-        // só precisamos recuperar o ID para que a navegação não force a Home.
+        // Restaura estado após morte do processo
         if (savedInstanceState != null) {
             currentFragmentId = savedInstanceState.getInt(KEY_CURRENT_FRAGMENT_ID, View.NO_ID)
             currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
         }
-        // ───────────────────────────────────────────────────────────────────
 
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
 
@@ -124,8 +124,22 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
             v.setPadding(v.paddingLeft, statusBarHeight, v.paddingRight, v.paddingBottom)
             insets
         }
+
         bottomNav = findViewById(R.id.bottom_navigation)
+        bottomNavContainer = findViewById(R.id.bottom_nav_container)
         navRail = findViewById(R.id.navigation_rail)
+
+        // CORREÇÃO 1: Tratar insets do sistema para dispositivos com navegação por gestos (Android 10+)
+        // Isso garante que o bottom margin correto seja aplicado e o HideBottomViewOnScrollBehavior suma com tudo
+        ViewCompat.setOnApplyWindowInsetsListener(bottomNavContainer) { v, insets ->
+            val systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val layoutParams = v.layoutParams as ViewGroup.MarginLayoutParams
+            // 20dp original do XML convertido para pixels
+            val originalMarginBottom = (20 * resources.displayMetrics.density).toInt()
+            layoutParams.bottomMargin = originalMarginBottom + systemBarsInsets.bottom
+            v.layoutParams = layoutParams
+            insets
+        }
 
         val rootView = findViewById<View>(R.id.main)
         rootView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
@@ -142,6 +156,17 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
 
         verificarModoSeguranca()
         iniciarUpdateWorker()
+        navigateToHome()
+    }
+
+    // CORREÇÃO 2: Função global para forçar a barra inferior a subir
+    fun showBottomNavigation() {
+        if (::bottomNavContainer.isInitialized && bottomNavContainer.visibility == View.VISIBLE) {
+            val layoutParams = bottomNavContainer.layoutParams as? CoordinatorLayout.LayoutParams
+            @Suppress("UNCHECKED_CAST")
+            val behavior = layoutParams?.behavior as? HideBottomViewOnScrollBehavior<View>
+            behavior?.slideUp(bottomNavContainer)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -210,13 +235,9 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
 
     private fun handleIntent(intent: Intent?) {
         val destination = intent?.getStringExtra("destination") ?: run {
-            // ── CORREÇÃO: verifica o FragmentManager, não a variável em memória ──
-            // Assim, se o processo foi morto e o FM já restaurou o fragment,
-            // não abrimos a Home por cima do que estava aberto.
             val hasRestoredFragment = supportFragmentManager
                 .findFragmentById(R.id.nav_host_fragment) != null
             if (!hasRestoredFragment) openFragment(R.id.navigation_home)
-            // ──────────────────────────────────────────────────────────────────
             return
         }
         Log.d(TAG, "Handling intent with destination: $destination")
@@ -255,6 +276,7 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
 
         updateMenuSelection(fragmentId)
         updateRefreshLayoutState()
+        showBottomNavigation() // CORREÇÃO 2: Força a barra inferior a reaparecer ao trocar de tela
     }
 
     private fun updateMenuSelection(fragmentId: Int) {
@@ -278,7 +300,7 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
         val safeMode = isSafeMode()
 
         if (isTablet) {
-            bottomNav.visibility = View.GONE
+            bottomNavContainer.visibility = View.GONE
             navRail.visibility = View.VISIBLE
 
             SAFE_MODE_BLOCKED_NAV.forEach { id ->
@@ -294,7 +316,7 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
 
         } else {
             navRail.visibility = View.GONE
-            bottomNav.visibility = View.VISIBLE
+            bottomNavContainer.visibility = View.VISIBLE
 
             SAFE_MODE_BLOCKED_NAV.forEach { id ->
                 bottomNav.menu.findItem(id)?.isEnabled = !safeMode
@@ -314,7 +336,8 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
                     rootView.getWindowVisibleDisplayFrame(r)
                     val screenHeight = rootView.rootView.height
                     val keypadHeight = screenHeight - r.bottom
-                    bottomNav.visibility = if (keypadHeight > screenHeight * 0.15) View.GONE else View.VISIBLE
+                    bottomNavContainer.visibility =
+                        if (keypadHeight > screenHeight * 0.15) View.GONE else View.VISIBLE
                 }
                 isKeypadListenerAdded = true
             }
@@ -324,9 +347,7 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
     private fun updateNavItemsAlpha(navView: ViewGroup, menu: Menu, safeMode: Boolean) {
         val menuSize = menu.size
         if (menuSize == 0) return
-
         val menuContainer = findNavMenuContainer(navView, menuSize) ?: return
-
         for (i in 0 until menuSize) {
             val itemId = menu[i].itemId
             if (SAFE_MODE_BLOCKED_NAV.contains(itemId)) {
@@ -508,11 +529,11 @@ class MainActivity : AppCompatActivity(), WebViewFragment.LoginSuccessListener {
 
         updateMenuSelection(View.NO_ID)
         updateRefreshLayoutState()
+        showBottomNavigation() // CORREÇÃO 2: Força a barra inferior a reaparecer
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.top_app_bar_menu, menu)
-
         val profileItem = menu.findItem(R.id.action_profile)
         if (isSafeMode()) {
             profileItem?.isEnabled = false

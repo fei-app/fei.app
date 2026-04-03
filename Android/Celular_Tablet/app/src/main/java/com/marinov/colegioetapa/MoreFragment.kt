@@ -69,7 +69,6 @@ class MoreFragment : Fragment(), MainActivity.RefreshableFragment {
         private const val ALPHA_DISABLED = 0.38f
         private const val ALPHA_ENABLED = 1.0f
     }
-
     private fun isSafeMode(): Boolean =
         (activity as? MainActivity)?.isSafeMode() ?: true
 
@@ -83,7 +82,7 @@ class MoreFragment : Fragment(), MainActivity.RefreshableFragment {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sharedPreferences = requireContext().getSharedPreferences(PROFILE_PREFS, Context.MODE_PRIVATE)
-
+        (activity as? MainActivity)?.showBottomNavigation()
         initViews(view)
         setupClickListeners(view)
 

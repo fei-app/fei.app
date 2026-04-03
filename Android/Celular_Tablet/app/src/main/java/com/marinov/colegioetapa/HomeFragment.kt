@@ -195,12 +195,32 @@ class HomeFragment : Fragment() {
         btnTentarNovamente?.setOnClickListener { loadInitialData() }
 
         swipeRefreshLayout?.setOnRefreshListener {
-            swipeRefreshLayout?.isRefreshing = false
-            if (!isSafeMode()) fetchDataFromServer()
+            // Só executa o refresh se o layout estiver em estado normal (conteúdo visível e não em safe mode)
+            if (isAdded && !isFragmentDestroyed && contentContainer?.visibility == View.VISIBLE &&
+                layoutSafeMode?.visibility != View.VISIBLE && layoutSemInternet?.visibility != View.VISIBLE
+            ) {
+                fetchDataFromServer()
+            } else {
+                // Se não for permitido, para o refresh imediatamente
+                swipeRefreshLayout?.isRefreshing = false
+            }
         }
 
         btnOpenProvas?.setOnClickListener {
             (activity as? MainActivity)?.openCustomFragment(ProvasFragment())
+        }
+    }
+
+    // --- Controle do SwipeRefreshLayout local baseado no estado da UI ---
+    private fun updateSwipeRefreshState() {
+        if (isFragmentDestroyed || swipeRefreshLayout == null) return
+        val isNormalContent = contentContainer?.visibility == View.VISIBLE &&
+                layoutSemInternet?.visibility != View.VISIBLE &&
+                layoutSafeMode?.visibility != View.VISIBLE &&
+                !isSafeMode()
+        swipeRefreshLayout?.isEnabled = isNormalContent
+        if (!isNormalContent) {
+            swipeRefreshLayout?.isRefreshing = false
         }
     }
 
@@ -283,7 +303,12 @@ class HomeFragment : Fragment() {
                     if (!isFragmentDestroyed) handleDataFetchError(e)
                 }
             } finally {
-                withContext(Dispatchers.Main) { topLoadingBar?.visibility = View.GONE }
+                withContext(Dispatchers.Main) {
+                    topLoadingBar?.visibility = View.GONE
+                    // Para o indicador de refresh, independentemente do resultado
+                    swipeRefreshLayout?.isRefreshing = false
+                    updateSwipeRefreshState()
+                }
             }
         }
     }
@@ -594,6 +619,7 @@ class HomeFragment : Fragment() {
         contentContainer?.visibility = View.GONE
         layoutSemInternet?.visibility = View.GONE
         layoutSafeMode?.visibility = View.GONE
+        updateSwipeRefreshState()
     }
 
     private fun showContentState() {
@@ -602,6 +628,7 @@ class HomeFragment : Fragment() {
         contentContainer?.visibility = View.VISIBLE
         layoutSemInternet?.visibility = View.GONE
         layoutSafeMode?.visibility = View.GONE
+        updateSwipeRefreshState()
     }
 
     private fun showOfflineState() {
@@ -610,6 +637,7 @@ class HomeFragment : Fragment() {
         contentContainer?.visibility = View.GONE
         layoutSemInternet?.visibility = View.VISIBLE
         layoutSafeMode?.visibility = View.GONE
+        updateSwipeRefreshState()
     }
 
     private fun showSafeModeState() {
@@ -618,7 +646,7 @@ class HomeFragment : Fragment() {
         contentContainer?.visibility = View.GONE
         layoutSemInternet?.visibility = View.GONE
         layoutSafeMode?.visibility = View.VISIBLE
-        swipeRefreshLayout?.isEnabled = false
+        updateSwipeRefreshState()
     }
 
     private fun hasInternetConnection(): Boolean {
@@ -672,4 +700,5 @@ class HomeFragment : Fragment() {
         val title: String?,
         val description: String?,
         val link: String?
-    )}
+    )
+}

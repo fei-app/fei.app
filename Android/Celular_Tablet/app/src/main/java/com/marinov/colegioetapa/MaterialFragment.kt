@@ -109,6 +109,7 @@ class MaterialFragment : Fragment() {
 
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                (activity as? MainActivity)?.showBottomNavigation()
                 if (navigationStack.size > 1) {
                     navigationStack.removeAt(navigationStack.size - 1)
                     updateAdapterFromCurrentNode()
@@ -255,7 +256,7 @@ class MaterialFragment : Fragment() {
     private fun onItemClick(item: MaterialItem) {
         val currentNode = navigationStack.last()
         val clickedNode = currentNode.children.find { it.name == item.name } ?: return
-
+        (activity as? MainActivity)?.showBottomNavigation()
         when (clickedNode.type) {
             MaterialNodeType.ASSUNTO, MaterialNodeType.SUBCATEGORIA -> {
                 navigationStack.add(clickedNode)

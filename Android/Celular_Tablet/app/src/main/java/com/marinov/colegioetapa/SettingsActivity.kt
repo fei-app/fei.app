@@ -351,10 +351,12 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     @SuppressLint("InflateParams")
-    private fun createProgressDialog(): android.app.AlertDialog {
+    private fun createProgressDialog(): androidx.appcompat.app.AlertDialog {
         val view = layoutInflater.inflate(R.layout.dialog_download_progress, null)
         progressBar = view.findViewById(R.id.progress_bar)
-        return android.app.AlertDialog.Builder(this)
+
+        // Use o MaterialAlertDialogBuilder para consistência visual
+        return MaterialAlertDialogBuilder(this)
             .setView(view)
             .setCancelable(false)
             .create()

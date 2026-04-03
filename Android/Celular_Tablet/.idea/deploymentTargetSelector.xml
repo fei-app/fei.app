@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-04-02T19:42:34.823976062Z">
+        <DropdownSelection timestamp="2026-04-03T00:47:29.821908276Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/home/gabrielbaraglio/.android/avd/9.0_Gapps_Phone.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=/home/gabrielbaraglio/.android/avd/GAPPS_Medium_Phone.avd" />
             </handle>
           </Target>
         </DropdownSelection>

@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/fundocartao"
     tools:context=".RedacaoSemanalFragment"
-    android:fitsSystemWindows="true"
-    android:paddingBottom="?attr/actionBarSize">
+    android:fitsSystemWindows="true">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
