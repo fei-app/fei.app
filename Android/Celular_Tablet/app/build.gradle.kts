@@ -10,7 +10,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "39.0"
+        versionName = "50.0"
         buildConfigField("String", "GITLAB_PAT", "\"${project.findProperty("GITLAB_PAT") ?: ""}\"")
     }
 
@@ -49,7 +49,6 @@ dependencies {
     implementation (libs.gson)
     implementation (libs.work.runtime.ktx)
     implementation (libs.converter.gson)
-    implementation (libs.logging.interceptor)
     implementation (libs.guava)
     implementation (libs.glide)
     annotationProcessor (libs.compiler)
