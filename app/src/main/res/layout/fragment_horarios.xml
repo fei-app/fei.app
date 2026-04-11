@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/fundocartao"
-    >
+    android:background="@color/fundocartao">
 
     <LinearLayout
         android:orientation="vertical"
@@ -51,56 +50,65 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
         </LinearLayout>
 
-        <!-- Contêiner para mensagem centralizada -->
-        <LinearLayout
-            android:id="@+id/messageContainer"
+        <!-- Seletor de dias da semana (Chips) -->
+        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:visibility="gone"
-            android:padding="16dp">
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="6dp">
 
-            <TextView
-                android:id="@+id/tvMessage"
-                android:layout_width="match_parent"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupDias"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                android:textColor="?attr/colorOnSurface"
-                android:gravity="center"
-                android:textAlignment="center"/>
-        </LinearLayout>
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                app:chipSpacingHorizontal="4dp"/>
+        </HorizontalScrollView>
 
-        <!-- Conteúdo Principal -->
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scrollContainer"
+        <!-- Divisor -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorOutlineVariant"/>
+
+        <!-- Área de conteúdo -->
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <HorizontalScrollView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerAulas"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingTop="8dp"
+                android:paddingBottom="88dp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="32dp"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:visibility="gone"/>
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fillViewport="true"
-                android:paddingBottom="8dp">
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:indicatorColor="?attr/colorPrimary"
+                app:trackColor="?attr/colorSurfaceVariant"/>
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp">
-
-                    <TableLayout
-                        android:id="@+id/tableHorarios"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:shrinkColumns="*"
-                        android:stretchColumns="*"
-                        android:background="@color/fundocartao"
-                        />
-                </com.google.android.material.card.MaterialCardView>
-            </HorizontalScrollView>
-        </androidx.core.widget.NestedScrollView>
+        </FrameLayout>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

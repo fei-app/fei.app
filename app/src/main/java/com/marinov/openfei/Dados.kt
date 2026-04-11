@@ -1,4 +1,3 @@
-// Dados.kt
 package com.marinov.openfei
 
 import android.content.Context
