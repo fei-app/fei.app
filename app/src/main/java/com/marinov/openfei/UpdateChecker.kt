@@ -29,7 +29,7 @@ object UpdateChecker {
                 conn.apply {
                     requestMethod = "GET"
                     setRequestProperty("Accept", "application/json")
-                    setRequestProperty("User-Agent", "EtapaApp-Android")
+                    setRequestProperty("User-Agent", "FEIApp-Android")
                     connectTimeout = 10000
                 }
 
