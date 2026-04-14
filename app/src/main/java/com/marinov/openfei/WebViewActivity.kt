@@ -6,10 +6,14 @@ import android.app.DownloadManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
+import android.view.WindowManager
 import android.webkit.CookieManager
 import android.webkit.URLUtil
 import android.webkit.ValueCallback
@@ -21,6 +25,8 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 
 class WebViewActivity : AppCompatActivity() {
 
@@ -56,6 +62,7 @@ class WebViewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_webview)
         originalOrientation = requestedOrientation
         webView = findViewById(R.id.webview)
+        configureSystemBarsForLegacyDevices()
         setupWebView()
         setupBackPressHandler()
 
@@ -192,6 +199,67 @@ class WebViewActivity : AppCompatActivity() {
                 putExtra(EXTRA_URL, url)
             }
             context.startActivity(intent)
+        }
+    }
+
+    @SuppressLint("ObsoleteSdkInt")
+    private fun configureSystemBarsForLegacyDevices() {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            val isDarkMode = when (AppCompatDelegate.getDefaultNightMode()) {
+                AppCompatDelegate.MODE_NIGHT_YES -> true
+                AppCompatDelegate.MODE_NIGHT_NO -> false
+                else -> {
+                    val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+                    currentNightMode == Configuration.UI_MODE_NIGHT_YES
+                }
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.apply {
+                    @Suppress("DEPRECATION")
+                    clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                    addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+                        @Suppress("DEPRECATION") statusBarColor = Color.BLACK
+                        @Suppress("DEPRECATION") navigationBarColor = Color.BLACK
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            @Suppress("DEPRECATION")
+                            var flags = decorView.systemUiVisibility
+                            @Suppress("DEPRECATION")
+                            flags = flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+                            @Suppress("DEPRECATION")
+                            decorView.systemUiVisibility = flags
+                        }
+                    } else {
+                        @Suppress("DEPRECATION")
+                        navigationBarColor = if (isDarkMode) {
+                            ContextCompat.getColor(this@WebViewActivity, R.color.nav_bar_dark)
+                        } else {
+                            ContextCompat.getColor(this@WebViewActivity, R.color.nav_bar_light)
+                        }
+                    }
+                }
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                @Suppress("DEPRECATION")
+                var flags = window.decorView.systemUiVisibility
+                if (isDarkMode) {
+                    @Suppress("DEPRECATION")
+                    flags = flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
+                } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
+                    @Suppress("DEPRECATION")
+                    flags = flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                }
+                @Suppress("DEPRECATION")
+                window.decorView.systemUiVisibility = flags
+            }
+            if (!isDarkMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                @Suppress("DEPRECATION")
+                var flags = window.decorView.systemUiVisibility
+                @Suppress("DEPRECATION")
+                flags = flags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                @Suppress("DEPRECATION")
+                window.decorView.systemUiVisibility = flags
+            }
         }
     }
 }

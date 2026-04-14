@@ -1,18 +1,19 @@
 package com.marinov.openfei
 
-import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -23,26 +24,29 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 
-class HorariosAula : Fragment(), MainActivity.RefreshableFragment {
+class HorariosAula : Fragment(){
 
-    private lateinit var recyclerAulas: RecyclerView
+    private lateinit var viewPagerAulas: ViewPager2
     private lateinit var barOffline: LinearLayout
     private lateinit var progressBar: CircularProgressIndicator
     private lateinit var tvMessage: TextView
     private lateinit var btnLogin: MaterialButton
-    private lateinit var adapter: AulasAdapter
 
+    // Um dos dois será nulo dependendo do layout (celular × tablet)
     private var chipGroupDias: ChipGroup? = null
-
+    private var scrollChips: HorizontalScrollView? = null
     private var layoutDias: LinearLayout? = null
 
     private val tabletDayButtons = LinkedHashMap<String, MaterialButton>()
 
     private var todasAulas: List<Dados.Aula> = emptyList()
+    private var diasVisiveis: List<String> = emptyList()
 
     private val ordemDias = listOf("Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado")
-
     private var diaSelecionado: String = getDiaAtual()
+
+    // Evita loop: chip.isChecked = true  →  listener  →  setCurrentItem  →  onPageSelected  →  ...
+    private var isProgrammaticChipUpdate = false
 
     // =====================================================================
     // Ciclo de vida
@@ -55,31 +59,29 @@ class HorariosAula : Fragment(), MainActivity.RefreshableFragment {
     ): View {
         val root = inflater.inflate(R.layout.fragment_horarios, container, false)
 
-        recyclerAulas = root.findViewById(R.id.recyclerAulas)
-        barOffline    = root.findViewById(R.id.barOffline)
-        progressBar   = root.findViewById(R.id.progressBar)
-        tvMessage     = root.findViewById(R.id.tvMessage)
-        btnLogin      = root.findViewById(R.id.btnLogin)
+        viewPagerAulas = root.findViewById(R.id.viewPagerAulas)
+        barOffline     = root.findViewById(R.id.barOffline)
+        progressBar    = root.findViewById(R.id.progressBar)
+        tvMessage      = root.findViewById(R.id.tvMessage)
+        btnLogin       = root.findViewById(R.id.btnLogin)
 
-        // Um dos dois será nulo dependendo do layout carregado (celular × tablet)
         chipGroupDias = root.findViewById(R.id.chipGroupDias)
+        scrollChips   = root.findViewById(R.id.scrollChips)
         layoutDias    = root.findViewById(R.id.layoutDias)
 
         btnLogin.setOnClickListener { carregarHorarios() }
-
-        setupRecyclerView()
         carregarHorarios()
 
         return root
     }
 
-    override fun onRefresh() {
-        Log.d("HorariosAula", "Pull-to-Refresh acionado")
-        carregarHorarios()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewPagerAulas.unregisterOnPageChangeCallback(pageChangeCallback)
     }
 
     // =====================================================================
-    // Lógica de dia
+    // Lógica de dia atual
     // =====================================================================
 
     private fun getDiaAtual(): String = when (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
@@ -94,9 +96,7 @@ class HorariosAula : Fragment(), MainActivity.RefreshableFragment {
 
     private fun proximoDiaComAula(diasComAula: Set<String>): String {
         if (diasComAula.isEmpty()) return ordemDias.first()
-
-        val indexHoje = ordemDias.indexOf(getDiaAtual()).takeIf { it >= 0 } ?: 0
-
+        val indexHoje = ordemDias.indexOf(getDiaAtual()).coerceAtLeast(0)
         for (offset in ordemDias.indices) {
             val candidato = ordemDias[(indexHoje + offset) % ordemDias.size]
             if (candidato in diasComAula) return candidato
@@ -105,45 +105,37 @@ class HorariosAula : Fragment(), MainActivity.RefreshableFragment {
     }
 
     // =====================================================================
-    // Seletor de dias (chips / botões)
+    // Construção dos seletores
     // =====================================================================
+
     private fun construirSeletorDias(diasComAula: Set<String>) {
         diaSelecionado = proximoDiaComAula(diasComAula)
+        diasVisiveis   = ordemDias.filter { it in diasComAula }
 
-        val chipGroup = chipGroupDias
-        val dayLayout = layoutDias
-
-        if (chipGroup != null) {
-            construirChips(chipGroup, diasComAula)
-        } else if (dayLayout != null) {
-            construirBotoesTablet(dayLayout, diasComAula)
-        }
+        chipGroupDias?.let { construirChips(it) }
+        layoutDias?.let    { construirBotoesTablet(it) }
     }
 
-    private fun construirChips(chipGroup: ChipGroup, diasComAula: Set<String>) {
+    private fun construirChips(chipGroup: ChipGroup) {
         chipGroup.removeAllViews()
-
-        val diasVisiveis = ordemDias.filter { it in diasComAula }
-        val chips = diasVisiveis.map { dia ->
+        diasVisiveis.forEachIndexed { index, dia ->
             Chip(requireContext(), null, com.google.android.material.R.attr.chipStyle).apply {
                 text = dia
                 isCheckable = true
+                isChecked = (dia == diaSelecionado)
+                setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked && !isProgrammaticChipUpdate) {
+                        viewPagerAulas.setCurrentItem(index, true)
+                    }
+                }
                 chipGroup.addView(this)
-            }
-        }
-        chips.forEachIndexed { index, chip ->
-            chip.isChecked = diasVisiveis[index] == diaSelecionado
-            chip.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) selecionarDia(diasVisiveis[index])
             }
         }
     }
 
-    private fun construirBotoesTablet(dayLayout: LinearLayout, diasComAula: Set<String>) {
+    private fun construirBotoesTablet(dayLayout: LinearLayout) {
         dayLayout.removeAllViews()
         tabletDayButtons.clear()
-
-        val diasVisiveis = ordemDias.filter { it in diasComAula }
         diasVisiveis.forEach { dia ->
             val btn = MaterialButton(
                 requireContext(),
@@ -157,48 +149,60 @@ class HorariosAula : Fragment(), MainActivity.RefreshableFragment {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply { setMargins(0, 4.dp, 0, 4.dp) }
-                setOnClickListener { selecionarDia(dia) }
+                setOnClickListener {
+                    viewPagerAulas.setCurrentItem(diasVisiveis.indexOf(dia), true)
+                }
             }
             tabletDayButtons[dia] = btn
             dayLayout.addView(btn)
         }
-
         atualizarEstiloBotoesDia()
     }
 
-    private fun selecionarDia(dia: String) {
+    // =====================================================================
+    // Sincronização seletor ↔ página (chamada pelo OnPageChangeCallback)
+    // =====================================================================
+
+    private fun sincronizarSeletorComDia(dia: String) {
         diaSelecionado = dia
+
+        // --- Chips (celular) ---
+        chipGroupDias?.let { group ->
+            val index = diasVisiveis.indexOf(dia).takeIf { it >= 0 } ?: return@let
+            isProgrammaticChipUpdate = true
+            (group.getChildAt(index) as? Chip)?.let { chip ->
+                chip.isChecked = true
+                // Rola o HorizontalScrollView para centralizar o chip selecionado
+                scrollChips?.post {
+                    val chipLeft   = chip.left
+                    val chipWidth  = chip.width
+                    val scrollWidth = scrollChips!!.width
+                    scrollChips!!.smoothScrollTo(chipLeft - (scrollWidth - chipWidth) / 2, 0)
+                }
+            }
+            isProgrammaticChipUpdate = false
+        }
+
+        // --- Botões tablet ---
         atualizarEstiloBotoesDia()
-        aplicarFiltroDia()
     }
+
     private fun atualizarEstiloBotoesDia() {
         if (tabletDayButtons.isEmpty()) return
         val ctx = context ?: return
 
-        val bgSelecionado = MaterialColors.getColor(
-            ctx,
-            com.google.android.material.R.attr.colorSecondaryContainer,
-            0
-        )
-        val textSelecionado = MaterialColors.getColor(
-            ctx,
-            com.google.android.material.R.attr.colorOnSecondaryContainer,
-            0
-        )
-        val textNormal = MaterialColors.getColor(
-            ctx,
-            com.google.android.material.R.attr.colorOnSurface,
-            0
-        )
+        val bgSel   = MaterialColors.getColor(ctx, com.google.android.material.R.attr.colorSecondaryContainer, 0)
+        val textSel = MaterialColors.getColor(ctx, com.google.android.material.R.attr.colorOnSecondaryContainer, 0)
+        val textNorm= MaterialColors.getColor(ctx, com.google.android.material.R.attr.colorOnSurface, 0)
 
         tabletDayButtons.forEach { (dia, btn) ->
             if (dia == diaSelecionado) {
-                btn.setBackgroundColor(bgSelecionado)
-                btn.setTextColor(textSelecionado)
+                btn.setBackgroundColor(bgSel)
+                btn.setTextColor(textSel)
                 btn.setTypeface(null, Typeface.BOLD)
             } else {
                 btn.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-                btn.setTextColor(textNormal)
+                btn.setTextColor(textNorm)
                 btn.setTypeface(null, Typeface.NORMAL)
             }
         }
@@ -232,13 +236,9 @@ class HorariosAula : Fragment(), MainActivity.RefreshableFragment {
                     mostrarMensagem("Nenhuma aula encontrada")
                 } else {
                     todasAulas = aulas
-
-                    // Descobre quais dias têm pelo menos uma aula e constrói o seletor
                     val diasComAula = aulas.map { it.diaSemana }.toSet()
                     construirSeletorDias(diasComAula)
-
-                    // Exibe as aulas do dia pré-selecionado
-                    aplicarFiltroDia()
+                    configurarViewPager()
                 }
 
             } catch (e: SessionExpiredException) {
@@ -258,71 +258,115 @@ class HorariosAula : Fragment(), MainActivity.RefreshableFragment {
     }
 
     // =====================================================================
-    // Filtragem e exibição
+    // Configuração do ViewPager2
     // =====================================================================
 
-    private fun aplicarFiltroDia() {
-        val aulasDoDia = todasAulas
-            .filter { it.diaSemana == diaSelecionado }
-            .sortedBy { it.horaInicio }
+    private fun configurarViewPager() {
+        val aulasPorDia = diasVisiveis.associateWith { dia ->
+            todasAulas.filter { it.diaSemana == dia }.sortedBy { it.horaInicio }
+        }
 
-        adapter.updateData(aulasDoDia)
+        // Tablet (layoutDias != null) → vertical, como "reels"
+        // Celular                     → horizontal, swipe esquerda/direita
+        viewPagerAulas.orientation = if (layoutDias != null)
+            ViewPager2.ORIENTATION_VERTICAL
+        else
+            ViewPager2.ORIENTATION_HORIZONTAL
 
-        if (aulasDoDia.isEmpty()) {
-            mostrarMensagem("Nenhuma aula em $diaSelecionado")
-        } else {
-            tvMessage.visibility = View.GONE
-            recyclerAulas.visibility = View.VISIBLE
+        viewPagerAulas.adapter = DiasPageAdapter(diasVisiveis, aulasPorDia)
+
+        val initialIndex = diasVisiveis.indexOf(diaSelecionado).coerceAtLeast(0)
+        viewPagerAulas.setCurrentItem(initialIndex, false)
+
+        // Re-registra para evitar duplicação em refresh
+        viewPagerAulas.unregisterOnPageChangeCallback(pageChangeCallback)
+        viewPagerAulas.registerOnPageChangeCallback(pageChangeCallback)
+
+        tvMessage.visibility     = View.GONE
+        viewPagerAulas.visibility = View.VISIBLE
+    }
+
+    private val pageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            if (position in diasVisiveis.indices) {
+                sincronizarSeletorComDia(diasVisiveis[position])
+            }
         }
     }
 
     // =====================================================================
-    // RecyclerView
-    // =====================================================================
-
-    private fun setupRecyclerView() {
-        adapter = AulasAdapter(emptyList())
-        recyclerAulas.layoutManager = LinearLayoutManager(requireContext())
-        recyclerAulas.adapter = adapter
-    }
-
-    // =====================================================================
-    // Helpers de estado visual
+    // Estado visual global
     // =====================================================================
 
     private fun exibirCarregando() {
-        progressBar.visibility = View.VISIBLE
-        recyclerAulas.visibility = View.GONE
-        tvMessage.visibility = View.GONE
-        barOffline.visibility = View.GONE
+        progressBar.visibility    = View.VISIBLE
+        viewPagerAulas.visibility = View.GONE
+        tvMessage.visibility      = View.GONE
+        barOffline.visibility     = View.GONE
     }
 
     private fun mostrarMensagem(msg: String) {
-        tvMessage.text = msg
-        tvMessage.visibility = View.VISIBLE
-        recyclerAulas.visibility = View.GONE
-        progressBar.visibility = View.GONE
+        tvMessage.text            = msg
+        tvMessage.visibility      = View.VISIBLE
+        viewPagerAulas.visibility = View.GONE
+        progressBar.visibility    = View.GONE
     }
 
     // =====================================================================
-    // Extensão utilitária
+    // Extensão dp
     // =====================================================================
 
     private val Int.dp: Int get() = (this * resources.displayMetrics.density).toInt()
 
     // =====================================================================
-    // Adapter
+    // Adapter do ViewPager2 — uma página por dia
+    // =====================================================================
+
+    private inner class DiasPageAdapter(
+        private val dias: List<String>,
+        private val aulasPorDia: Map<String, List<Dados.Aula>>
+    ) : RecyclerView.Adapter<DiasPageAdapter.PageHolder>() {
+
+        override fun getItemCount() = dias.size
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageHolder {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_dia_page, parent, false)
+            return PageHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: PageHolder, position: Int) {
+            val dia = dias[position]
+            holder.bind(aulasPorDia[dia] ?: emptyList(), dia)
+        }
+
+        inner class PageHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            private val recycler: RecyclerView = itemView.findViewById(R.id.recyclerAulasPage)
+            private val tvEmpty: TextView      = itemView.findViewById(R.id.tvEmptyPage)
+
+            init { recycler.layoutManager = LinearLayoutManager(itemView.context) }
+
+            fun bind(aulas: List<Dados.Aula>, dia: String) {
+                if (aulas.isEmpty()) {
+                    recycler.visibility = View.GONE
+                    tvEmpty.visibility  = View.VISIBLE
+                    tvEmpty.text        = "Nenhuma aula em $dia"
+                } else {
+                    tvEmpty.visibility  = View.GONE
+                    recycler.visibility = View.VISIBLE
+                    recycler.adapter    = AulasAdapter(aulas)
+                }
+            }
+        }
+    }
+
+    // =====================================================================
+    // Adapter das aulas dentro de cada página
     // =====================================================================
 
     private inner class AulasAdapter(
-        private var items: List<Dados.Aula>
+        private val items: List<Dados.Aula>
     ) : RecyclerView.Adapter<AulasAdapter.ViewHolder>() {
-
-        @SuppressLint("NotifyDataSetChanged")
-        fun updateData(newItems: List<Dados.Aula>) {
-            items = newItems
-            notifyDataSetChanged()
-        }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context)
@@ -330,17 +374,14 @@ class HorariosAula : Fragment(), MainActivity.RefreshableFragment {
             return ViewHolder(view)
         }
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bind(items[position])
-        }
-
-        override fun getItemCount(): Int = items.size
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(items[position])
+        override fun getItemCount() = items.size
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val txtCodigo: TextView  = itemView.findViewById(R.id.txtCodigoDisciplina)
-            private val txtNome: TextView    = itemView.findViewById(R.id.txtNomeDisciplina)
+            private val txtCodigo:  TextView = itemView.findViewById(R.id.txtCodigoDisciplina)
+            private val txtNome:    TextView = itemView.findViewById(R.id.txtNomeDisciplina)
             private val txtHorario: TextView = itemView.findViewById(R.id.txtHorario)
-            private val txtSala: TextView    = itemView.findViewById(R.id.txtSala)
+            private val txtSala:    TextView = itemView.findViewById(R.id.txtSala)
 
             fun bind(aula: Dados.Aula) {
                 txtCodigo.text  = aula.codigoDisciplina

@@ -57,7 +57,7 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
             </LinearLayout>
 
-            <!-- Lista de botões de dia (preenchida dinamicamente) -->
+            <!-- Botões de dia (preenchidos dinamicamente) -->
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -76,19 +76,22 @@
 
         </LinearLayout>
 
-        <!-- ===== PAINEL DIREITO: lista de aulas do dia ===== -->
+        <!-- Divisor vertical -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="?attr/colorOutlineVariant"/>
+
+        <!-- ===== PAINEL DIREITO: ViewPager2 vertical (swipe cima/baixo entre dias) ===== -->
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerAulas"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPagerAulas"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="24dp"
                 android:visibility="gone"/>
 
             <TextView

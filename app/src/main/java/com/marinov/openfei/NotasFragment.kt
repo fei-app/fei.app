@@ -15,11 +15,11 @@ import android.widget.TableRow
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -65,7 +65,6 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
             }
         )
 
-        // Se há estado salvo, não é a primeira carga completa (ex: rotação)
         isFirstLoad = savedInstanceState == null
         loadNotas()
     }
@@ -82,12 +81,10 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
 
             when (status) {
                 MainActivity.STATUS_OFFLINE, MainActivity.STATUS_LOGIN_NEEDED -> {
-                    // Offline ou deslogado: tenta carregar do cache via Dados
                     showOfflineBar()
                     loadNotasData(online = false)
                 }
                 MainActivity.STATUS_ONLINE_OK -> {
-                    // Online: busca do servidor
                     hideOfflineBar()
                     loadNotasData(online = true)
                 }
@@ -102,16 +99,33 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
 
     private suspend fun loadNotasData(online: Boolean) {
         try {
-            val notas = Dados.obterNotas(online = online)
+            // Busca notas e disciplinas em paralelo
+            val notasDeferred = lifecycleScope.async(Dispatchers.IO) {
+                Dados.obterNotas(online = online)
+            }
+            val disciplinasDeferred = lifecycleScope.async(Dispatchers.IO) {
+                runCatching { Dados.obterDisciplinas(online = online) }.getOrElse { emptyList() }
+            }
+
+            val notas = notasDeferred.await()
+            val disciplinas = disciplinasDeferred.await()
+
+            // Só toca na UI depois que ambos os dados chegaram
             withContext(Dispatchers.Main) {
                 if (notas.isNotEmpty()) {
                     buildTable(notas)
+                } else {
+                    tableNotas.removeAllViews()
+                }
+
+                buildLegend(disciplinas)
+
+                // Revela o conteúdo de uma vez, sem piscar
+                if (notas.isNotEmpty()) {
                     showContent()
                 } else {
                     showEmptyState()
                 }
-                // Carrega a legenda independentemente das notas (mas apenas se online ou cache tiver)
-                loadLegend()
             }
         } catch (e: Exception) {
             Log.e("NotasFragment", "Erro ao obter notas", e)
@@ -178,33 +192,24 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
         }
     }
 
-    private suspend fun loadLegend() {
-        try {
-            val disciplinas = Dados.obterDisciplinas(online = true)
-            withContext(Dispatchers.Main) {
-                legendContainer.removeAllViews()
-                if (disciplinas.isEmpty()) {
-                    hideLegend()
-                    return@withContext
-                }
-                legendCard.visibility = View.VISIBLE
-                legendTitle.visibility = View.VISIBLE
-                val context = requireContext()
-                for (d in disciplinas) {
-                    val item = TextView(context).apply {
-                        text = "${d.codigo} - ${d.nome}"
-                        setTextColor(ContextCompat.getColor(context, R.color.colorOnSurface))
-                        textSize = 14f
-                        setPadding(0, 4, 0, 4)
-                    }
-                    legendContainer.addView(item)
-                }
+    /** Monta a legenda na UI — deve ser chamado sempre na Main thread, antes de showContent(). */
+    private fun buildLegend(disciplinas: List<Dados.Disciplina>) {
+        legendContainer.removeAllViews()
+        if (disciplinas.isEmpty()) {
+            hideLegend()
+            return
+        }
+        val context = context ?: return
+        legendCard.visibility = View.VISIBLE
+        legendTitle.visibility = View.VISIBLE
+        for (d in disciplinas) {
+            val item = TextView(context).apply {
+                text = "${d.codigo} - ${d.nome}"
+                setTextColor(ContextCompat.getColor(context, R.color.colorOnSurface))
+                textSize = 14f
+                setPadding(0, 4, 0, 4)
             }
-        } catch (e: Exception) {
-            Log.e("NotasFragment", "Erro ao carregar legenda", e)
-            withContext(Dispatchers.Main) {
-                hideLegend()
-            }
+            legendContainer.addView(item)
         }
     }
 

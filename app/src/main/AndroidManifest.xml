@@ -68,7 +68,7 @@
         <activity
             android:name=".WebViewActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:theme="@style/Theme.FEI" />
 
         <activity
             android:name=".SettingsActivity"

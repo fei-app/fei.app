@@ -53,7 +53,6 @@ class MainActivity : AppCompatActivity() {
 
         private val REFRESHABLE_FRAGMENTS = setOf(
             R.id.navigation_notas,
-            R.id.option_horarios_aula,
             R.id.action_profile,
             R.id.navigation_more
         )
