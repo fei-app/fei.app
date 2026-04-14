@@ -76,12 +76,6 @@
 
         </LinearLayout>
 
-        <!-- Divisor vertical -->
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="?attr/colorOutlineVariant"/>
-
         <!-- ===== PAINEL DIREITO: ViewPager2 vertical (swipe cima/baixo entre dias) ===== -->
         <FrameLayout
             android:layout_width="0dp"
