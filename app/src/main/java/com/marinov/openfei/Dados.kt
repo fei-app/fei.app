@@ -497,7 +497,7 @@ object Dados {
             Calendar.THURSDAY  -> "Quinta"
             Calendar.FRIDAY    -> "Sexta"
             Calendar.SATURDAY  -> "Sábado"
-            else               -> "Segunda"
+            else -> ""
         }
     }
 

@@ -33,7 +33,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_sem_internet"
-                    app:tint="?attr/colorOnErrorContainer" />
+                    app:tint="?attr/colorOnErrorContainer"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -52,7 +52,7 @@
                     android:id="@+id/btnLogin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TENTAR"
+                    android:text="TENTAR NOVAMENTE"
                     android:textAllCaps="true"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
             </LinearLayout>
@@ -75,12 +75,6 @@
             </ScrollView>
 
         </LinearLayout>
-
-        <!-- Divisor vertical -->
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="?attr/colorOutlineVariant"/>
 
         <!-- ===== PAINEL DIREITO: lista de aulas do dia ===== -->
         <FrameLayout

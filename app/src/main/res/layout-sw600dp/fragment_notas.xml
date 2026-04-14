@@ -79,7 +79,7 @@
                 android:id="@+id/btnLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="FAZER LOGIN"
+                android:text="TENTAR NOVAMENTE"
                 android:textAllCaps="true"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
         </LinearLayout>

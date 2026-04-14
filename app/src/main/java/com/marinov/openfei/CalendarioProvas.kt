@@ -43,8 +43,9 @@ class CalendarioProvas : Fragment() {
     private lateinit var adapter: ProvasCalendarioAdapter
 
     private var todasProvas: List<Dados.ProvaCalendario> = emptyList()
-    private var mesSelecionado: Int = 1  // 1 a 12 (Janeiro a Dezembro)
+    private var mesSelecionado: Int = 1
     private var filtroAtual: Int = FILTRO_TODOS
+    private var dadosCarregados: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -102,9 +103,8 @@ class CalendarioProvas : Fragment() {
 
         spinnerMes.adapter = adapter
 
-        // Seleciona o mês atual por padrão (índice = mês - 1)
         val calendar = Calendar.getInstance()
-        val mesAtual = calendar.get(Calendar.MONTH) + 1 // Calendar.MONTH é 0-based
+        val mesAtual = calendar.get(Calendar.MONTH) + 1
         mesSelecionado = mesAtual
         spinnerMes.setSelection(mesAtual - 1)
 
@@ -212,6 +212,7 @@ class CalendarioProvas : Fragment() {
 
             progressBar.visibility = View.GONE
             todasProvas = provas
+            dadosCarregados = true
 
             if (provas.isEmpty()) {
                 exibirMensagemSemProvas()
@@ -219,10 +220,10 @@ class CalendarioProvas : Fragment() {
                 exibirConteudo()
                 aplicarFiltros()
             }
-        } catch (e: SessionExpiredException) {
+        } catch (_: SessionExpiredException) {
             exibirBarraOffline()
             exibirSemDados()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             exibirBarraOffline()
             exibirSemDados()
         }
@@ -230,6 +231,7 @@ class CalendarioProvas : Fragment() {
 
     private fun aplicarFiltros() {
         if (!::adapter.isInitialized) return
+        if (!dadosCarregados) return
 
         val listaFiltrada = todasProvas.filter { prova ->
             // Filtro por tipo
@@ -240,7 +242,6 @@ class CalendarioProvas : Fragment() {
                 else -> true
             }
 
-            // Filtro por mês (obrigatório, pois não há opção "Todos")
             val partes = prova.dataProva.split("/")
             val passaMes = if (partes.size == 2) {
                 val mes = partes[1].toIntOrNull() ?: 0
@@ -297,7 +298,6 @@ class CalendarioProvas : Fragment() {
         barOffline.visibility = View.GONE
     }
 
-    // ===================== ADAPTER =====================
     private inner class ProvasCalendarioAdapter(
         private var items: List<Dados.ProvaCalendario>,
         private val onItemClick: (Dados.ProvaCalendario) -> Unit
