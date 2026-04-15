@@ -73,20 +73,19 @@ class CalendarioProvas : Fragment() {
         setupRecyclerView()
 
         btnLogin.setOnClickListener {
-            (activity as? MainActivity)?.navigateToHome()
+            carregarDados()
         }
 
         btnFiltro.setOnClickListener {
             mostrarMenuFiltro(it)
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    (activity as? MainActivity)?.navigateToHome()
-                }
+        //Método para ação do botão voltar
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                (activity as? MainActivity)?.navigateToHome()
             }
-        )
+        }
 
         carregarDados()
     }

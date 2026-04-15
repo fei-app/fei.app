@@ -54,13 +54,13 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
         legendContainer = view.findViewById(R.id.legendContainer)
         legendTitle = view.findViewById(R.id.legendTitle)
         val btnLogin: Button = view.findViewById(R.id.btnLogin)
-        btnLogin.setOnClickListener { navigateToHome() }
+        btnLogin.setOnClickListener { loadNotas() }
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    navigateToHome()
+                    (activity as? MainActivity)?.navigateToHome()
                 }
             }
         )
@@ -256,9 +256,5 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
 
     private fun hideOfflineBar() {
         if (isAdded) barOffline.visibility = View.GONE
-    }
-
-    private fun navigateToHome() {
-        (activity as? MainActivity)?.navigateToHome()
     }
 }
