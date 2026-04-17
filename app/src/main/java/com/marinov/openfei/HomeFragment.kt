@@ -155,7 +155,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-
     private fun loadInitialData() {
         // Exibe cache do carousel imediatamente (sem esperar a rede)
         val hasCarouselCache = loadCarouselCache()
@@ -171,7 +170,25 @@ class HomeFragment : Fragment() {
         val mainActivity = activity as? MainActivity ?: return
 
         lifecycleScope.launch {
-            // checkConnectionAndSession é suspend: faz requisição real ao servidor
+            // Passo 1: carrega notas e aulas do cache local antes de qualquer chamada de rede,
+            // evitando o "piscar" onde as seções somem enquanto aguardam o servidor.
+            val cachedNotas  = withContext(Dispatchers.IO) { Dados.obterNotas(online = false) }
+            val cachedAulas  = withContext(Dispatchers.IO) { Dados.retornaAulasDia(online = false) }
+
+            if (!isFragmentDestroyed) {
+                val hasCachedData = hasCarouselCache || cachedNotas.isNotEmpty() || cachedAulas.isNotEmpty()
+                if (hasCachedData) {
+                    // Preenche UI com dados em cache — serão sobrepostos silenciosamente pelo fetch
+                    setupNotasTable(cachedNotas)
+                    setupAulasDia(cachedAulas)
+                    showContentState()
+                } else {
+                    // Nenhum dado em cache: mostra tela de carregamento normal
+                    showLoadingState()
+                }
+            }
+
+            // Passo 2: verifica conectividade/sessão (suspende aqui até a resposta)
             val status = mainActivity.checkConnectionAndSession()
 
             if (isFragmentDestroyed) return@launch
@@ -182,23 +199,12 @@ class HomeFragment : Fragment() {
                     return@launch
                 }
                 MainActivity.STATUS_OFFLINE -> {
-                    // Caso C: sem conexão → exibe dados do cache e tela offline.
-                    try {
-                        val notas   = withContext(Dispatchers.IO) { Dados.obterNotas(online = false) }
-                        val aulasDia = withContext(Dispatchers.IO) { Dados.retornaAulasDia(online = false) }
-                        if (!isFragmentDestroyed) {
-                            setupNotasTable(notas)
-                            setupAulasDia(aulasDia)
-                            showOfflineState()
-                        }
-                    } catch (e: Exception) {
-                        Log.e("HomeFragment", "Erro ao carregar cache offline: ${e.message}", e)
-                        if (!isFragmentDestroyed) showOfflineState()
-                    }
+                    // Caso C: sem conexão → dados em cache já estão exibidos; apenas sinaliza offline.
+                    if (!isFragmentDestroyed) showOfflineState()
                 }
                 MainActivity.STATUS_ONLINE_OK -> {
-                    // Caso B: online + logado → busca do servidor.
-                    if (hasCarouselCache) showContentState() else showLoadingState()
+                    // Caso B: online + logado → busca dados atualizados do servidor.
+                    // O conteúdo em cache já está visível; fetchDataFromServer atualiza em segundo plano.
                     fetchDataFromServer()
                 }
             }
