@@ -23,13 +23,12 @@ object UpdateChecker {
     fun checkForUpdate(context: Context, isManualCheck: Boolean, listener: UpdateListener) {
         Thread {
             runCatching {
-                // A API do GitLab exige que o namespace e o projeto sejam separados por %2F
                 val url = URL("https://gitlab.com/api/v4/projects/fei.app%2Ffei.app/releases")
                 val conn = url.openConnection() as HttpURLConnection
                 conn.apply {
                     requestMethod = "GET"
                     setRequestProperty("Accept", "application/json")
-                    setRequestProperty("User-Agent", "FEIApp-Android")
+                    setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:149.0) Gecko/20100101 Firefox/149.0")
                     connectTimeout = 10000
                 }
 
