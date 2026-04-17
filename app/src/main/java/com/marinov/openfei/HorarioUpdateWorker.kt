@@ -19,12 +19,12 @@ class HorarioUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
     companion object {
         private const val TAG = "HorarioUpdateWorker"
         const val EXTRA_DESTINATION = "destination"
+        private const val REQUEST_CODE_HORARIOS = 200
     }
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         Log.d(TAG, "Worker iniciado. Verificando novos horários de aula...")
 
-        // Inicializa o objeto Dados com o contexto da aplicação
         Dados.init(applicationContext)
 
         return@withContext try {
@@ -44,21 +44,20 @@ class HorarioUpdateWorker(appContext: Context, workerParams: WorkerParameters) :
             Result.success()
         } catch (e: Exception) {
             Log.e(TAG, "Erro ao verificar horários", e)
-            // Em caso de erro de rede ou outro, tenta novamente mais tarde
             Result.retry()
         }
     }
 
     private fun sendNotification() {
-        // Intent para abrir a MainActivity e direcionar para o fragmento de horários
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
+            action = "com.marinov.openfei.ACTION_OPEN_HORARIOS"
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra(EXTRA_DESTINATION, "horarios")
         }
 
         val pendingIntent = PendingIntent.getActivity(
             applicationContext,
-            0,
+            REQUEST_CODE_HORARIOS,
             intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
