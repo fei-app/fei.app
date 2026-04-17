@@ -26,7 +26,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_sem_internet"
-                app:tint="?attr/colorOnErrorContainer" />
+                app:tint="?attr/colorOnErrorContainer"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -34,7 +34,7 @@
                 android:layout_marginStart="8dp"
                 android:text="Sem conexão"
                 android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?attr/colorOnErrorContainer" />
+                android:textColor="?attr/colorOnErrorContainer"/>
 
             <View
                 android:layout_width="0dp"
@@ -45,7 +45,7 @@
                 android:id="@+id/btnLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="FAZER LOGIN"
+                android:text="TENTAR NOVAMENTE"
                 android:textAllCaps="true"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
         </LinearLayout>

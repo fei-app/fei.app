@@ -44,7 +44,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone">
-
         <!-- Barra Offline -->
         <LinearLayout
             android:id="@+id/barOffline"
@@ -79,7 +78,7 @@
                 android:id="@+id/btnLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="FAZER LOGIN"
+                android:text="TENTAR NOVAMENTE"
                 android:textAllCaps="true"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
         </LinearLayout>
