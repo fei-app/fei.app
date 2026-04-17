@@ -215,7 +215,9 @@ class WebViewFragment : Fragment() {
         if (url == null) return false
 
         if (isHomeUrl(url)) {
-            simulateHomeButtonClick()
+            Handler(Looper.getMainLooper()).post {
+                (activity as? MainActivity)?.navigateToHome()
+            }
             return true // Interceptado
         }
 
@@ -239,12 +241,6 @@ class WebViewFragment : Fragment() {
 
     private fun isHomeUrl(url: String?): Boolean {
         return url?.contains(HOME_URL_IDENTIFIER) == true
-    }
-
-    private fun simulateHomeButtonClick() {
-        Handler(Looper.getMainLooper()).post {
-            (activity as? MainActivity)?.navigateToHome()
-        }
     }
 
     private fun setupWebViewSecurity() {

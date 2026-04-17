@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,7 +33,6 @@ class HorariosAula : Fragment(){
     private lateinit var tvMessage: TextView
     private lateinit var btnLogin: MaterialButton
 
-    // Um dos dois será nulo dependendo do layout (celular × tablet)
     private var chipGroupDias: ChipGroup? = null
     private var scrollChips: HorizontalScrollView? = null
     private var layoutDias: LinearLayout? = null
@@ -45,12 +45,7 @@ class HorariosAula : Fragment(){
     private val ordemDias = listOf("Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado")
     private var diaSelecionado: String = getDiaAtual()
 
-    // Evita loop: chip.isChecked = true  →  listener  →  setCurrentItem  →  onPageSelected  →  ...
     private var isProgrammaticChipUpdate = false
-
-    // =====================================================================
-    // Ciclo de vida
-    // =====================================================================
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,7 +66,15 @@ class HorariosAula : Fragment(){
 
         btnLogin.setOnClickListener { carregarHorarios() }
         carregarHorarios()
-
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            //Método para ação do botão voltar
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    (activity as? MainActivity)?.navigateToHome()
+                }
+            }
+        )
         return root
     }
 
@@ -79,10 +82,6 @@ class HorariosAula : Fragment(){
         super.onDestroyView()
         viewPagerAulas.unregisterOnPageChangeCallback(pageChangeCallback)
     }
-
-    // =====================================================================
-    // Lógica de dia atual
-    // =====================================================================
 
     private fun getDiaAtual(): String = when (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
         Calendar.MONDAY    -> "Segunda"
@@ -103,11 +102,6 @@ class HorariosAula : Fragment(){
         }
         return diasComAula.first()
     }
-
-    // =====================================================================
-    // Construção dos seletores
-    // =====================================================================
-
     private fun construirSeletorDias(diasComAula: Set<String>) {
         diaSelecionado = proximoDiaComAula(diasComAula)
         diasVisiveis   = ordemDias.filter { it in diasComAula }
@@ -159,10 +153,6 @@ class HorariosAula : Fragment(){
         atualizarEstiloBotoesDia()
     }
 
-    // =====================================================================
-    // Sincronização seletor ↔ página (chamada pelo OnPageChangeCallback)
-    // =====================================================================
-
     private fun sincronizarSeletorComDia(dia: String) {
         diaSelecionado = dia
 
@@ -207,11 +197,6 @@ class HorariosAula : Fragment(){
             }
         }
     }
-
-    // =====================================================================
-    // Carregamento de dados
-    // =====================================================================
-
     private fun carregarHorarios() {
         val mainActivity = activity as? MainActivity ?: return
 
@@ -257,10 +242,6 @@ class HorariosAula : Fragment(){
         }
     }
 
-    // =====================================================================
-    // Configuração do ViewPager2
-    // =====================================================================
-
     private fun configurarViewPager() {
         val aulasPorDia = diasVisiveis.associateWith { dia ->
             todasAulas.filter { it.diaSemana == dia }.sortedBy { it.horaInicio }
@@ -294,10 +275,6 @@ class HorariosAula : Fragment(){
         }
     }
 
-    // =====================================================================
-    // Estado visual global
-    // =====================================================================
-
     private fun exibirCarregando() {
         progressBar.visibility    = View.VISIBLE
         viewPagerAulas.visibility = View.GONE
@@ -312,16 +289,7 @@ class HorariosAula : Fragment(){
         progressBar.visibility    = View.GONE
     }
 
-    // =====================================================================
-    // Extensão dp
-    // =====================================================================
-
     private val Int.dp: Int get() = (this * resources.displayMetrics.density).toInt()
-
-    // =====================================================================
-    // Adapter do ViewPager2 — uma página por dia
-    // =====================================================================
-
     private inner class DiasPageAdapter(
         private val dias: List<String>,
         private val aulasPorDia: Map<String, List<Dados.Aula>>
@@ -359,10 +327,6 @@ class HorariosAula : Fragment(){
             }
         }
     }
-
-    // =====================================================================
-    // Adapter das aulas dentro de cada página
-    // =====================================================================
 
     private inner class AulasAdapter(
         private val items: List<Dados.Aula>

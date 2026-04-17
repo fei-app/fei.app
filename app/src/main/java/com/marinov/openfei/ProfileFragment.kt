@@ -51,14 +51,12 @@ class ProfileFragment : Fragment(), MainActivity.RefreshableFragment {
             loadProfile()
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    navigateToHomeFragment()
-                }
+        //Método para ação do botão voltar
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                (activity as? MainActivity)?.navigateToHome()
             }
-        )
+        }
 
         loadProfile()
     }
@@ -132,10 +130,6 @@ class ProfileFragment : Fragment(), MainActivity.RefreshableFragment {
         valueView.text = value
 
         profileContainer.addView(itemView)
-    }
-
-    private fun navigateToHomeFragment() {
-        (activity as? MainActivity)?.navigateToHome()
     }
 
     override fun onDestroyView() {
