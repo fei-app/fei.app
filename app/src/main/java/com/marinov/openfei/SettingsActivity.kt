@@ -230,11 +230,11 @@ class SettingsActivity : AppCompatActivity() {
             try {
                 val apkFile = withContext(Dispatchers.IO) { downloadApk(apkUrl) }
                 progressDialog.dismiss()
-                apkFile?.let(::showInstallDialog) ?: showError("Falha ao baixar o arquivo.")
+                apkFile?.let(::showInstallDialog) ?: showError("Falha ao baixar o arquivo. Tente usar um VPN ou proxy ou baixar a atualização manualmente.")
             } catch (e: Exception) {
                 progressDialog.dismiss()
                 Log.e(tag, "Erro no download", e)
-                showError("Falha no download: ${e.message}")
+                showError("Falha no download: ${e.message}. Tente usar um VPN ou proxy ou baixar a atualização manualmente")
             }
         }
     }
@@ -281,7 +281,7 @@ class SettingsActivity : AppCompatActivity() {
             }
             outputFile
         } catch (e: Exception) {
-            Log.e(tag, "Erro no download", e); null
+            Log.e(tag, "Erro no download.", e); null
         }
     }
 
@@ -311,7 +311,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Log.e(tag, "Erro na instalação", e)
-                showError("Erro ao iniciar a instalação: ${e.message}")
+                showError("Erro ao iniciar a instalação: ${e.message}.")
             }
         }
     }
