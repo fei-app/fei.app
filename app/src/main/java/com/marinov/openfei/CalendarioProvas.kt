@@ -264,7 +264,6 @@ class CalendarioProvas : Fragment() {
     }
 
     private fun exibirCarregando() {
-        barOffline.visibility = View.GONE
         progressBar.visibility = View.VISIBLE
         recyclerProvas.visibility = View.GONE
         txtSemProvas.visibility = View.GONE

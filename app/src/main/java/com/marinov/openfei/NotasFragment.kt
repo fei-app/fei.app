@@ -153,11 +153,10 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
 
         val tiposFixos = setOf("P1", "P2", "P3", "PJ")
 
-        val tiposVisiveis = tiposProvaSet.filter { tipo ->
-            tipo in tiposFixos || disciplinasMap.values.any { notasMap ->
-                notasMap[tipo]?.let { it.isNotBlank() && it != "-" } ?: false
-            }
-        }.sorted()
+        val tiposVisiveis = (
+                tiposFixos +
+                        tiposProvaSet.filter { tipo -> tipo !in tiposFixos && disciplinasMap.values.any{ notasMap -> notasMap[tipo]?.let { it.isNotBlank() && it != "-" } ?: false } }
+                ).sorted()
 
         val headerRow = TableRow(context).apply {
             setBackgroundColor(ContextCompat.getColor(context, R.color.header_bg))
