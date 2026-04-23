@@ -101,9 +101,9 @@ class MoreFragment : Fragment(), MainActivity.RefreshableFragment {
         view.findViewById<View>(R.id.option_site_completo).setOnClickListener {
             openLink("https://interage.fei.org.br/secureserver/portal/graduacao/home")
         }
-        //view.findViewById<View>(R.id.navigation_provas).setOnClickListener {
-        //(activity as MainActivity).openCustomFragment(MaterialArquivadoFragment())
-       // }
+        view.findViewById<View>(R.id.navigation_provas).setOnClickListener {
+        (activity as MainActivity).openCustomFragment(MaterialArquivadoFragment())
+        }
         btnReloadProfile.setOnClickListener {
             (activity as? MainActivity)?.openCustomFragment(ProfileFragment())
         }

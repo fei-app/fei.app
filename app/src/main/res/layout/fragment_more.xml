@@ -408,7 +408,7 @@
                         android:textAppearance="?android:attr/textAppearanceListItem" />
                 </LinearLayout>
                 <!-- Materiais arquivados -->
-                <!--  <LinearLayout
+                <LinearLayout
                       android:id="@+id/navigation_provas"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
@@ -432,7 +432,7 @@
                           android:layout_height="wrap_content"
                           android:text="Materiais arquivados"
                           android:textAppearance="?android:attr/textAppearanceListItem" />
-                  </LinearLayout>-->
+                  </LinearLayout>
 
               </LinearLayout>
           </androidx.core.widget.NestedScrollView>
