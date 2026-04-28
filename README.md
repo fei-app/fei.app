@@ -1,6 +1,6 @@
 # OpenFEI #
 
-<img src="https://gitlab.com/fei.app/fei.app/-/raw/master/app/src/main/ic_launcher-playstore.png?ref_type=heads" width="200"/> 
+<img src="https://gitlab.com/fei.app/fei.app/-/raw/f94216ed1b3bf80f180d9ff1317e9e197cf5d6ba/Android/app/src/main/ic_launcher-playstore.png" width="200"/> 
 
 Meu cliente alternativo para acessar o portal do aluno do Centro Universitário FEI , com funcionalidades extras ao aplicativo oficial.
 
