@@ -1,0 +1,365 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.marinov.openfei"
+4    android:versionCode="1"
+5    android:versionName="1.5" >
+6
+7    <uses-sdk
+7-->INJECTED
+8        android:minSdkVersion="30"
+8-->INJECTED
+9        android:targetSdkVersion="36" />
+9-->INJECTED
+10
+11    <!-- Permissões obrigatórias -->
+12    <uses-permission android:name="android.permission.INTERNET" />
+12-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:6:5-67
+12-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:6:22-64
+13    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+13-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:7:5-79
+13-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:7:22-76
+14    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+14-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:8:5-83
+14-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:8:22-80
+15    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+15-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:9:5-77
+15-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:9:22-74
+16    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+16-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:10:5-94
+16-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:10:22-92
+17    <!-- Permissões para versões antigas -->
+18    <uses-permission
+18-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:12:5-14:38
+19        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+19-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:13:9-65
+20        android:maxSdkVersion="29" />
+20-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:14:9-35
+21    <uses-permission
+21-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:15:5-17:38
+22        android:name="android.permission.READ_EXTERNAL_STORAGE"
+22-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:16:9-64
+23        android:maxSdkVersion="29" />
+23-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:17:9-35
+24
+25    <!-- Necessário para Android 11+ -->
+26    <queries>
+26-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:20:5-25:15
+27        <intent>
+27-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:21:9-24:18
+28            <action android:name="android.intent.action.VIEW" />
+28-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:22:13-65
+28-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:22:21-62
+29
+30            <data android:mimeType="application/vnd.android.package-archive" />
+30-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:23:13-80
+30-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:23:19-77
+31        </intent>
+32    </queries>
+33
+34    <uses-permission android:name="android.permission.WAKE_LOCK" />
+34-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:23:5-68
+34-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:23:22-65
+35    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+35-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:25:5-81
+35-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:25:22-78
+36    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+36-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:26:5-77
+36-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:26:22-74
+37
+38    <permission
+38-->[androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d67923692959e0930df0db460ff23c2a/transformed/core-1.18.0/AndroidManifest.xml:22:5-24:47
+39        android:name="com.marinov.openfei.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+39-->[androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d67923692959e0930df0db460ff23c2a/transformed/core-1.18.0/AndroidManifest.xml:23:9-81
+40        android:protectionLevel="signature" />
+40-->[androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d67923692959e0930df0db460ff23c2a/transformed/core-1.18.0/AndroidManifest.xml:24:9-44
+41
+42    <uses-permission android:name="com.marinov.openfei.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+42-->[androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d67923692959e0930df0db460ff23c2a/transformed/core-1.18.0/AndroidManifest.xml:26:5-97
+42-->[androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d67923692959e0930df0db460ff23c2a/transformed/core-1.18.0/AndroidManifest.xml:26:22-94
+43
+44    <application
+44-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:27:5-88:19
+45        android:name="com.marinov.openfei.MyApplication"
+45-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:28:9-38
+46        android:allowBackup="true"
+46-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:29:9-35
+47        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+47-->[androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d67923692959e0930df0db460ff23c2a/transformed/core-1.18.0/AndroidManifest.xml:28:18-86
+48        android:dataExtractionRules="@xml/data_extraction_rules"
+48-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:30:9-65
+49        android:debuggable="true"
+50        android:enableOnBackInvokedCallback="true"
+50-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:37:9-51
+51        android:extractNativeLibs="false"
+51-->INJECTED
+52        android:fullBackupContent="@xml/backup_rules"
+52-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:31:9-54
+53        android:icon="@mipmap/ic_launcher"
+53-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:32:9-43
+54        android:label="@string/app_name"
+54-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:33:9-41
+55        android:requestLegacyExternalStorage="true"
+55-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:38:9-52
+56        android:roundIcon="@mipmap/ic_launcher_round"
+56-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:34:9-54
+57        android:supportsRtl="true"
+57-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:35:9-35
+58        android:testOnly="true"
+59        android:theme="@style/Theme.FEI" >
+59-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:36:9-41
+60
+61        <!-- Configurações de notch e temas dinâmicos -->
+62        <meta-data
+62-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:42:9-44:36
+63            android:name="android.notch_support"
+63-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:43:13-49
+64            android:value="true" />
+64-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:44:13-33
+65        <meta-data
+65-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:45:9-47:36
+66            android:name="com.google.android.material.color.DYNAMIC_COLORS_ENABLED"
+66-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:46:13-84
+67            android:value="true" />
+67-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:47:13-33
+68
+69        <!-- Activities principais -->
+70        <activity
+70-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:50:9-63:20
+71            android:name="com.marinov.openfei.MainActivity"
+71-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:51:13-41
+72            android:configChanges="orientation|screenSize|keyboardHidden"
+72-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:55:13-74
+73            android:exported="true"
+73-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:52:13-36
+74            android:theme="@style/Theme.FEI"
+74-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:53:13-45
+75            android:windowSoftInputMode="adjustResize" >
+75-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:54:13-55
+76            <intent-filter>
+76-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:56:13-59:29
+77                <action android:name="android.intent.action.MAIN" />
+77-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:57:17-69
+77-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:57:25-66
+78
+79                <category android:name="android.intent.category.LAUNCHER" />
+79-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:58:17-77
+79-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:58:27-74
+80            </intent-filter>
+81
+82            <meta-data
+82-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:60:13-62:53
+83                android:name="android.app.shortcuts"
+83-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:61:17-53
+84                android:resource="@xml/shortcuts" />
+84-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:62:17-50
+85        </activity>
+86        <activity
+86-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:64:9-67:48
+87            android:name="com.marinov.openfei.LoginActivity"
+87-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:65:13-42
+88            android:exported="false"
+88-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:66:13-37
+89            android:theme="@style/Theme.FEI" />
+89-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:67:13-45
+90        <activity
+90-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:68:9-71:48
+91            android:name="com.marinov.openfei.WebViewActivity"
+91-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:69:13-44
+92            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+92-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:70:13-87
+93            android:theme="@style/Theme.FEI" />
+93-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:71:13-45
+94        <activity
+94-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:73:9-77:46
+95            android:name="com.marinov.openfei.SettingsActivity"
+95-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:74:13-45
+96            android:exported="false"
+96-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:75:13-37
+97            android:launchMode="singleTop"
+97-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:77:13-43
+98            android:theme="@style/Theme.FEI" />
+98-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:76:13-45
+99
+100        <provider
+100-->INJECTED
+101            android:name="androidx.core.content.FileProvider"
+101-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:80:13-62
+102            android:authorities="com.marinov.openfei.provider"
+102-->INJECTED
+103            android:exported="false"
+103-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:82:13-37
+104            android:grantUriPermissions="true" >
+104-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:83:13-47
+105            <meta-data
+105-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:84:13-86:53
+106                android:name="android.support.FILE_PROVIDER_PATHS"
+106-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:85:17-67
+107                android:resource="@xml/file_paths" />
+107-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:86:17-51
+108        </provider>
+109        <provider
+109-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:29:9-37:20
+110            android:name="androidx.startup.InitializationProvider"
+110-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:30:13-67
+111            android:authorities="com.marinov.openfei.androidx-startup"
+111-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:31:13-68
+112            android:exported="false" >
+112-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:32:13-37
+113            <meta-data
+113-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:34:13-36:52
+114                android:name="androidx.work.WorkManagerInitializer"
+114-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:35:17-68
+115                android:value="androidx.startup" />
+115-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:36:17-49
+116            <meta-data
+116-->[androidx.emoji2:emoji2:1.3.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/34709883cb40d07fb9ebfe8874f519cd/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+117                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+117-->[androidx.emoji2:emoji2:1.3.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/34709883cb40d07fb9ebfe8874f519cd/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+118                android:value="androidx.startup" />
+118-->[androidx.emoji2:emoji2:1.3.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/34709883cb40d07fb9ebfe8874f519cd/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+119            <meta-data
+119-->[androidx.lifecycle:lifecycle-process:2.9.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/49df27abcff7b00c78178f9315234c3c/transformed/lifecycle-process-2.9.0/AndroidManifest.xml:29:13-31:52
+120                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+120-->[androidx.lifecycle:lifecycle-process:2.9.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/49df27abcff7b00c78178f9315234c3c/transformed/lifecycle-process-2.9.0/AndroidManifest.xml:30:17-78
+121                android:value="androidx.startup" />
+121-->[androidx.lifecycle:lifecycle-process:2.9.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/49df27abcff7b00c78178f9315234c3c/transformed/lifecycle-process-2.9.0/AndroidManifest.xml:31:17-49
+122            <meta-data
+122-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:29:13-31:52
+123                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+123-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:30:17-85
+124                android:value="androidx.startup" />
+124-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:31:17-49
+125        </provider>
+126
+127        <service
+127-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:39:9-45:35
+128            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+128-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:40:13-84
+129            android:directBootAware="false"
+129-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:41:13-44
+130            android:enabled="@bool/enable_system_job_service_default"
+130-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:42:13-70
+131            android:exported="true"
+131-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:43:13-36
+132            android:permission="android.permission.BIND_JOB_SERVICE" />
+132-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:44:13-69
+133        <service
+133-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:46:9-52:35
+134            android:name="androidx.work.impl.foreground.SystemForegroundService"
+134-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:47:13-81
+135            android:directBootAware="false"
+135-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:48:13-44
+136            android:enabled="@bool/enable_system_foreground_service_default"
+136-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:49:13-77
+137            android:exported="false" />
+137-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:50:13-37
+138
+139        <receiver
+139-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:54:9-59:35
+140            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+140-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:55:13-88
+141            android:directBootAware="false"
+141-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:56:13-44
+142            android:enabled="true"
+142-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:57:13-35
+143            android:exported="false" />
+143-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:58:13-37
+144        <receiver
+144-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:60:9-69:20
+145            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+145-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:61:13-88
+146            android:directBootAware="false"
+146-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:62:13-44
+147            android:enabled="false"
+147-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:63:13-36
+148            android:exported="false" >
+148-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:64:13-37
+149            <intent-filter>
+149-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:66:13-68:29
+150                <action android:name="android.intent.action.BOOT_COMPLETED" />
+150-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:67:17-79
+150-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:67:25-76
+151            </intent-filter>
+152        </receiver>
+153        <receiver
+153-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:70:9-80:20
+154            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+154-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:71:13-78
+155            android:directBootAware="false"
+155-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:72:13-44
+156            android:enabled="true"
+156-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:73:13-35
+157            android:exported="true"
+157-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:74:13-36
+158            android:permission="android.permission.DUMP" >
+158-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:75:13-57
+159            <intent-filter>
+159-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:77:13-79:29
+160                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+160-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:78:17-88
+160-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:78:25-85
+161            </intent-filter>
+162        </receiver>
+163
+164        <uses-library
+164-->[androidx.window:window:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/7b6c9815469ba702d0cde45567d83cb7/transformed/window-1.0.0/AndroidManifest.xml:25:9-27:40
+165            android:name="androidx.window.extensions"
+165-->[androidx.window:window:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/7b6c9815469ba702d0cde45567d83cb7/transformed/window-1.0.0/AndroidManifest.xml:26:13-54
+166            android:required="false" />
+166-->[androidx.window:window:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/7b6c9815469ba702d0cde45567d83cb7/transformed/window-1.0.0/AndroidManifest.xml:27:13-37
+167        <uses-library
+167-->[androidx.window:window:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/7b6c9815469ba702d0cde45567d83cb7/transformed/window-1.0.0/AndroidManifest.xml:28:9-30:40
+168            android:name="androidx.window.sidecar"
+168-->[androidx.window:window:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/7b6c9815469ba702d0cde45567d83cb7/transformed/window-1.0.0/AndroidManifest.xml:29:13-51
+169            android:required="false" />
+169-->[androidx.window:window:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/7b6c9815469ba702d0cde45567d83cb7/transformed/window-1.0.0/AndroidManifest.xml:30:13-37
+170
+171        <service
+171-->[androidx.room:room-runtime-android:2.7.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/2b5cf602deb78e7ceb9a6bbb9e8d6b80/transformed/room-runtime-release/AndroidManifest.xml:24:9-28:63
+172            android:name="androidx.room.MultiInstanceInvalidationService"
+172-->[androidx.room:room-runtime-android:2.7.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/2b5cf602deb78e7ceb9a6bbb9e8d6b80/transformed/room-runtime-release/AndroidManifest.xml:25:13-74
+173            android:directBootAware="true"
+173-->[androidx.room:room-runtime-android:2.7.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/2b5cf602deb78e7ceb9a6bbb9e8d6b80/transformed/room-runtime-release/AndroidManifest.xml:26:13-43
+174            android:exported="false" />
+174-->[androidx.room:room-runtime-android:2.7.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/2b5cf602deb78e7ceb9a6bbb9e8d6b80/transformed/room-runtime-release/AndroidManifest.xml:27:13-37
+175
+176        <receiver
+176-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:34:9-52:20
+177            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+177-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:35:13-76
+178            android:directBootAware="false"
+178-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:36:13-44
+179            android:enabled="true"
+179-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:37:13-35
+180            android:exported="true"
+180-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:38:13-36
+181            android:permission="android.permission.DUMP" >
+181-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:39:13-57
+182            <intent-filter>
+182-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:40:13-42:29
+183                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+183-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:17-91
+183-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:25-88
+184            </intent-filter>
+185            <intent-filter>
+185-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:43:13-45:29
+186                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+186-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:17-85
+186-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:25-82
+187            </intent-filter>
+188            <intent-filter>
+188-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:46:13-48:29
+189                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+189-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:17-88
+189-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:25-85
+190            </intent-filter>
+191            <intent-filter>
+191-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:49:13-51:29
+192                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+192-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:17-95
+192-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/94aae458109737c2a183310a69010bf2/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:25-92
+193            </intent-filter>
+194        </receiver>
+195    </application>
+196
+197</manifest>

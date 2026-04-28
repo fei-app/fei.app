@@ -1,0 +1,46 @@
+[
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_pages.xml",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_pages.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_notas.xml",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_notas.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_webview.xml",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_webview.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_provas.xml",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_provas.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/activity_settings.xml",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/activity_settings.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_more.xml",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_more.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_home.xml",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_home.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_materia_prova.xml",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_materia_prova.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_provas_calendar.xml",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_provas_calendar.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_profile.xml",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_profile.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_horarios.xml",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_horarios.xml"
+    }
+]

@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundocartao">
+
+    <LinearLayout
+        android:id="@+id/content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/profile_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="20dp"
+            android:background="@color/fundocartao"
+            android:gravity="center_vertical">
+
+            <!-- Foto de Perfil -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_profile_photo"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_person"
+                android:contentDescription="Foto de perfil"
+                android:layout_marginEnd="16dp"
+                app:shapeAppearanceOverlay="@style/CircleImageView"
+                android:background="@color/white"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp" />
+
+            <!-- Informações do Usuário -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <!-- Nome do Aluno -->
+                <TextView
+                    android:id="@+id/tv_student_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Faça login para exibir os dados"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+
+                <!-- Matrícula -->
+                <TextView
+                    android:id="@+id/tv_student_registration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--"
+                    android:textAppearance="?attr/textAppearanceBody2"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:layout_marginBottom="2dp" />
+
+                <!-- Curso -->
+                <TextView
+                    android:id="@+id/tv_student_class"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--"
+                    android:textAppearance="?attr/textAppearanceBody2"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+                <!-- Email -->
+                <TextView
+                    android:id="@+id/tv_student_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--"
+                    android:textAppearance="?attr/textAppearanceBody2"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+            </LinearLayout>
+
+            <!-- Botão de Info -->
+            <ImageView
+                android:id="@+id/btn_reload_profile"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_info"
+                android:contentDescription="Recarregar perfil"
+                android:padding="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="?attr/colorOnSurface" />
+        </LinearLayout>
+
+        <!-- Divisor -->
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            android:layout_marginHorizontal="16dp"/>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="100dp">
+
+                <!-- Faltas -->
+                <LinearLayout
+                    android:id="@+id/option_faltas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp"
+                    android:paddingHorizontal="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_faltas"
+                        android:contentDescription="Faltas"
+                        android:layout_marginEnd="16dp"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Faltas"
+                        android:textAppearance="?android:attr/textAppearanceListItem" />
+                </LinearLayout>
+
+                <!-- Mudança de Horário -->
+                <LinearLayout
+                    android:id="@+id/option_mudanca_horario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp"
+                    android:paddingHorizontal="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_horarios"
+                        android:contentDescription="Mudança de Horário"
+                        android:layout_marginEnd="16dp"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mudança de Horário"
+                        android:textAppearance="?android:attr/textAppearanceListItem" />
+                </LinearLayout>
+
+                <!-- Escolha de Área e Ênfase -->
+                <LinearLayout
+                    android:id="@+id/option_escolha_area"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp"
+                    android:paddingHorizontal="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_escolha_area"
+                        android:contentDescription="Escolha de Área e Ênfase"
+                        android:layout_marginEnd="16dp"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Escolha de Área e Ênfase"
+                        android:textAppearance="?android:attr/textAppearanceListItem" />
+                </LinearLayout>
+
+                <!-- Dados Pessoais -->
+                <LinearLayout
+                    android:id="@+id/option_dados_pessoais"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp"
+                    android:paddingHorizontal="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_person"
+                        android:contentDescription="Dados Pessoais"
+                        android:layout_marginEnd="16dp"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dados Pessoais"
+                        android:textAppearance="?android:attr/textAppearanceListItem" />
+                </LinearLayout>
+
+                <!-- Atualização de Senha -->
+                <LinearLayout
+                    android:id="@+id/option_alterar_senha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp"
+                    android:paddingHorizontal="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_chave"
+                        android:contentDescription="Atualização de Senha"
+                        android:layout_marginEnd="16dp"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Atualização de Senha"
+                        android:textAppearance="?android:attr/textAppearanceListItem" />
+                </LinearLayout>
+
+                <!-- Boletos -->
+                <LinearLayout
+                    android:id="@+id/option_boletos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp"
+                    android:paddingHorizontal="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_boleto"
+                        android:contentDescription="Boletos"
+                        android:layout_marginEnd="16dp"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Boletos"
+                        android:textAppearance="?android:attr/textAppearanceListItem" />
+                </LinearLayout>
+
+                <!-- Presença -->
+                <LinearLayout
+                    android:id="@+id/option_persenca"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp"
+                    android:paddingHorizontal="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_presenca"
+                        android:contentDescription="Presença"
+                        android:layout_marginEnd="16dp"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Presença"
+                        android:textAppearance="?android:attr/textAppearanceListItem" />
+                </LinearLayout>
+
+                <!-- Solicitação de Documentos -->
+                <LinearLayout
+                    android:id="@+id/option_solicitacao_documentos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp"
+                    android:paddingHorizontal="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_documento"
+                        android:contentDescription="Solicitação de Documentos"
+                        android:layout_marginEnd="16dp"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Solicitação de Documentos"
+                        android:textAppearance="?android:attr/textAppearanceListItem" />
+                </LinearLayout>
+                <!-- Atividades Complementares -->
+                <LinearLayout
+                    android:id="@+id/option_atividades_complementares"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp"
+                    android:paddingHorizontal="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_documento"
+                        android:contentDescription="Atividades Complementares"
+                        android:layout_marginEnd="16dp"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Atividades Complementares"
+                        android:textAppearance="?android:attr/textAppearanceListItem" />
+                </LinearLayout>
+                <!-- Cursos de Férias -->
+                <LinearLayout
+                    android:id="@+id/option_curso_de_ferias"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp"
+                    android:paddingHorizontal="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_ferias"
+                        android:contentDescription="Cursos de Férias"
+                        android:layout_marginEnd="16dp"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cursos de Férias"
+                        android:textAppearance="?android:attr/textAppearanceListItem" />
+                </LinearLayout>
+                <!-- Site completo -->
+                <LinearLayout
+                    android:id="@+id/option_site_completo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp"
+                    android:paddingHorizontal="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_site"
+                        android:contentDescription="Site completo"
+                        android:layout_marginEnd="16dp"
+                        app:tint="?attr/colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Site completo"
+                        android:textAppearance="?android:attr/textAppearanceListItem" />
+                </LinearLayout>
+                <!-- Materiais arquivados -->
+                <LinearLayout
+                      android:id="@+id/navigation_provas"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="horizontal"
+                      android:paddingVertical="16dp"
+                      android:paddingHorizontal="12dp"
+                      android:clickable="true"
+                      android:focusable="true"
+                      android:background="?android:attr/selectableItemBackground">
+
+                      <ImageView
+                          android:layout_width="24dp"
+                          android:layout_height="24dp"
+                          android:src="@drawable/ic_texto"
+                          android:contentDescription="Provas e materiais dos anos anteriores"
+                          android:layout_marginEnd="16dp"
+                          app:tint="?attr/colorOnSurface" />
+
+                      <TextView
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:text="Materiais arquivados"
+                          android:textAppearance="?android:attr/textAppearanceListItem" />
+                  </LinearLayout>
+
+              </LinearLayout>
+          </androidx.core.widget.NestedScrollView>
+
+      </LinearLayout>
+
+  </androidx.coordinatorlayout.widget.CoordinatorLayout>

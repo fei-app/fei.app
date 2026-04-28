@@ -1,0 +1,474 @@
+[
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-mdpi_shortcut_notas.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-mdpi/shortcut_notas.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_presenca.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_presenca.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-xxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-xxhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_activity_login.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/activity_login.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_texto.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_texto.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_escolha_area.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_escolha_area.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_provas_calendar.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_provas_calendar.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_chatgpt.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_chatgpt.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-xxxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-xxxhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/menu_top_app_bar_menu.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/menu/top_app_bar_menu.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_chevron_right.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_chevron_right.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-hdpi_shortcut_notas.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-hdpi/shortcut_notas.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_fragment_webview.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/fragment_webview.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/color_selector_bottom_nav_item_color.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/color/selector_bottom_nav_item_color.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_whatsapp.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_whatsapp.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_menu.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_menu.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_fragment_notas.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/fragment_notas.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-xhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-xhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_notification.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_notification.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_ferias.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_ferias.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_perplexity.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_perplexity.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_fragment_pages.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/fragment_pages.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_relatorio_evolucao.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_relatorio_evolucao.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-xxxhdpi_shortcut_notas.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-xxxhdpi/shortcut_notas.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-mdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-mdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-hdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-hdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_divider_horizontal.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/divider_horizontal.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_delete_sweep.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_delete_sweep.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_inicio.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_inicio.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_fragment_horarios.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/fragment_horarios.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_horarios.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_horarios.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/xml_shortcuts.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/xml/shortcuts.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_fragment_profile.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/fragment_profile.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_site.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_site.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_fragment_provas.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/fragment_provas.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_activity_settings.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/activity_settings.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-xhdpi_shortcut_aulas.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-xhdpi/shortcut_aulas.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_profile.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_profile.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_faltas.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_faltas.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/color_nav_item_color.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/color/nav_item_color.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_materia_prova.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_materia_prova.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_item_profile.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/item_profile.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_fragment_provas_calendar.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/fragment_provas_calendar.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_settings.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_settings.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-hdpi_ic_notification.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-hdpi/ic_notification.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_item_dia_page.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/item_dia_page.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_activity_webview.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/activity_webview.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_pages.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_pages.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_more.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_more.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_sem_internet.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_sem_internet.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_item_prova_calendario.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/item_prova_calendario.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_activity_main.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-xhdpi_ic_notification.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-xhdpi/ic_notification.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_fragment_materia_prova.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/fragment_materia_prova.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_gitlab.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_gitlab.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_folder.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_folder.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_bg_azul.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/bg_azul.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-xxxhdpi_shortcut_aulas.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-xxxhdpi/shortcut_aulas.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_bg_amarelo.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/bg_amarelo.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_webview.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_webview.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/xml_data_extraction_rules.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_provas.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_provas.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_fragment_home.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/fragment_home.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_security.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_security.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-hdpi_shortcut_calendario.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-hdpi/shortcut_calendario.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-mdpi_shortcut_aulas.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-mdpi/shortcut_aulas.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_chave.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_chave.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/xml_backup_rules.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_redacao_semanal.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_redacao_semanal.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-mdpi_shortcut_calendario.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-mdpi/shortcut_calendario.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_arrow_drop_down.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_arrow_drop_down.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_fragment_more.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/fragment_more.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-xxhdpi_shortcut_aulas.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-xxhdpi/shortcut_aulas.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-xxhdpi_shortcut_calendario.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-xxhdpi/shortcut_calendario.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-xxhdpi_ic_notification.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-xxhdpi/ic_notification.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_item_aula_card.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/item_aula_card.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_home.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_home.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_item_prova.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/item_prova.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_calendario.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_calendario.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-xxxhdpi_shortcut_calendario.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-xxxhdpi/shortcut_calendario.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_horarios.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_horarios.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_bg_celula_cor_primaria.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/bg_celula_cor_primaria.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_boleto.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_boleto.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-xxhdpi_shortcut_notas.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-xxhdpi/shortcut_notas.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/xml_file_paths.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/xml/file_paths.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_update.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_update.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/menu_bottom_nav_menu.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/menu/bottom_nav_menu.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_notas.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_notas.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_dialog_download_progress.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/dialog_download_progress.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout-sw600dp_activity_settings.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/activity_settings.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_info.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_info.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_item_carousel.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/item_carousel.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_claude.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_claude.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/menu_menu_filtro_provas_calendario.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/menu/menu_filtro_provas_calendario.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_documento.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_documento.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.marinov.openfei.app-main-59:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_person.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_person.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-mdpi_ic_notification.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-mdpi/ic_notification.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-xhdpi_shortcut_calendario.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-xhdpi/shortcut_calendario.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_item_aula_horario.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/item_aula_horario.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable_ic_filtro.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable/ic_filtro.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-xhdpi_shortcut_notas.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-xhdpi/shortcut_notas.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-hdpi_shortcut_aulas.png.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-hdpi/shortcut_aulas.png"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/drawable-anydpi_ic_notification.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/drawable-anydpi/ic_notification.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_notas.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_notas.xml"
+    }
+]
