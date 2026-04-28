@@ -12,6 +12,10 @@
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout/fragment_provas.xml"
     },
     {
+        "merged": "com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_materiais_arquivados.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_materiais_arquivados.xml"
+    },
+    {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/layout_item_carousel.xml.flat",
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout/item_carousel.xml"
     },
@@ -20,12 +24,12 @@
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/drawable-mdpi/shortcut_calendario.png"
     },
     {
-        "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_home.xml.flat",
-        "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_home.xml"
-    },
-    {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/layout_item_prova.xml.flat",
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout/item_prova.xml"
+    },
+    {
+        "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_home.xml.flat",
+        "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_home.xml"
     },
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/xml_file_paths.xml.flat",
@@ -172,10 +176,6 @@
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/drawable/ic_chave.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-debug-57:/layout_fragment_provas.xml.flat",
-        "source": "com.marinov.openfei.app-main-59:/layout/fragment_provas.xml"
-    },
-    {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/drawable-mdpi_shortcut_aulas.png.flat",
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/drawable-mdpi/shortcut_aulas.png"
     },
@@ -192,12 +192,12 @@
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_horarios.xml"
     },
     {
-        "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/layout_item_profile.xml.flat",
-        "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout/item_profile.xml"
-    },
-    {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/layout_item_aula_card.xml.flat",
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout/item_aula_card.xml"
+    },
+    {
+        "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/layout_item_profile.xml.flat",
+        "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout/item_profile.xml"
     },
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/drawable_ic_filtro.xml.flat",
@@ -206,6 +206,10 @@
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/drawable_ic_security.xml.flat",
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/drawable/ic_security.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-debug-57:/layout_fragment_materiais_arquivados.xml.flat",
+        "source": "com.marinov.openfei.app-main-59:/layout/fragment_materiais_arquivados.xml"
     },
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/drawable-xhdpi_shortcut_calendario.png.flat",
@@ -266,10 +270,6 @@
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/mipmap-xxxhdpi_ic_launcher_foreground.webp.flat",
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/mipmap-xxxhdpi/ic_launcher_foreground.webp"
-    },
-    {
-        "merged": "com.marinov.openfei.app-debug-57:/layout-sw600dp_fragment_provas.xml.flat",
-        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_provas.xml"
     },
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-debug-57:/drawable_ic_horarios.xml.flat",

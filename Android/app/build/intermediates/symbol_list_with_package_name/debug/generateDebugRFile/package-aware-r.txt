@@ -216,11 +216,11 @@ layout dialog_download_progress
 layout fragment_home
 layout fragment_horarios
 layout fragment_materia_prova
+layout fragment_materiais_arquivados
 layout fragment_more
 layout fragment_notas
 layout fragment_pages
 layout fragment_profile
-layout fragment_provas
 layout fragment_provas_calendar
 layout fragment_webview
 layout item_aula_card

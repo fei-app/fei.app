@@ -12,10 +12,6 @@
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_profile.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_provas.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_provas.xml"
-    },
-    {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/activity_settings.xml",
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout-sw600dp/activity_settings.xml"
     },
@@ -38,6 +34,10 @@
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_horarios.xml",
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_horarios.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_materiais_arquivados.xml",
+        "source": "com.marinov.openfei.app-main-59:/layout-sw600dp/fragment_materiais_arquivados.xml"
     },
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-56:/layout-sw600dp-v13/fragment_more.xml",

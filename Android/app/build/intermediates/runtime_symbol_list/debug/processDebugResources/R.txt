@@ -4579,6 +4579,7 @@ int layout dialog_download_progress 0x7f0c0030
 int layout fragment_home 0x7f0c0031
 int layout fragment_horarios 0x7f0c0032
 int layout fragment_materia_prova 0x7f0c0033
+int layout fragment_materiais_arquivados 0x7f0c0083
 int layout fragment_more 0x7f0c0034
 int layout fragment_notas 0x7f0c0035
 int layout fragment_pages 0x7f0c0036

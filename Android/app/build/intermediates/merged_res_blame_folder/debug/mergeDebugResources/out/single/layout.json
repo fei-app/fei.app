@@ -1,11 +1,11 @@
 [
     {
-        "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-56:/layout/item_aula_card.xml",
-        "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout/item_aula_card.xml"
-    },
-    {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_profile.xml",
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout/fragment_profile.xml"
+    },
+    {
+        "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-56:/layout/item_aula_card.xml",
+        "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout/item_aula_card.xml"
     },
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_provas_calendar.xml",
@@ -34,6 +34,10 @@
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-56:/layout/item_aula_horario.xml",
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout/item_aula_horario.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_materiais_arquivados.xml",
+        "source": "com.marinov.openfei.app-main-59:/layout/fragment_materiais_arquivados.xml"
     },
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_notas.xml",
@@ -74,10 +78,6 @@
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-56:/layout/item_dia_page.xml",
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-59:/layout/item_dia_page.xml"
-    },
-    {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_provas.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/fragment_provas.xml"
     },
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-56:/layout/item_prova.xml",

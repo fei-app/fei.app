@@ -215,11 +215,11 @@ int layout dialog_download_progress 0x0
 int layout fragment_home 0x0
 int layout fragment_horarios 0x0
 int layout fragment_materia_prova 0x0
+int layout fragment_materiais_arquivados 0x0
 int layout fragment_more 0x0
 int layout fragment_notas 0x0
 int layout fragment_pages 0x0
 int layout fragment_profile 0x0
-int layout fragment_provas 0x0
 int layout fragment_provas_calendar 0x0
 int layout fragment_webview 0x0
 int layout item_aula_card 0x0
