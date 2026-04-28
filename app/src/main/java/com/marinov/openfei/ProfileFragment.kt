@@ -52,11 +52,14 @@ class ProfileFragment : Fragment(), MainActivity.RefreshableFragment {
         }
 
         //Método para ação do botão voltar
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                (activity as? MainActivity)?.navigateToHome()
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    (activity as? MainActivity)?.navigateToHome()
+                }
             }
-        }
+        )
 
         loadProfile()
     }
