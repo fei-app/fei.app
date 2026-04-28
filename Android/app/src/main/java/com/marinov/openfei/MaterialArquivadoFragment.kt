@@ -88,7 +88,7 @@ class MaterialArquivadoFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_provas, container, false)
+        val view = inflater.inflate(R.layout.fragment_materiais_arquivados, container, false)
         layoutSemInternet = view.findViewById(R.id.layout_sem_internet)
         btnTentarNovamente = view.findViewById(R.id.btn_tentar_novamente)
         searchView = view.findViewById(R.id.search_view)
@@ -97,7 +97,7 @@ class MaterialArquivadoFragment : Fragment() {
 
         createNotificationChannel()
 
-        searchView.queryHint = "Buscar provas..."
+        searchView.queryHint = "Buscar materiais..."
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = false
             override fun onQueryTextChange(newText: String?): Boolean {

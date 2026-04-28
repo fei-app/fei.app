@@ -1,20 +1,20 @@
 -- Merging decision tree log ---
 provider#androidx.core.content.FileProvider
-INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:79:9-87:20
+INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:79:9-87:20
 	android:grantUriPermissions
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:83:13-47
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:83:13-47
 	android:authorities
-		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:81:13-60
+		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:81:13-60
 	android:exported
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:82:13-37
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:82:13-37
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:80:13-62
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:80:13-62
 manifest
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:2:1-89:12
-INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:2:1-89:12
-INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:2:1-89:12
-INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:2:1-89:12
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:1-89:12
+INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:1-89:12
+INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:1-89:12
+INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:1-89:12
 MERGED from [androidx.databinding:viewbinding:9.2.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/49813fad9adeaa7505afd6644eadf280/transformed/viewbinding-9.2.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.navigation:navigation-runtime-android:2.9.8] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/ce9dc6f25bee16cb887a067ce5d4bb0b/transformed/navigation-runtime-release/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.navigation:navigation-common-android:2.9.8] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/9714ae130433d1fed5eb36c651891c98/transformed/navigation-common-release/AndroidManifest.xml:17:1-22:12
@@ -84,64 +84,64 @@ MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/gabrielbaraglio/.
 MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/7e8b2c7422960d28e87021603f930a91/transformed/core-runtime-2.2.0/AndroidManifest.xml:17:1-22:12
 MERGED from [com.github.bumptech.glide:disklrucache:5.0.7] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/b9e2fce72c5656393aaadd41f83c0755/transformed/disklrucache-5.0.7/AndroidManifest.xml:2:1-7:12
 	package
-		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml
+		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
 	android:versionName
-		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml
+		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
 	xmlns:tools
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:3:5-51
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:3:5-51
 	android:versionCode
-		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml
+		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
 	xmlns:android
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:2:11-69
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:11-69
 uses-permission#android.permission.INTERNET
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:6:5-67
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:6:5-67
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:6:22-64
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:6:22-64
 uses-permission#android.permission.ACCESS_NETWORK_STATE
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:7:5-79
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:7:5-79
 MERGED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:24:5-79
 MERGED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:24:5-79
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:7:22-76
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:7:22-76
 uses-permission#android.permission.REQUEST_INSTALL_PACKAGES
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:8:5-83
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:8:5-83
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:8:22-80
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:8:22-80
 uses-permission#android.permission.POST_NOTIFICATIONS
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:9:5-77
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:9:5-77
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:9:22-74
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:9:22-74
 uses-permission#android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:10:5-94
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:10:5-94
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:10:22-92
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:10:22-92
 uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:12:5-14:38
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:12:5-14:38
 	android:maxSdkVersion
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:14:9-35
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:14:9-35
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:13:9-65
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:13:9-65
 uses-permission#android.permission.READ_EXTERNAL_STORAGE
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:15:5-17:38
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:15:5-17:38
 	android:maxSdkVersion
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:17:9-35
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:17:9-35
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:16:9-64
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:16:9-64
 queries
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:20:5-25:15
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:20:5-25:15
 intent#action:name:android.intent.action.VIEW+data:mimeType:application/vnd.android.package-archive
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:21:9-24:18
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:21:9-24:18
 action#android.intent.action.VIEW
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:22:13-65
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:22:13-65
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:22:21-62
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:22:21-62
 data
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:23:13-80
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:23:13-80
 	android:mimeType
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:23:19-77
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:23:19-77
 application
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:27:5-88:19
-INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:27:5-88:19
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:27:5-88:19
+INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:27:5-88:19
 MERGED from [com.google.android.material:material:1.13.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/969bb0952c6469abd8785726cbb3a0a6/transformed/material-1.13.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.13.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/969bb0952c6469abd8785726cbb3a0a6/transformed/material-1.13.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/4995df13997954641a04f37c70de968f/transformed/constraintlayout-2.2.1/AndroidManifest.xml:7:5-20
@@ -165,109 +165,109 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /home/gabrielbaraglio/.grad
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/b25e7f3e81dcbc8435110c944ccc63bf/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/b25e7f3e81dcbc8435110c944ccc63bf/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
 	android:extractNativeLibs
-		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml
+		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
 	android:requestLegacyExternalStorage
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:38:9-52
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:38:9-52
 	android:roundIcon
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:34:9-54
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:34:9-54
 	android:icon
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:32:9-43
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:32:9-43
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d67923692959e0930df0db460ff23c2a/transformed/core-1.18.0/AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:35:9-35
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:35:9-35
 	android:label
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:33:9-41
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:33:9-41
 	android:fullBackupContent
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:31:9-54
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:31:9-54
 	tools:targetApi
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:39:9-29
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:39:9-29
 	android:allowBackup
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:29:9-35
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:29:9-35
 	android:theme
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:36:9-41
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:36:9-41
 	android:enableOnBackInvokedCallback
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:37:9-51
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:37:9-51
 	android:dataExtractionRules
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:30:9-65
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:30:9-65
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:28:9-38
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:28:9-38
 meta-data#android.notch_support
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:42:9-44:36
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:42:9-44:36
 	android:value
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:44:13-33
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:44:13-33
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:43:13-49
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:43:13-49
 meta-data#com.google.android.material.color.DYNAMIC_COLORS_ENABLED
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:45:9-47:36
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:45:9-47:36
 	android:value
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:47:13-33
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:47:13-33
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:46:13-84
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:46:13-84
 activity#com.marinov.openfei.MainActivity
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:50:9-63:20
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:50:9-63:20
 	android:windowSoftInputMode
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:54:13-55
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:54:13-55
 	android:exported
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:52:13-36
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:52:13-36
 	android:configChanges
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:55:13-74
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:55:13-74
 	android:theme
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:53:13-45
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:53:13-45
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:51:13-41
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:51:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:56:13-59:29
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:56:13-59:29
 action#android.intent.action.MAIN
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:57:17-69
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:57:17-69
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:57:25-66
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:57:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:58:17-77
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:58:17-77
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:58:27-74
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:58:27-74
 meta-data#android.app.shortcuts
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:60:13-62:53
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:60:13-62:53
 	android:resource
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:62:17-50
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:62:17-50
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:61:17-53
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:61:17-53
 activity#com.marinov.openfei.LoginActivity
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:64:9-67:48
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:64:9-67:48
 	android:exported
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:66:13-37
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:66:13-37
 	android:theme
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:67:13-45
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:67:13-45
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:65:13-42
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:65:13-42
 activity#com.marinov.openfei.WebViewActivity
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:68:9-71:48
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:68:9-71:48
 	android:configChanges
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:70:13-87
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:70:13-87
 	android:theme
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:71:13-45
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:71:13-45
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:69:13-44
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:69:13-44
 activity#com.marinov.openfei.SettingsActivity
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:73:9-77:46
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:73:9-77:46
 	android:launchMode
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:77:13-43
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:77:13-43
 	android:exported
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:75:13-37
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:75:13-37
 	android:theme
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:76:13-45
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:76:13-45
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:74:13-45
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:74:13-45
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:84:13-86:53
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:84:13-86:53
 	android:resource
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:86:17-51
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:86:17-51
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:85:17-67
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:85:17-67
 uses-sdk
-INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml
-INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml
+INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
+INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
 MERGED from [androidx.databinding:viewbinding:9.2.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/49813fad9adeaa7505afd6644eadf280/transformed/viewbinding-9.2.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.databinding:viewbinding:9.2.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/49813fad9adeaa7505afd6644eadf280/transformed/viewbinding-9.2.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.navigation:navigation-runtime-android:2.9.8] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/ce9dc6f25bee16cb887a067ce5d4bb0b/transformed/navigation-runtime-release/AndroidManifest.xml:20:5-44
@@ -405,9 +405,9 @@ MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/gabrielbaraglio/.gradl
 MERGED from [com.github.bumptech.glide:disklrucache:5.0.7] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/b9e2fce72c5656393aaadd41f83c0755/transformed/disklrucache-5.0.7/AndroidManifest.xml:5:5-44
 MERGED from [com.github.bumptech.glide:disklrucache:5.0.7] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/b9e2fce72c5656393aaadd41f83c0755/transformed/disklrucache-5.0.7/AndroidManifest.xml:5:5-44
 	android:targetSdkVersion
-		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml
+		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml
+		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
 uses-permission#android.permission.WAKE_LOCK
 ADDED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:23:5-68
 	android:name

@@ -4,7 +4,7 @@
             "outputFile": "com.marinov.openfei.app-mergeDebugResources-55:/values-night-v29/values-night-v29.xml",
             "map": [
                 {
-                    "source": "/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/res/values-night-v29/themes.xml",
+                    "source": "/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/res/values-night-v29/themes.xml",
                     "from": {
                         "startLines": "3",
                         "startColumns": "4",

@@ -4,30 +4,13 @@
             "outputFile": "com.marinov.openfei.app-mergeDebugResources-55:/values-sw600dp-v13/values-sw600dp-v13.xml",
             "map": [
                 {
-                    "source": "/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/res/values-sw600dp/bools.xml",
+                    "source": "/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/res/values-sw600dp/bools.xml",
                     "from": {
                         "startLines": "2,3",
                         "startColumns": "4,4",
                         "startOffsets": "55,93",
                         "endColumns": "37,39",
                         "endOffsets": "88,128"
-                    }
-                },
-                {
-                    "source": "/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/res/values-sw600dp/dimens.xml",
-                    "from": {
-                        "startLines": "3,2,12,11,4,7,10,9,8,5,6,1,13",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "111,64,591,539,166,330,487,433,377,225,273,16,643",
-                        "endColumns": "54,46,51,51,58,46,51,53,55,47,56,47,52",
-                        "endOffsets": "161,106,638,586,220,372,534,482,428,268,325,59,691"
-                    },
-                    "to": {
-                        "startLines": "12,13,14,15,16,26,27,28,29,30,31,34,35",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "689,744,791,843,895,1516,1563,1615,1669,1725,1773,1945,1993",
-                        "endColumns": "54,46,51,51,58,46,51,53,55,47,56,47,52",
-                        "endOffsets": "739,786,838,890,949,1558,1610,1664,1720,1768,1825,1988,2041"
                     }
                 },
                 {
@@ -64,6 +47,23 @@
                         "startOffsets": "133,202,271,341,415,491,550,621",
                         "endColumns": "68,68,69,73,75,58,70,67",
                         "endOffsets": "197,266,336,410,486,545,616,684"
+                    }
+                },
+                {
+                    "source": "/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/res/values-sw600dp/dimens.xml",
+                    "from": {
+                        "startLines": "3,2,12,11,4,7,10,9,8,5,6,1,13",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "111,64,591,539,166,330,487,433,377,225,273,16,643",
+                        "endColumns": "54,46,51,51,58,46,51,53,55,47,56,47,52",
+                        "endOffsets": "161,106,638,586,220,372,534,482,428,268,325,59,691"
+                    },
+                    "to": {
+                        "startLines": "12,13,14,15,16,26,27,28,29,30,31,34,35",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "689,744,791,843,895,1516,1563,1615,1669,1725,1773,1945,1993",
+                        "endColumns": "54,46,51,51,58,46,51,53,55,47,56,47,52",
+                        "endOffsets": "739,786,838,890,949,1558,1610,1664,1720,1768,1825,1988,2041"
                     }
                 }
             ]

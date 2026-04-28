@@ -13,46 +13,46 @@
 10
 11    <!-- Permissões obrigatórias -->
 12    <uses-permission android:name="android.permission.INTERNET" />
-12-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:6:5-67
-12-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:6:22-64
+12-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:6:5-67
+12-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:6:22-64
 13    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-13-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:7:5-79
-13-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:7:22-76
+13-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:7:5-79
+13-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:7:22-76
 14    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-14-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:8:5-83
-14-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:8:22-80
+14-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:8:5-83
+14-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:8:22-80
 15    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-15-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:9:5-77
-15-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:9:22-74
+15-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:9:5-77
+15-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:9:22-74
 16    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-16-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:10:5-94
-16-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:10:22-92
+16-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:10:5-94
+16-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:10:22-92
 17    <!-- Permissões para versões antigas -->
 18    <uses-permission
-18-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:12:5-14:38
+18-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:12:5-14:38
 19        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-19-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:13:9-65
+19-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:13:9-65
 20        android:maxSdkVersion="29" />
-20-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:14:9-35
+20-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:14:9-35
 21    <uses-permission
-21-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:15:5-17:38
+21-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:15:5-17:38
 22        android:name="android.permission.READ_EXTERNAL_STORAGE"
-22-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:16:9-64
+22-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:16:9-64
 23        android:maxSdkVersion="29" />
-23-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:17:9-35
+23-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:17:9-35
 24
 25    <!-- Necessário para Android 11+ -->
 26    <queries>
-26-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:20:5-25:15
+26-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:20:5-25:15
 27        <intent>
-27-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:21:9-24:18
+27-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:21:9-24:18
 28            <action android:name="android.intent.action.VIEW" />
-28-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:22:13-65
-28-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:22:21-62
+28-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:22:13-65
+28-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:22:21-62
 29
 30            <data android:mimeType="application/vnd.android.package-archive" />
-30-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:23:13-80
-30-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:23:19-77
+30-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:23:13-80
+30-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:23:19-77
 31        </intent>
 32    </queries>
 33
@@ -78,124 +78,124 @@
 42-->[androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d67923692959e0930df0db460ff23c2a/transformed/core-1.18.0/AndroidManifest.xml:26:22-94
 43
 44    <application
-44-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:27:5-88:19
+44-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:27:5-88:19
 45        android:name="com.marinov.openfei.MyApplication"
-45-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:28:9-38
+45-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:28:9-38
 46        android:allowBackup="true"
-46-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:29:9-35
+46-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:29:9-35
 47        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
 47-->[androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d67923692959e0930df0db460ff23c2a/transformed/core-1.18.0/AndroidManifest.xml:28:18-86
 48        android:dataExtractionRules="@xml/data_extraction_rules"
-48-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:30:9-65
+48-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:30:9-65
 49        android:debuggable="true"
 50        android:enableOnBackInvokedCallback="true"
-50-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:37:9-51
+50-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:37:9-51
 51        android:extractNativeLibs="false"
 51-->INJECTED
 52        android:fullBackupContent="@xml/backup_rules"
-52-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:31:9-54
+52-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:31:9-54
 53        android:icon="@mipmap/ic_launcher"
-53-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:32:9-43
+53-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:32:9-43
 54        android:label="@string/app_name"
-54-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:33:9-41
+54-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:33:9-41
 55        android:requestLegacyExternalStorage="true"
-55-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:38:9-52
+55-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:38:9-52
 56        android:roundIcon="@mipmap/ic_launcher_round"
-56-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:34:9-54
+56-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:34:9-54
 57        android:supportsRtl="true"
-57-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:35:9-35
+57-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:35:9-35
 58        android:testOnly="true"
 59        android:theme="@style/Theme.FEI" >
-59-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:36:9-41
+59-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:36:9-41
 60
 61        <!-- Configurações de notch e temas dinâmicos -->
 62        <meta-data
-62-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:42:9-44:36
+62-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:42:9-44:36
 63            android:name="android.notch_support"
-63-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:43:13-49
+63-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:43:13-49
 64            android:value="true" />
-64-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:44:13-33
+64-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:44:13-33
 65        <meta-data
-65-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:45:9-47:36
+65-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:45:9-47:36
 66            android:name="com.google.android.material.color.DYNAMIC_COLORS_ENABLED"
-66-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:46:13-84
+66-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:46:13-84
 67            android:value="true" />
-67-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:47:13-33
+67-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:47:13-33
 68
 69        <!-- Activities principais -->
 70        <activity
-70-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:50:9-63:20
+70-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:50:9-63:20
 71            android:name="com.marinov.openfei.MainActivity"
-71-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:51:13-41
+71-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:51:13-41
 72            android:configChanges="orientation|screenSize|keyboardHidden"
-72-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:55:13-74
+72-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:55:13-74
 73            android:exported="true"
-73-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:52:13-36
+73-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:52:13-36
 74            android:theme="@style/Theme.FEI"
-74-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:53:13-45
+74-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:53:13-45
 75            android:windowSoftInputMode="adjustResize" >
-75-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:54:13-55
+75-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:54:13-55
 76            <intent-filter>
-76-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:56:13-59:29
+76-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:56:13-59:29
 77                <action android:name="android.intent.action.MAIN" />
-77-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:57:17-69
-77-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:57:25-66
+77-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:57:17-69
+77-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:57:25-66
 78
 79                <category android:name="android.intent.category.LAUNCHER" />
-79-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:58:17-77
-79-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:58:27-74
+79-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:58:17-77
+79-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:58:27-74
 80            </intent-filter>
 81
 82            <meta-data
-82-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:60:13-62:53
+82-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:60:13-62:53
 83                android:name="android.app.shortcuts"
-83-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:61:17-53
+83-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:61:17-53
 84                android:resource="@xml/shortcuts" />
-84-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:62:17-50
+84-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:62:17-50
 85        </activity>
 86        <activity
-86-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:64:9-67:48
+86-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:64:9-67:48
 87            android:name="com.marinov.openfei.LoginActivity"
-87-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:65:13-42
+87-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:65:13-42
 88            android:exported="false"
-88-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:66:13-37
+88-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:66:13-37
 89            android:theme="@style/Theme.FEI" />
-89-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:67:13-45
+89-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:67:13-45
 90        <activity
-90-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:68:9-71:48
+90-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:68:9-71:48
 91            android:name="com.marinov.openfei.WebViewActivity"
-91-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:69:13-44
+91-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:69:13-44
 92            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
-92-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:70:13-87
+92-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:70:13-87
 93            android:theme="@style/Theme.FEI" />
-93-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:71:13-45
+93-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:71:13-45
 94        <activity
-94-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:73:9-77:46
+94-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:73:9-77:46
 95            android:name="com.marinov.openfei.SettingsActivity"
-95-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:74:13-45
+95-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:74:13-45
 96            android:exported="false"
-96-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:75:13-37
+96-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:75:13-37
 97            android:launchMode="singleTop"
-97-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:77:13-43
+97-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:77:13-43
 98            android:theme="@style/Theme.FEI" />
-98-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:76:13-45
+98-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:76:13-45
 99
 100        <provider
 100-->INJECTED
 101            android:name="androidx.core.content.FileProvider"
-101-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:80:13-62
+101-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:80:13-62
 102            android:authorities="com.marinov.openfei.provider"
 102-->INJECTED
 103            android:exported="false"
-103-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:82:13-37
+103-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:82:13-37
 104            android:grantUriPermissions="true" >
-104-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:83:13-47
+104-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:83:13-47
 105            <meta-data
-105-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:84:13-86:53
+105-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:84:13-86:53
 106                android:name="android.support.FILE_PROVIDER_PATHS"
-106-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:85:17-67
+106-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:85:17-67
 107                android:resource="@xml/file_paths" />
-107-->/home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/AndroidManifest.xml:86:17-51
+107-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:86:17-51
 108        </provider>
 109        <provider
 109-->[androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/30e6ab374d6ec21cde69367df6a2b3b7/transformed/work-runtime-2.11.2/AndroidManifest.xml:29:9-37:20

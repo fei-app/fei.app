@@ -1,8 +1,8 @@
-com.marinov.openfei.app-pngs-0 /home/gabrielbaraglio/StudioProjects/fei.app/app/build/generated/res/pngs/debug
-com.marinov.openfei.app-updated_navigation_xml-1 /home/gabrielbaraglio/StudioProjects/fei.app/app/build/generated/updated_navigation_xml/debug
-com.marinov.openfei.app-packageDebugResources-2 /home/gabrielbaraglio/StudioProjects/fei.app/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
-com.marinov.openfei.app-packageDebugResources-3 /home/gabrielbaraglio/StudioProjects/fei.app/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
-com.marinov.openfei.app-debug-4 /home/gabrielbaraglio/StudioProjects/fei.app/app/build/intermediates/merged_res/debug/mergeDebugResources
-com.marinov.openfei.app-debug-5 /home/gabrielbaraglio/StudioProjects/fei.app/app/src/debug/res
-com.marinov.openfei.app-main-6 /home/gabrielbaraglio/StudioProjects/fei.app/app/src/main/res
+com.marinov.openfei.app-pngs-0 /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/build/generated/res/pngs/debug
+com.marinov.openfei.app-updated_navigation_xml-1 /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/build/generated/updated_navigation_xml/debug
+com.marinov.openfei.app-packageDebugResources-2 /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.marinov.openfei.app-packageDebugResources-3 /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.marinov.openfei.app-debug-4 /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.marinov.openfei.app-debug-5 /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/debug/res
+com.marinov.openfei.app-main-6 /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/res
 gradleHome-0 /home/gabrielbaraglio/.gradle
