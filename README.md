@@ -24,3 +24,10 @@ Android:
       1. Android 11 ou superior;
 
   Baixe o apk aqui (baixe a versão mais recente disponível): https://gitlab.com/fei.app/fei.app/-/releases
+
+# BoletosFEI #
+## Como instalar? ##
+Android:
+Requisitos mínimos:
+  1. Android 11 ou superior;
+Baixe o apk aqui (baixe a versão mais recente disponível): https://gitlab.com/fei.app/boletos.fei/-/releases
