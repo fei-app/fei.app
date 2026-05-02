@@ -5,7 +5,7 @@ INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/
 		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:83:13-47
 	android:authorities
 		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:81:13-60
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:81:13-64
 	android:exported
 		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:82:13-37
 	android:name

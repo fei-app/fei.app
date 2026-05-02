@@ -31,7 +31,11 @@
     <color name="md_theme_light_surfaceVariant">#F3EDF7</color>
     <color name="nav_bar_dark">#E9EFF7</color>
     <color name="nav_bar_light">#E9EFF7</color>
+    <color name="status_aberto_bg">#E65100</color>
+    <color name="status_aberto_text">#FFE0B2</color>
     <color name="status_bar_dark_fallback">#FF000000</color>
+    <color name="status_pago_bg">#1B5E20</color>
+    <color name="status_pago_text">#A5D6A7</color>
     <color name="white">#FFFFFF</color>
     <dimen name="activity_horizontal_margin">0dp</dimen>
     <dimen name="carousel_height_mobile">180dp</dimen>

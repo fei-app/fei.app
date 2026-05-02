@@ -2,7 +2,7 @@
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 3    package="com.marinov.openfei"
 4    android:versionCode="1"
-5    android:versionName="1.5" >
+5    android:versionName="1.6_BETA" >
 6
 7    <uses-sdk
 7-->INJECTED
@@ -184,7 +184,7 @@
 100-->INJECTED
 101            android:name="androidx.core.content.FileProvider"
 101-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:80:13-62
-102            android:authorities="com.marinov.openfei.provider"
+102            android:authorities="com.marinov.openfei.fileprovider"
 102-->INJECTED
 103            android:exported="false"
 103-->/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:82:13-37

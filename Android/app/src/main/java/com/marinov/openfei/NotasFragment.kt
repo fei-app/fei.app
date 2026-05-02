@@ -153,11 +153,20 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
 
         val tiposFixos = setOf("P1", "P2", "P3", "PJ")
 
+        // Monta as colunas: tipos fixos + tipos adicionais que tenham ao menos um valor válido
         val tiposVisiveis = (
                 tiposFixos +
-                        tiposProvaSet.filter { tipo -> tipo !in tiposFixos && disciplinasMap.values.any{ notasMap -> notasMap[tipo]?.let { it.isNotBlank() && it != "-" } ?: false } }
+                        tiposProvaSet.filter { tipo ->
+                            tipo !in tiposFixos &&
+                                    disciplinasMap.values.any { notasMap ->
+                                        notasMap[tipo]?.let {
+                                            it.isNotBlank() && it != "-" && it != "--"
+                                        } ?: false
+                                    }
+                        }
                 ).sorted()
 
+        // Linha de cabeçalho
         val headerRow = TableRow(context).apply {
             setBackgroundColor(ContextCompat.getColor(context, R.color.header_bg))
         }
@@ -173,6 +182,8 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
         tableNotas.addView(headerRow)
 
         val colorDefault = ContextCompat.getColor(context, R.color.colorOnSurface)
+
+        // Linhas de dados
         for ((codigo, notasMap) in disciplinasMap) {
             val row = TableRow(context)
             row.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
@@ -182,7 +193,8 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
             row.addView(codigoCell)
 
             for (tipo in tiposVisiveis) {
-                val valor = notasMap[tipo] ?: "-"
+                // 🔧 CORREÇÃO: qualquer valor nulo, vazio ou em branco vira "--"
+                val valor = notasMap[tipo]?.takeIf { it.isNotBlank() } ?: "--"
                 val cell = createCell(valor, isHeader = false)
                 cell.setTextColor(colorDefault)
                 row.addView(cell)

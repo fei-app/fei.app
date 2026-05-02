@@ -19,7 +19,11 @@ color nav_bar_dark
 color nav_bar_light
 color nav_item_color
 color selector_bottom_nav_item_color
+color status_aberto_bg
+color status_aberto_text
 color status_bar_dark_fallback
+color status_pago_bg
+color status_pago_text
 color white
 dimen activity_horizontal_margin
 dimen carousel_height_mobile
@@ -47,10 +51,12 @@ drawable ic_boleto
 drawable ic_calendario
 drawable ic_chatgpt
 drawable ic_chave
+drawable ic_check
 drawable ic_chevron_right
 drawable ic_claude
 drawable ic_delete_sweep
 drawable ic_documento
+drawable ic_download
 drawable ic_escolha_area
 drawable ic_faltas
 drawable ic_ferias
@@ -88,6 +94,7 @@ id barOffline
 id barra_compartilhamento
 id bottom_nav_container
 id bottom_navigation
+id btnBaixarBoleto
 id btnFiltro
 id btnLogin
 id btn_chatgpt
@@ -106,6 +113,7 @@ id card_aula
 id card_prova
 id carouselLoadingIndicator
 id chipGroupDias
+id chipStatus
 id container
 id contentContainer
 id contentLayout
@@ -164,7 +172,9 @@ id progress_circular
 id progress_indicator
 id recentGradesSectionContainer
 id recyclerAulasPage
+id recyclerBoletos
 id recyclerProvas
+id rowDataPagamento
 id scrollChips
 id search_view
 id spinner_mes
@@ -177,8 +187,10 @@ id til_user
 id toolbar
 id topAppBar
 id top_loading_bar
+id tvDataPagamento
 id tvEmptyPage
 id tvMessage
+id tvVencimento
 id tv_student_class
 id tv_student_name
 id tv_student_number
@@ -213,6 +225,7 @@ layout activity_main
 layout activity_settings
 layout activity_webview
 layout dialog_download_progress
+layout fragment_boletos
 layout fragment_home
 layout fragment_horarios
 layout fragment_materia_prova
@@ -225,6 +238,7 @@ layout fragment_provas_calendar
 layout fragment_webview
 layout item_aula_card
 layout item_aula_horario
+layout item_boleto
 layout item_carousel
 layout item_dia_page
 layout item_profile

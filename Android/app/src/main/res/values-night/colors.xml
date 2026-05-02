@@ -16,4 +16,10 @@
     <color name="nav_bar_dark">#00070F</color>
     <color name="fundocartao">#000000</color>
     <color name="white">#FFFFFF</color>
+
+    <!-- Boletos -->
+    <color name="status_pago_bg">#1B5E20</color>
+    <color name="status_pago_text">#A5D6A7</color>
+    <color name="status_aberto_bg">#E65100</color>
+    <color name="status_aberto_text">#FFE0B2</color>
 </resources>

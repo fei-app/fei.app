@@ -84,7 +84,7 @@ class MoreFragment : Fragment(), MainActivity.RefreshableFragment {
             openLink("https://interage.fei.org.br/secureserver/portal/graduacao/cgi/conta/senha")
         }
         view.findViewById<View>(R.id.option_boletos).setOnClickListener {
-            openLink("https://interage.fei.org.br/secureserver/portal/graduacao/tesouraria/consultas/boletos")
+            (activity as MainActivity).openCustomFragment(BoletosFragment())
         }
         view.findViewById<View>(R.id.option_persenca).setOnClickListener {
             openLink("https://interage.fei.org.br/secureserver/portal/graduacao/sala-dos-professores/aulas/presenca")

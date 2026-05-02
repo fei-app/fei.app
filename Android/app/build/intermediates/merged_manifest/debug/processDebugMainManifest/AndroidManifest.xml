@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.marinov.openfei"
     android:versionCode="1"
-    android:versionName="1.5" >
+    android:versionName="1.6_BETA" >
 
     <uses-sdk
         android:minSdkVersion="30"
@@ -99,7 +99,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.marinov.openfei.provider"
+            android:authorities="com.marinov.openfei.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true" >
             <meta-data

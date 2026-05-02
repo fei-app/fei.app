@@ -18,7 +18,11 @@ int color nav_bar_dark 0x0
 int color nav_bar_light 0x0
 int color nav_item_color 0x0
 int color selector_bottom_nav_item_color 0x0
+int color status_aberto_bg 0x0
+int color status_aberto_text 0x0
 int color status_bar_dark_fallback 0x0
+int color status_pago_bg 0x0
+int color status_pago_text 0x0
 int color white 0x0
 int dimen activity_horizontal_margin 0x0
 int dimen carousel_height_mobile 0x0
@@ -46,10 +50,12 @@ int drawable ic_boleto 0x0
 int drawable ic_calendario 0x0
 int drawable ic_chatgpt 0x0
 int drawable ic_chave 0x0
+int drawable ic_check 0x0
 int drawable ic_chevron_right 0x0
 int drawable ic_claude 0x0
 int drawable ic_delete_sweep 0x0
 int drawable ic_documento 0x0
+int drawable ic_download 0x0
 int drawable ic_escolha_area 0x0
 int drawable ic_faltas 0x0
 int drawable ic_ferias 0x0
@@ -87,6 +93,7 @@ int id barOffline 0x0
 int id barra_compartilhamento 0x0
 int id bottom_nav_container 0x0
 int id bottom_navigation 0x0
+int id btnBaixarBoleto 0x0
 int id btnFiltro 0x0
 int id btnLogin 0x0
 int id btn_chatgpt 0x0
@@ -105,6 +112,7 @@ int id card_aula 0x0
 int id card_prova 0x0
 int id carouselLoadingIndicator 0x0
 int id chipGroupDias 0x0
+int id chipStatus 0x0
 int id container 0x0
 int id contentContainer 0x0
 int id contentLayout 0x0
@@ -163,7 +171,9 @@ int id progress_circular 0x0
 int id progress_indicator 0x0
 int id recentGradesSectionContainer 0x0
 int id recyclerAulasPage 0x0
+int id recyclerBoletos 0x0
 int id recyclerProvas 0x0
+int id rowDataPagamento 0x0
 int id scrollChips 0x0
 int id search_view 0x0
 int id spinner_mes 0x0
@@ -176,8 +186,10 @@ int id til_user 0x0
 int id toolbar 0x0
 int id topAppBar 0x0
 int id top_loading_bar 0x0
+int id tvDataPagamento 0x0
 int id tvEmptyPage 0x0
 int id tvMessage 0x0
+int id tvVencimento 0x0
 int id tv_student_class 0x0
 int id tv_student_name 0x0
 int id tv_student_number 0x0
@@ -212,6 +224,7 @@ int layout activity_main 0x0
 int layout activity_settings 0x0
 int layout activity_webview 0x0
 int layout dialog_download_progress 0x0
+int layout fragment_boletos 0x0
 int layout fragment_home 0x0
 int layout fragment_horarios 0x0
 int layout fragment_materia_prova 0x0
@@ -224,6 +237,7 @@ int layout fragment_provas_calendar 0x0
 int layout fragment_webview 0x0
 int layout item_aula_card 0x0
 int layout item_aula_horario 0x0
+int layout item_boleto 0x0
 int layout item_carousel 0x0
 int layout item_dia_page 0x0
 int layout item_profile 0x0

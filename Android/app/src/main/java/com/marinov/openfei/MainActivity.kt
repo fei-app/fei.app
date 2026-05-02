@@ -147,6 +147,7 @@ class MainActivity : AppCompatActivity() {
         iniciarNotasWorker()
         iniciarCalendarioWorker()
         iniciarLoginWorker()
+        iniciarBoletosWorker()
 
         if (savedInstanceState == null) {
             navigateToHome()
@@ -200,7 +201,7 @@ class MainActivity : AppCompatActivity() {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
         )
-        finish() // Fecha MainActivity para evitar voltar sem login
+        finish()
     }
 
     // ===================== CICLO DE VIDA =====================
@@ -274,6 +275,7 @@ class MainActivity : AppCompatActivity() {
             "notas"   -> openFragment(R.id.navigation_notas)
             "horarios"-> openFragment(R.id.option_horarios_aula)
             "provas"  -> openFragment(R.id.option_calendario_provas)
+            "boletos" -> openFragment(R.id.option_boletos)
         }
     }
 
@@ -290,6 +292,7 @@ class MainActivity : AppCompatActivity() {
             R.id.option_horarios_aula     -> HorariosAula()
             R.id.action_profile           -> ProfileFragment()
             R.id.navigation_more          -> MoreFragment()
+            R.id.option_boletos           -> BoletosFragment()
             else -> return
         }
         currentFragment = fragment
@@ -410,6 +413,7 @@ class MainActivity : AppCompatActivity() {
             "NotasWorkerTask", ExistingPeriodicWorkPolicy.KEEP, notasWork
         )
     }
+
     private fun iniciarCalendarioWorker() {
         val calendarioWork = PeriodicWorkRequest.Builder(
             HorarioUpdateWorker::class.java, 20, TimeUnit.MINUTES
@@ -418,12 +422,22 @@ class MainActivity : AppCompatActivity() {
             "CalendarioWorkerTask", ExistingPeriodicWorkPolicy.KEEP, calendarioWork
         )
     }
+
     private fun iniciarLoginWorker() {
         val loginWork = PeriodicWorkRequest.Builder(
             LoginWorker::class.java, 15, TimeUnit.MINUTES
         ).build()
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             "LoginWorkerTask", ExistingPeriodicWorkPolicy.KEEP, loginWork
+        )
+    }
+
+    private fun iniciarBoletosWorker() {
+        val boletosWork = PeriodicWorkRequest.Builder(
+            BoletosWorker::class.java, 20, TimeUnit.MINUTES
+        ).build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "BoletosWorkerTask", ExistingPeriodicWorkPolicy.KEEP, boletosWork
         )
     }
 
