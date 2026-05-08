@@ -4,7 +4,7 @@
             "outputFile": "com.marinov.openfei.app-mergeDebugResources-55:/values-km/values-km.xml",
             "map": [
                 {
-                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/969bb0952c6469abd8785726cbb3a0a6/transformed/material-1.13.0/res/values-km/values-km.xml",
+                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/ce66387216921258635fc12bc969b024/transformed/material-1.13.0/res/values-km/values-km.xml",
                     "from": {
                         "startLines": "2,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -23,7 +23,7 @@
                     }
                 },
                 {
-                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/34551c1c3555c4f9771b1f0f9e679b8e/transformed/appcompat-1.7.0/res/values-km/values-km.xml",
+                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/8a2aed163f2654ea8a37bae3f48bcdbe/transformed/appcompat-1.7.0/res/values-km/values-km.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -40,24 +40,7 @@
                     }
                 },
                 {
-                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/2e640069049bc2ae7cd5c94d1ff4e595/transformed/navigation-ui-2.9.8/res/values-km/values-km.xml",
-                    "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,160",
-                        "endColumns": "104,104",
-                        "endOffsets": "155,260"
-                    },
-                    "to": {
-                        "startLines": "116,117",
-                        "startColumns": "4,4",
-                        "startOffsets": "9794,9899",
-                        "endColumns": "104,104",
-                        "endOffsets": "9894,9999"
-                    }
-                },
-                {
-                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d67923692959e0930df0db460ff23c2a/transformed/core-1.18.0/res/values-km/values-km.xml",
+                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/f6f52a97aa197cabf3731d7a971720eb/transformed/core-1.18.0/res/values-km/values-km.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
@@ -71,6 +54,23 @@
                         "startOffsets": "3320,3415,3518,3616,3716,3817,3929,10407",
                         "endColumns": "94,102,97,99,100,111,111,100",
                         "endOffsets": "3410,3513,3611,3711,3812,3924,4036,10503"
+                    }
+                },
+                {
+                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/8362d71de8030eda43b01c541a3ca4e3/transformed/navigation-ui-2.9.8/res/values-km/values-km.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,160",
+                        "endColumns": "104,104",
+                        "endOffsets": "155,260"
+                    },
+                    "to": {
+                        "startLines": "116,117",
+                        "startColumns": "4,4",
+                        "startOffsets": "9794,9899",
+                        "endColumns": "104,104",
+                        "endOffsets": "9894,9999"
                     }
                 }
             ]

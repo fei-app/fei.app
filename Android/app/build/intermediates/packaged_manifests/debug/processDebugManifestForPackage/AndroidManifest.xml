@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.marinov.openfei"
     android:versionCode="1"
-    android:versionName="1.6_BETA" >
+    android:versionName="2.0" >
 
     <uses-sdk
         android:minSdkVersion="30"
-        android:targetSdkVersion="36" />
+        android:targetSdkVersion="37" />
 
     <!-- Permissões obrigatórias -->
     <uses-permission android:name="android.permission.INTERNET" />
