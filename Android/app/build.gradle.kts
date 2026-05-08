@@ -3,14 +3,14 @@ plugins {
 }
 android {
     namespace = "com.marinov.openfei"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.marinov.openfei"
         minSdk = 30
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
-        versionName = "2.0"
+        versionName = "2.1"
         buildConfigField("String", "GITLAB_PAT", "\"${project.findProperty("GITLAB_PAT") ?: ""}\"")
     }
 

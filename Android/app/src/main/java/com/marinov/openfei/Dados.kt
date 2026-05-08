@@ -313,7 +313,7 @@ object Dados {
             // Monta o nome do arquivo a partir do vencimento: "08/05/2026" → "Boleto_05_2026.pdf"
             val partes = vencimento.split("/")
             val nomeArquivo = if (partes.size == 3) {
-                "${partes[1]}_${partes[2]}.pdf"
+                "${partes[2]}_${partes[1]}.pdf"
             } else {
                 "$tituloId.pdf"
             }

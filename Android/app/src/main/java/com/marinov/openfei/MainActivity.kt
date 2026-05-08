@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import androidx.core.view.isVisible
+import com.marinov.openfei.R
 
 class MainActivity : AppCompatActivity() {
 
@@ -398,7 +399,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun iniciarUpdateWorker() {
         val updateWork = PeriodicWorkRequest.Builder(
-            UpdateCheckWorker::class.java, 15, TimeUnit.MINUTES
+            UpdateCheckWorker::class.java, 120, TimeUnit.MINUTES
         ).build()
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             "UpdateCheckWorker", ExistingPeriodicWorkPolicy.KEEP, updateWork
