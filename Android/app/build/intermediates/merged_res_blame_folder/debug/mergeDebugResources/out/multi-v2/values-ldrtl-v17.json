@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.marinov.openfei.app-mergeDebugResources-55:/values-ldrtl-v17/values-ldrtl-v17.xml",
+            "outputFile": "com.marinov.openfei.app-mergeDebugResources-62:/values-ldrtl-v17/values-ldrtl-v17.xml",
             "map": [
                 {
                     "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/50f6d76a824b4b2da5016b35fe3d167c/transformed/material-1.13.0/res/values-ldrtl-v17/values-ldrtl-v17.xml",

@@ -1,98 +1,102 @@
 [
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/activity_login.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/activity_login.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/activity_main.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/activity_main.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_provas_calendar.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/fragment_provas_calendar.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/fragment_pages.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/fragment_pages.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/item_prova_calendario.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/item_prova_calendario.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/fragment_webview.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/fragment_webview.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/activity_main.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/activity_main.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/ad_home_native.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/ad_home_native.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/item_aula_horario.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/item_aula_horario.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/activity_settings.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/activity_settings.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/item_aula_card.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/item_aula_card.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/item_prova_calendario.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/item_prova_calendario.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_pages.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/fragment_pages.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/fragment_horarios.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/fragment_horarios.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/activity_webview.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/activity_webview.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/fragment_profile.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/fragment_profile.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_more.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/fragment_more.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/fragment_more.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/fragment_more.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/activity_settings.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/activity_settings.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/item_boleto.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/item_boleto.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/item_dia_page.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/item_dia_page.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/fragment_boletos.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/fragment_boletos.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_boletos.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/fragment_boletos.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/item_dia_page.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/item_dia_page.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_webview.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/fragment_webview.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/activity_login.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/activity_login.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/item_carousel.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/item_carousel.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/item_prova.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/item_prova.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_profile.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/fragment_profile.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/activity_webview.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/activity_webview.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_materiais_arquivados.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/fragment_materiais_arquivados.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/fragment_notas.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/fragment_notas.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/item_boleto.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/item_boleto.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/item_aula_horario.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/item_aula_horario.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_home.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/fragment_home.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/fragment_materiais_arquivados.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/fragment_materiais_arquivados.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/item_profile.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/item_profile.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/dialog_download_progress.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/dialog_download_progress.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/item_prova.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/item_prova.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/item_profile.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/item_profile.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/dialog_download_progress.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/dialog_download_progress.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/fragment_materia_prova.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/fragment_materia_prova.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_horarios.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/fragment_horarios.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/fragment_home.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/fragment_home.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_notas.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/fragment_notas.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/item_carousel.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/item_carousel.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-56:/layout/fragment_materia_prova.xml",
-        "source": "com.marinov.openfei.app-main-59:/layout/fragment_materia_prova.xml"
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/item_aula_card.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/item_aula_card.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-63:/layout/fragment_provas_calendar.xml",
+        "source": "com.marinov.openfei.app-main-66:/layout/fragment_provas_calendar.xml"
     }
 ]

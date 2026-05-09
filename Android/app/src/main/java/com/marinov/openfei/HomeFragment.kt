@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.CookieManager
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TableLayout
@@ -35,6 +36,14 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.nativead.MediaView
+import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.nativead.NativeAdOptions
+import com.google.android.gms.ads.nativead.NativeAdView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.CircularProgressIndicator
@@ -68,6 +77,11 @@ class HomeFragment : Fragment() {
     private var aulasContainer: LinearLayout? = null
     private var txtSemAulas: TextView? = null
 
+    // ── AdMob ──────────────────────────────────────────────────
+    private var adContainer: FrameLayout? = null
+    private var currentNativeAd: NativeAd? = null
+    // ────────────────────────────────────────────────────────────
+
     private lateinit var carouselAdapter: CarouselAdapter
 
     private var isFragmentDestroyed = false
@@ -81,6 +95,10 @@ class HomeFragment : Fragment() {
 
         const val HOME_URL = "https://interage.fei.org.br/secureserver/portal/graduacao/home"
         const val USER_AGENT = "Mozilla/5.0 (Linux; Android 16; sdk_gphone64_x86_64 Build/BE2A.250530.026.D1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/133.0.6943.137 Mobile Safari/537.36"
+
+        // ── AdMob ──────────────────────────────────────────────
+        const val AD_UNIT_ID = "ca-app-pub-8734981142486691/1921511395"
+        // ────────────────────────────────────────────────────────
     }
 
     override fun onCreateView(
@@ -103,6 +121,10 @@ class HomeFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        // Destrói o anúncio nativo para evitar memory leak
+        currentNativeAd?.destroy()
+        currentNativeAd = null
+
         super.onDestroyView()
         isFragmentDestroyed = true
         handler.removeCallbacksAndMessages(null)
@@ -124,6 +146,10 @@ class HomeFragment : Fragment() {
         aulasSectionContainer = view.findViewById(R.id.aulasSectionContainer)
         aulasContainer = view.findViewById(R.id.aulasContainer)
         txtSemAulas = view.findViewById(R.id.txtSemAulas)
+
+        // ── AdMob ──────────────────────────────────────────────
+        adContainer = view.findViewById(R.id.adContainer)
+        // ────────────────────────────────────────────────────────
     }
 
     private fun setupAdapters() {
@@ -439,6 +465,8 @@ class HomeFragment : Fragment() {
         contentContainer?.visibility = View.VISIBLE
         layoutSemInternet?.visibility = View.GONE
         updateSwipeRefreshState()
+        // Carrega o anúncio apenas uma vez por ciclo de vida da view
+        if (currentNativeAd == null) loadNativeAd()
     }
 
     private fun showOfflineState() {
@@ -448,6 +476,78 @@ class HomeFragment : Fragment() {
         layoutSemInternet?.visibility = View.VISIBLE
         updateSwipeRefreshState()
     }
+
+    // ── AdMob: carregamento e binding do anúncio nativo ────────
+
+    private fun loadNativeAd() {
+        val context = context ?: return
+        val adLoader = AdLoader.Builder(context, AD_UNIT_ID)
+            .forNativeAd { nativeAd ->
+                // Destrói eventual anúncio anterior
+                currentNativeAd?.destroy()
+                currentNativeAd = nativeAd
+
+                if (isFragmentDestroyed || !isAdded) {
+                    nativeAd.destroy()
+                    currentNativeAd = null
+                    return@forNativeAd
+                }
+
+                val adView = layoutInflater.inflate(
+                    R.layout.ad_home_native, adContainer, false
+                ) as NativeAdView
+
+                // Vincula headline (obrigatório)
+                val headlineView = adView.findViewById<TextView>(R.id.ad_headline)
+                headlineView.text = nativeAd.headline
+                adView.headlineView = headlineView
+
+                // Body
+                val bodyView = adView.findViewById<TextView>(R.id.ad_body)
+                bodyView.text = nativeAd.body
+                bodyView.visibility = if (nativeAd.body != null) View.VISIBLE else View.GONE
+                adView.bodyView = bodyView
+
+                // Ícone
+                val iconView = adView.findViewById<ImageView>(R.id.ad_icon)
+                nativeAd.icon?.let {
+                    iconView.setImageDrawable(it.drawable)
+                    iconView.visibility = View.VISIBLE
+                } ?: run { iconView.visibility = View.GONE }
+                adView.iconView = iconView
+
+                // MediaView
+                val mediaView = adView.findViewById<MediaView>(R.id.ad_media)
+                adView.mediaView = mediaView
+
+                // Call-to-action
+                val ctaView = adView.findViewById<MaterialButton>(R.id.ad_call_to_action)
+                nativeAd.callToAction?.let {
+                    ctaView.text = it
+                    ctaView.visibility = View.VISIBLE
+                } ?: run { ctaView.visibility = View.GONE }
+                adView.callToActionView = ctaView
+
+                // Registra o NativeAd na view (obrigatório para rastrear cliques)
+                adView.setNativeAd(nativeAd)
+
+                adContainer?.removeAllViews()
+                adContainer?.addView(adView)
+                adContainer?.visibility = View.VISIBLE
+            }
+            .withAdListener(object : AdListener() {
+                override fun onAdFailedToLoad(error: LoadAdError) {
+                    Log.w("HomeFragment", "Anúncio nativo falhou ao carregar: ${error.message}")
+                    adContainer?.visibility = View.GONE
+                }
+            })
+            .withNativeAdOptions(NativeAdOptions.Builder().build())
+            .build()
+
+        adLoader.loadAd(AdRequest.Builder().build())
+    }
+
+    // ────────────────────────────────────────────────────────────
 
     // ======================== ADAPTER ========================
     private inner class CarouselAdapter : RecyclerView.Adapter<CarouselViewHolder>() {

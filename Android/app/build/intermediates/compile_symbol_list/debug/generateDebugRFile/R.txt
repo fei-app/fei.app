@@ -87,6 +87,12 @@ int drawable shortcut_calendario 0x0
 int drawable shortcut_notas 0x0
 int id action_profile 0x0
 int id action_settings 0x0
+int id adContainer 0x0
+int id ad_body 0x0
+int id ad_call_to_action 0x0
+int id ad_headline 0x0
+int id ad_icon 0x0
+int id ad_media 0x0
 int id aulasContainer 0x0
 int id aulasSectionContainer 0x0
 int id barOffline 0x0
@@ -142,6 +148,7 @@ int id legendTitle 0x0
 int id loadingContainer 0x0
 int id logo_fei 0x0
 int id main 0x0
+int id native_ad_view 0x0
 int id nav_graph 0x0
 int id nav_host_fragment 0x0
 int id navigation_home 0x0
@@ -223,6 +230,7 @@ int layout activity_login 0x0
 int layout activity_main 0x0
 int layout activity_settings 0x0
 int layout activity_webview 0x0
+int layout ad_home_native 0x0
 int layout dialog_download_progress 0x0
 int layout fragment_boletos 0x0
 int layout fragment_home 0x0

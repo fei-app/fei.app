@@ -122,9 +122,6 @@
                     </FrameLayout>
                 </androidx.cardview.widget.CardView>
 
-                <!-- Seção de Aulas do Dia -->
-
-
                 <!-- Seção de Notas -->
                 <LinearLayout
                     android:id="@+id/recentGradesSectionContainer"
@@ -161,9 +158,18 @@
 
                     </com.google.android.material.card.MaterialCardView>
 
-
                 </LinearLayout>
 
+                <!-- Container do Anúncio Nativo (entre Notas e Aulas do dia) -->
+                <FrameLayout
+                    android:id="@+id/adContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:visibility="gone" />
+
+                <!-- Seção de Aulas do Dia -->
                 <LinearLayout
                     android:id="@+id/aulasSectionContainer"
                     android:layout_width="match_parent"
@@ -199,6 +205,7 @@
                         android:padding="16dp"
                         android:visibility="gone" />
                 </LinearLayout>
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

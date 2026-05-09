@@ -1,21 +1,22 @@
 -- Merging decision tree log ---
 provider#androidx.core.content.FileProvider
-INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:79:9-87:20
+INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:83:9-91:20
 	android:grantUriPermissions
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:83:13-47
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:87:13-47
 	android:authorities
 		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:81:13-64
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:85:13-64
 	android:exported
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:82:13-37
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:86:13-37
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:80:13-62
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:84:13-62
 manifest
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:1-89:12
-INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:1-89:12
-INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:1-89:12
-INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:1-89:12
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:1-93:12
+INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:1-93:12
+INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:1-93:12
+INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:1-93:12
 MERGED from [androidx.databinding:viewbinding:9.2.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d5abf12fdbfeb70b5e972995f7e75fed/transformed/viewbinding-9.2.1/AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.gms:play-services-ads:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/cee72a70da876511051148b03c53e06e/transformed/play-services-ads-23.6.0/AndroidManifest.xml:17:1-25:12
 MERGED from [androidx.webkit:webkit:1.16.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/1b4c60262f00db76f4920398938a14a1/transformed/webkit-1.16.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.navigation:navigation-runtime-android:2.9.8] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/43b23356c88d149dcb5e36abb6245515/transformed/navigation-runtime-release/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.navigation:navigation-common-android:2.9.8] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0d8afbd195f1bb3fac21bd4d40a96b5b/transformed/navigation-common-release/AndroidManifest.xml:17:1-22:12
@@ -30,6 +31,16 @@ MERGED from [androidx.appcompat:appcompat:1.7.0] /home/gabrielbaraglio/.gradle/c
 MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.2.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/08adecb5d36fd6d7c0cd116d5a4530f6/transformed/swiperefreshlayout-1.2.0/AndroidManifest.xml:2:1-7:12
 MERGED from [com.github.bumptech.glide:glide:5.0.7] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/948964ce416d6c120c546e84d91e64cd/transformed/glide-5.0.7/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.viewpager2:viewpager2:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/1143139afd48cf1e7cc7362d89651f38/transformed/viewpager2-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:17:1-112:12
+MERGED from [com.google.android.gms:play-services-ads-base:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/c85c59154d6e4187998647e6e898ee6a/transformed/play-services-ads-base-23.6.0/AndroidManifest.xml:2:1-9:12
+MERGED from [com.google.android.gms:play-services-ads-identifier:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/9627eb2e213b0e30d4273a3737e8cfce/transformed/play-services-ads-identifier-18.0.0/AndroidManifest.xml:17:1-27:12
+MERGED from [com.google.android.gms:play-services-appset:16.0.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/abae91ef01eb8c674c6829de7cede104/transformed/play-services-appset-16.0.1/AndroidManifest.xml:2:1-9:12
+MERGED from [com.google.android.gms:play-services-base:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/57635191fa5534b0a8801bbfbff0fdd2/transformed/play-services-base-18.0.0/AndroidManifest.xml:16:1-24:12
+MERGED from [com.google.android.gms:play-services-tasks:18.2.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/550a978d565da0c3748c510fb9cd3b8d/transformed/play-services-tasks-18.2.0/AndroidManifest.xml:2:1-5:12
+MERGED from [com.google.android.gms:play-services-measurement-sdk-api:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0ec8b140551d826da702455aa7e1a608/transformed/play-services-measurement-sdk-api-20.1.2/AndroidManifest.xml:17:1-28:12
+MERGED from [com.google.android.ump:user-messaging-platform:3.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/3be7c5e78761ce23d770b5aad54d3bdc/transformed/user-messaging-platform-3.0.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.gms:play-services-measurement-base:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/fbc3a5dee8113fb7b649ebe29cd7f49d/transformed/play-services-measurement-base-20.1.2/AndroidManifest.xml:2:1-9:12
+MERGED from [com.google.android.gms:play-services-basement:18.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/5e598df57d4606ea89d55313b4fe6a33/transformed/play-services-basement-18.4.0/AndroidManifest.xml:2:1-9:12
 MERGED from [androidx.fragment:fragment-ktx:1.6.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/65eef13a4578584c0c6413a81fddf265/transformed/fragment-ktx-1.6.2/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.fragment:fragment:1.6.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/4c92389f62bdf49cd8ffb7e57f163323/transformed/fragment-1.6.2/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.activity:activity-ktx:1.8.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e2fcbdde41728db9ce14a48699beede5/transformed/activity-ktx-1.8.0/AndroidManifest.xml:2:1-7:12
@@ -44,6 +55,7 @@ MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /home/gabrie
 MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/6eaea5dd74de99c13d2bafb12a27a101/transformed/vectordrawable-1.1.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.work:work-runtime-ktx:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/2723aba6c3bd2576ccb2d93e09455fd4/transformed/work-runtime-ktx-2.11.2/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:17:1-83:12
+MERGED from [androidx.browser:browser:1.8.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/5ca9c6bc3824759212488522d33055fe/transformed/browser-1.8.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d3faf3dcd7acbd0724e22878660ffc9a/transformed/emoji2-views-helper-1.3.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.emoji2:emoji2:1.3.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/07fda8c630bb9d08e809a7b682eaccac/transformed/emoji2-1.3.0/AndroidManifest.xml:17:1-35:12
 MERGED from [androidx.viewpager:viewpager:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/ed42be1bee8a1c0795f0af1778960271/transformed/viewpager-1.0.0/AndroidManifest.xml:17:1-22:12
@@ -51,6 +63,8 @@ MERGED from [androidx.customview:customview:1.1.0] /home/gabrielbaraglio/.gradle
 MERGED from [androidx.window:window:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/22dde87e7ade8c898d19fe92aea68b3f/transformed/window-1.0.0/AndroidManifest.xml:17:1-33:12
 MERGED from [androidx.loader:loader:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/5befdb896e3bb279af55b273cb985624/transformed/loader-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/c7709cb086f36a99d8cbe96b28d97d94/transformed/core-1.18.0/AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.privacysandbox.ads:ads-adservices-java:1.0.0-beta05] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/6ea650afa9afd903e1f9b8d012194e70/transformed/ads-adservices-java-1.0.0-beta05/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.privacysandbox.ads:ads-adservices:1.0.0-beta05] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/3f50e74d38785e5b7cda5fb93bf88eb0/transformed/ads-adservices-1.0.0-beta05/AndroidManifest.xml:17:1-28:12
 MERGED from [androidx.graphics:graphics-shapes-android:1.0.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0c3d5fc4f62c9b61c9c571799dc8e992/transformed/graphics-shapes-release/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.9.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/db3b81c7f5cad33daa3caad174fb8fd7/transformed/lifecycle-runtime-ktx/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/8330f46093e4f830449094ff04050eb3/transformed/lifecycle-viewmodel-ktx-2.9.0/AndroidManifest.xml:2:1-7:12
@@ -95,10 +109,18 @@ MERGED from [com.github.bumptech.glide:disklrucache:5.0.7] /home/gabrielbaraglio
 		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:2:11-69
 uses-permission#android.permission.INTERNET
 ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:6:5-67
+MERGED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:24:5-67
+MERGED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:24:5-67
+MERGED from [com.google.android.gms:play-services-measurement-sdk-api:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0ec8b140551d826da702455aa7e1a608/transformed/play-services-measurement-sdk-api-20.1.2/AndroidManifest.xml:23:5-67
+MERGED from [com.google.android.gms:play-services-measurement-sdk-api:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0ec8b140551d826da702455aa7e1a608/transformed/play-services-measurement-sdk-api-20.1.2/AndroidManifest.xml:23:5-67
 	android:name
 		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:6:22-64
 uses-permission#android.permission.ACCESS_NETWORK_STATE
 ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:7:5-79
+MERGED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:25:5-79
+MERGED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:25:5-79
+MERGED from [com.google.android.gms:play-services-measurement-sdk-api:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0ec8b140551d826da702455aa7e1a608/transformed/play-services-measurement-sdk-api-20.1.2/AndroidManifest.xml:24:5-79
+MERGED from [com.google.android.gms:play-services-measurement-sdk-api:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0ec8b140551d826da702455aa7e1a608/transformed/play-services-measurement-sdk-api-20.1.2/AndroidManifest.xml:24:5-79
 MERGED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:24:5-79
 MERGED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:24:5-79
 	android:name
@@ -129,6 +151,8 @@ ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/And
 		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:16:9-64
 queries
 ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:20:5-25:15
+MERGED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:35:5-68:15
+MERGED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:35:5-68:15
 intent#action:name:android.intent.action.VIEW+data:mimeType:application/vnd.android.package-archive
 ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:21:9-24:18
 action#android.intent.action.VIEW
@@ -140,12 +164,28 @@ ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/And
 	android:mimeType
 		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:23:19-77
 application
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:27:5-88:19
-INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:27:5-88:19
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:27:5-92:19
+INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:27:5-92:19
 MERGED from [com.google.android.material:material:1.13.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/50f6d76a824b4b2da5016b35fe3d167c/transformed/material-1.13.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.13.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/50f6d76a824b4b2da5016b35fe3d167c/transformed/material-1.13.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/558380242e67b13c2becb559eea1fc76/transformed/constraintlayout-2.2.1/AndroidManifest.xml:7:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.2.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/558380242e67b13c2becb559eea1fc76/transformed/constraintlayout-2.2.1/AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:70:5-110:19
+MERGED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:70:5-110:19
+MERGED from [com.google.android.gms:play-services-ads-base:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/c85c59154d6e4187998647e6e898ee6a/transformed/play-services-ads-base-23.6.0/AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-ads-base:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/c85c59154d6e4187998647e6e898ee6a/transformed/play-services-ads-base-23.6.0/AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-ads-identifier:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/9627eb2e213b0e30d4273a3737e8cfce/transformed/play-services-ads-identifier-18.0.0/AndroidManifest.xml:25:5-20
+MERGED from [com.google.android.gms:play-services-ads-identifier:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/9627eb2e213b0e30d4273a3737e8cfce/transformed/play-services-ads-identifier-18.0.0/AndroidManifest.xml:25:5-20
+MERGED from [com.google.android.gms:play-services-appset:16.0.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/abae91ef01eb8c674c6829de7cede104/transformed/play-services-appset-16.0.1/AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-appset:16.0.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/abae91ef01eb8c674c6829de7cede104/transformed/play-services-appset-16.0.1/AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-base:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/57635191fa5534b0a8801bbfbff0fdd2/transformed/play-services-base-18.0.0/AndroidManifest.xml:19:5-23:19
+MERGED from [com.google.android.gms:play-services-base:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/57635191fa5534b0a8801bbfbff0fdd2/transformed/play-services-base-18.0.0/AndroidManifest.xml:19:5-23:19
+MERGED from [com.google.android.gms:play-services-tasks:18.2.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/550a978d565da0c3748c510fb9cd3b8d/transformed/play-services-tasks-18.2.0/AndroidManifest.xml:4:5-20
+MERGED from [com.google.android.gms:play-services-tasks:18.2.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/550a978d565da0c3748c510fb9cd3b8d/transformed/play-services-tasks-18.2.0/AndroidManifest.xml:4:5-20
+MERGED from [com.google.android.gms:play-services-measurement-base:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/fbc3a5dee8113fb7b649ebe29cd7f49d/transformed/play-services-measurement-base-20.1.2/AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-measurement-base:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/fbc3a5dee8113fb7b649ebe29cd7f49d/transformed/play-services-measurement-base-20.1.2/AndroidManifest.xml:7:5-20
+MERGED from [com.google.android.gms:play-services-basement:18.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/5e598df57d4606ea89d55313b4fe6a33/transformed/play-services-basement-18.4.0/AndroidManifest.xml:5:5-7:19
+MERGED from [com.google.android.gms:play-services-basement:18.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/5e598df57d4606ea89d55313b4fe6a33/transformed/play-services-basement-18.4.0/AndroidManifest.xml:5:5-7:19
 MERGED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:28:5-81:19
 MERGED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:28:5-81:19
 MERGED from [androidx.emoji2:emoji2:1.3.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/07fda8c630bb9d08e809a7b682eaccac/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
@@ -154,6 +194,8 @@ MERGED from [androidx.window:window:1.0.0] /home/gabrielbaraglio/.gradle/caches/
 MERGED from [androidx.window:window:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/22dde87e7ade8c898d19fe92aea68b3f/transformed/window-1.0.0/AndroidManifest.xml:24:5-31:19
 MERGED from [androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/c7709cb086f36a99d8cbe96b28d97d94/transformed/core-1.18.0/AndroidManifest.xml:28:5-89
 MERGED from [androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/c7709cb086f36a99d8cbe96b28d97d94/transformed/core-1.18.0/AndroidManifest.xml:28:5-89
+MERGED from [androidx.privacysandbox.ads:ads-adservices:1.0.0-beta05] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/3f50e74d38785e5b7cda5fb93bf88eb0/transformed/ads-adservices-1.0.0-beta05/AndroidManifest.xml:22:5-26:19
+MERGED from [androidx.privacysandbox.ads:ads-adservices:1.0.0-beta05] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/3f50e74d38785e5b7cda5fb93bf88eb0/transformed/ads-adservices-1.0.0-beta05/AndroidManifest.xml:22:5-26:19
 MERGED from [androidx.lifecycle:lifecycle-process:2.9.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/a18ba5da15e2bdf60996b727030ad6ae/transformed/lifecycle-process-2.9.0/AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.lifecycle:lifecycle-process:2.9.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/a18ba5da15e2bdf60996b727030ad6ae/transformed/lifecycle-process-2.9.0/AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.room:room-runtime-android:2.7.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0287d5f8eeb92f24d627e5fcf6ac0a0c/transformed/room-runtime-release/AndroidManifest.xml:23:5-29:19
@@ -204,72 +246,80 @@ ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/And
 		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:47:13-33
 	android:name
 		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:46:13-84
+meta-data#com.google.android.gms.ads.APPLICATION_ID
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:49:9-51:70
+	android:value
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:51:13-67
+	android:name
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:50:13-69
 activity#com.marinov.openfei.MainActivity
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:50:9-63:20
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:54:9-67:20
 	android:windowSoftInputMode
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:54:13-55
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:58:13-55
 	android:exported
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:52:13-36
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:56:13-36
 	android:configChanges
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:55:13-74
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:59:13-74
 	android:theme
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:53:13-45
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:57:13-45
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:51:13-41
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:55:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:56:13-59:29
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:60:13-63:29
 action#android.intent.action.MAIN
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:57:17-69
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:61:17-69
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:57:25-66
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:61:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:58:17-77
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:62:17-77
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:58:27-74
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:62:27-74
 meta-data#android.app.shortcuts
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:60:13-62:53
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:64:13-66:53
 	android:resource
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:62:17-50
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:66:17-50
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:61:17-53
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:65:17-53
 activity#com.marinov.openfei.LoginActivity
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:64:9-67:48
-	android:exported
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:66:13-37
-	android:theme
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:67:13-45
-	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:65:13-42
-activity#com.marinov.openfei.WebViewActivity
 ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:68:9-71:48
-	android:configChanges
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:70:13-87
+	android:exported
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:70:13-37
 	android:theme
 		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:71:13-45
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:69:13-44
-activity#com.marinov.openfei.SettingsActivity
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:73:9-77:46
-	android:launchMode
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:77:13-43
-	android:exported
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:75:13-37
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:69:13-42
+activity#com.marinov.openfei.WebViewActivity
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:72:9-75:48
+	android:configChanges
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:74:13-87
 	android:theme
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:76:13-45
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:75:13-45
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:74:13-45
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:73:13-44
+activity#com.marinov.openfei.SettingsActivity
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:77:9-81:46
+	android:launchMode
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:81:13-43
+	android:exported
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:79:13-37
+	android:theme
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:80:13-45
+	android:name
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:78:13-45
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:84:13-86:53
+ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:88:13-90:53
 	android:resource
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:86:17-51
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:90:17-51
 	android:name
-		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:85:17-67
+		ADDED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml:89:17-67
 uses-sdk
 INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
 INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
 MERGED from [androidx.databinding:viewbinding:9.2.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d5abf12fdbfeb70b5e972995f7e75fed/transformed/viewbinding-9.2.1/AndroidManifest.xml:5:5-44
 MERGED from [androidx.databinding:viewbinding:9.2.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d5abf12fdbfeb70b5e972995f7e75fed/transformed/viewbinding-9.2.1/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-ads:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/cee72a70da876511051148b03c53e06e/transformed/play-services-ads-23.6.0/AndroidManifest.xml:21:5-23:52
+MERGED from [com.google.android.gms:play-services-ads:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/cee72a70da876511051148b03c53e06e/transformed/play-services-ads-23.6.0/AndroidManifest.xml:21:5-23:52
 MERGED from [androidx.webkit:webkit:1.16.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/1b4c60262f00db76f4920398938a14a1/transformed/webkit-1.16.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.webkit:webkit:1.16.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/1b4c60262f00db76f4920398938a14a1/transformed/webkit-1.16.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.navigation:navigation-runtime-android:2.9.8] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/43b23356c88d149dcb5e36abb6245515/transformed/navigation-runtime-release/AndroidManifest.xml:20:5-44
@@ -298,6 +348,26 @@ MERGED from [com.github.bumptech.glide:glide:5.0.7] /home/gabrielbaraglio/.gradl
 MERGED from [com.github.bumptech.glide:glide:5.0.7] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/948964ce416d6c120c546e84d91e64cd/transformed/glide-5.0.7/AndroidManifest.xml:5:5-44
 MERGED from [androidx.viewpager2:viewpager2:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/1143139afd48cf1e7cc7362d89651f38/transformed/viewpager2-1.0.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.viewpager2:viewpager2:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/1143139afd48cf1e7cc7362d89651f38/transformed/viewpager2-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:21:5-44
+MERGED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:21:5-44
+MERGED from [com.google.android.gms:play-services-ads-base:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/c85c59154d6e4187998647e6e898ee6a/transformed/play-services-ads-base-23.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-ads-base:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/c85c59154d6e4187998647e6e898ee6a/transformed/play-services-ads-base-23.6.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-ads-identifier:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/9627eb2e213b0e30d4273a3737e8cfce/transformed/play-services-ads-identifier-18.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-ads-identifier:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/9627eb2e213b0e30d4273a3737e8cfce/transformed/play-services-ads-identifier-18.0.0/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-appset:16.0.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/abae91ef01eb8c674c6829de7cede104/transformed/play-services-appset-16.0.1/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-appset:16.0.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/abae91ef01eb8c674c6829de7cede104/transformed/play-services-appset-16.0.1/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-base:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/57635191fa5534b0a8801bbfbff0fdd2/transformed/play-services-base-18.0.0/AndroidManifest.xml:18:5-43
+MERGED from [com.google.android.gms:play-services-base:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/57635191fa5534b0a8801bbfbff0fdd2/transformed/play-services-base-18.0.0/AndroidManifest.xml:18:5-43
+MERGED from [com.google.android.gms:play-services-tasks:18.2.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/550a978d565da0c3748c510fb9cd3b8d/transformed/play-services-tasks-18.2.0/AndroidManifest.xml:3:5-44
+MERGED from [com.google.android.gms:play-services-tasks:18.2.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/550a978d565da0c3748c510fb9cd3b8d/transformed/play-services-tasks-18.2.0/AndroidManifest.xml:3:5-44
+MERGED from [com.google.android.gms:play-services-measurement-sdk-api:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0ec8b140551d826da702455aa7e1a608/transformed/play-services-measurement-sdk-api-20.1.2/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.gms:play-services-measurement-sdk-api:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0ec8b140551d826da702455aa7e1a608/transformed/play-services-measurement-sdk-api-20.1.2/AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.ump:user-messaging-platform:3.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/3be7c5e78761ce23d770b5aad54d3bdc/transformed/user-messaging-platform-3.0.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.ump:user-messaging-platform:3.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/3be7c5e78761ce23d770b5aad54d3bdc/transformed/user-messaging-platform-3.0.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-measurement-base:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/fbc3a5dee8113fb7b649ebe29cd7f49d/transformed/play-services-measurement-base-20.1.2/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-measurement-base:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/fbc3a5dee8113fb7b649ebe29cd7f49d/transformed/play-services-measurement-base-20.1.2/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.gms:play-services-basement:18.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/5e598df57d4606ea89d55313b4fe6a33/transformed/play-services-basement-18.4.0/AndroidManifest.xml:3:5-44
+MERGED from [com.google.android.gms:play-services-basement:18.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/5e598df57d4606ea89d55313b4fe6a33/transformed/play-services-basement-18.4.0/AndroidManifest.xml:3:5-44
 MERGED from [androidx.fragment:fragment-ktx:1.6.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/65eef13a4578584c0c6413a81fddf265/transformed/fragment-ktx-1.6.2/AndroidManifest.xml:20:5-44
 MERGED from [androidx.fragment:fragment-ktx:1.6.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/65eef13a4578584c0c6413a81fddf265/transformed/fragment-ktx-1.6.2/AndroidManifest.xml:20:5-44
 MERGED from [androidx.fragment:fragment:1.6.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/4c92389f62bdf49cd8ffb7e57f163323/transformed/fragment-1.6.2/AndroidManifest.xml:20:5-44
@@ -326,6 +396,8 @@ MERGED from [androidx.work:work-runtime-ktx:2.11.2] /home/gabrielbaraglio/.gradl
 MERGED from [androidx.work:work-runtime-ktx:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/2723aba6c3bd2576ccb2d93e09455fd4/transformed/work-runtime-ktx-2.11.2/AndroidManifest.xml:20:5-44
 MERGED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:21:5-44
 MERGED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:21:5-44
+MERGED from [androidx.browser:browser:1.8.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/5ca9c6bc3824759212488522d33055fe/transformed/browser-1.8.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.browser:browser:1.8.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/5ca9c6bc3824759212488522d33055fe/transformed/browser-1.8.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d3faf3dcd7acbd0724e22878660ffc9a/transformed/emoji2-views-helper-1.3.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/d3faf3dcd7acbd0724e22878660ffc9a/transformed/emoji2-views-helper-1.3.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.emoji2:emoji2:1.3.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/07fda8c630bb9d08e809a7b682eaccac/transformed/emoji2-1.3.0/AndroidManifest.xml:21:5-44
@@ -340,6 +412,10 @@ MERGED from [androidx.loader:loader:1.0.0] /home/gabrielbaraglio/.gradle/caches/
 MERGED from [androidx.loader:loader:1.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/5befdb896e3bb279af55b273cb985624/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/c7709cb086f36a99d8cbe96b28d97d94/transformed/core-1.18.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/c7709cb086f36a99d8cbe96b28d97d94/transformed/core-1.18.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.privacysandbox.ads:ads-adservices-java:1.0.0-beta05] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/6ea650afa9afd903e1f9b8d012194e70/transformed/ads-adservices-java-1.0.0-beta05/AndroidManifest.xml:5:5-44
+MERGED from [androidx.privacysandbox.ads:ads-adservices-java:1.0.0-beta05] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/6ea650afa9afd903e1f9b8d012194e70/transformed/ads-adservices-java-1.0.0-beta05/AndroidManifest.xml:5:5-44
+MERGED from [androidx.privacysandbox.ads:ads-adservices:1.0.0-beta05] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/3f50e74d38785e5b7cda5fb93bf88eb0/transformed/ads-adservices-1.0.0-beta05/AndroidManifest.xml:20:5-44
+MERGED from [androidx.privacysandbox.ads:ads-adservices:1.0.0-beta05] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/3f50e74d38785e5b7cda5fb93bf88eb0/transformed/ads-adservices-1.0.0-beta05/AndroidManifest.xml:20:5-44
 MERGED from [androidx.graphics:graphics-shapes-android:1.0.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0c3d5fc4f62c9b61c9c571799dc8e992/transformed/graphics-shapes-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.graphics:graphics-shapes-android:1.0.1] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0c3d5fc4f62c9b61c9c571799dc8e992/transformed/graphics-shapes-release/AndroidManifest.xml:5:5-44
 MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.9.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/db3b81c7f5cad33daa3caad174fb8fd7/transformed/lifecycle-runtime-ktx/AndroidManifest.xml:5:5-44
@@ -404,18 +480,151 @@ MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/gabrielbaraglio/.gradl
 MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/c204160966e06ec9c7ff9415ea798ff1/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
 MERGED from [com.github.bumptech.glide:disklrucache:5.0.7] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/b5d40f08005a8a15d686d480bdeaad8a/transformed/disklrucache-5.0.7/AndroidManifest.xml:5:5-44
 MERGED from [com.github.bumptech.glide:disklrucache:5.0.7] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/b5d40f08005a8a15d686d480bdeaad8a/transformed/disklrucache-5.0.7/AndroidManifest.xml:5:5-44
+	tools:overrideLibrary
+		ADDED from [com.google.android.gms:play-services-ads:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/cee72a70da876511051148b03c53e06e/transformed/play-services-ads-23.6.0/AndroidManifest.xml:23:9-49
 	android:targetSdkVersion
 		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
 	android:minSdkVersion
 		INJECTED from /home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/AndroidManifest.xml
-uses-permission#android.permission.WAKE_LOCK
-ADDED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:23:5-68
+uses-permission#com.google.android.gms.permission.AD_ID
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:26:5-79
+MERGED from [com.google.android.gms:play-services-ads-identifier:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/9627eb2e213b0e30d4273a3737e8cfce/transformed/play-services-ads-identifier-18.0.0/AndroidManifest.xml:23:5-79
+MERGED from [com.google.android.gms:play-services-ads-identifier:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/9627eb2e213b0e30d4273a3737e8cfce/transformed/play-services-ads-identifier-18.0.0/AndroidManifest.xml:23:5-79
+MERGED from [com.google.android.gms:play-services-measurement-sdk-api:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0ec8b140551d826da702455aa7e1a608/transformed/play-services-measurement-sdk-api-20.1.2/AndroidManifest.xml:26:5-79
+MERGED from [com.google.android.gms:play-services-measurement-sdk-api:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0ec8b140551d826da702455aa7e1a608/transformed/play-services-measurement-sdk-api-20.1.2/AndroidManifest.xml:26:5-79
 	android:name
-		ADDED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:23:22-65
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:26:22-76
+uses-permission#android.permission.ACCESS_ADSERVICES_AD_ID
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:27:5-82
+	android:name
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:27:22-79
+uses-permission#android.permission.ACCESS_ADSERVICES_ATTRIBUTION
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:28:5-88
+	android:name
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:28:22-85
+uses-permission#android.permission.ACCESS_ADSERVICES_TOPICS
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:29:5-83
+	android:name
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:29:22-80
 uses-permission#android.permission.RECEIVE_BOOT_COMPLETED
-ADDED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:25:5-81
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:30:5-32:31
+REJECTED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:25:5-81
+	tools:node
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:32:9-28
 	android:name
-		ADDED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:25:22-78
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:31:9-65
+intent#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+data:scheme:https
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:38:9-44:18
+category#android.intent.category.BROWSABLE
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:41:13-74
+	android:name
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:41:23-71
+intent#action:name:android.support.customtabs.action.CustomTabsService
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:47:9-49:18
+action#android.support.customtabs.action.CustomTabsService
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:48:13-90
+	android:name
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:48:21-87
+intent#action:name:android.intent.action.INSERT+data:mimeType:vnd.android.cursor.dir/event
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:52:9-56:18
+action#android.intent.action.INSERT
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:53:13-67
+	android:name
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:53:21-64
+intent#action:name:android.intent.action.VIEW+data:scheme:sms
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:57:9-61:18
+intent#action:name:android.intent.action.DIAL+data:path:tel:
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:62:9-66:18
+action#android.intent.action.DIAL
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:63:13-65
+	android:name
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:63:21-62
+activity#com.google.android.gms.ads.AdActivity
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:73:9-78:43
+	android:exported
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:76:13-37
+	tools:ignore
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:78:13-40
+	android:configChanges
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:75:13-122
+	android:theme
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:77:13-61
+	android:name
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:74:13-65
+provider#com.google.android.gms.ads.MobileAdsInitProvider
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:80:9-85:43
+	android:authorities
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:82:13-73
+	android:exported
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:83:13-37
+	tools:ignore
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:85:13-40
+	android:initOrder
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:84:13-36
+	android:name
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:81:13-76
+service#com.google.android.gms.ads.AdService
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:87:9-91:43
+	android:enabled
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:89:13-35
+	android:exported
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:90:13-37
+	tools:ignore
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:91:13-40
+	android:name
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:88:13-64
+activity#com.google.android.gms.ads.OutOfContextTestingActivity
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:93:9-97:43
+	android:exported
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:96:13-37
+	tools:ignore
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:97:13-40
+	android:configChanges
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:95:13-122
+	android:name
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:94:13-82
+activity#com.google.android.gms.ads.NotificationHandlerActivity
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:98:9-105:43
+	android:excludeFromRecents
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:100:13-46
+	android:launchMode
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:102:13-44
+	android:exported
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:101:13-37
+	tools:ignore
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:105:13-40
+	android:theme
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:104:13-72
+	android:taskAffinity
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:103:13-36
+	android:name
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:99:13-82
+property#android.adservices.AD_SERVICES_CONFIG
+ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:107:9-109:62
+	android:resource
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:109:13-59
+	android:name
+		ADDED from [com.google.android.gms:play-services-ads-lite:23.6.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/e4b72527a81bec7bba6b213fa1ae9fcf/transformed/play-services-ads-lite-23.6.0/AndroidManifest.xml:108:13-65
+activity#com.google.android.gms.common.api.GoogleApiActivity
+ADDED from [com.google.android.gms:play-services-base:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/57635191fa5534b0a8801bbfbff0fdd2/transformed/play-services-base-18.0.0/AndroidManifest.xml:20:9-22:45
+	android:exported
+		ADDED from [com.google.android.gms:play-services-base:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/57635191fa5534b0a8801bbfbff0fdd2/transformed/play-services-base-18.0.0/AndroidManifest.xml:22:19-43
+	android:theme
+		ADDED from [com.google.android.gms:play-services-base:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/57635191fa5534b0a8801bbfbff0fdd2/transformed/play-services-base-18.0.0/AndroidManifest.xml:21:19-78
+	android:name
+		ADDED from [com.google.android.gms:play-services-base:18.0.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/57635191fa5534b0a8801bbfbff0fdd2/transformed/play-services-base-18.0.0/AndroidManifest.xml:20:19-85
+uses-permission#android.permission.WAKE_LOCK
+ADDED from [com.google.android.gms:play-services-measurement-sdk-api:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0ec8b140551d826da702455aa7e1a608/transformed/play-services-measurement-sdk-api-20.1.2/AndroidManifest.xml:25:5-68
+MERGED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:23:5-68
+MERGED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:23:5-68
+	android:name
+		ADDED from [com.google.android.gms:play-services-measurement-sdk-api:20.1.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0ec8b140551d826da702455aa7e1a608/transformed/play-services-measurement-sdk-api-20.1.2/AndroidManifest.xml:25:22-65
+meta-data#com.google.android.gms.version
+ADDED from [com.google.android.gms:play-services-basement:18.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/5e598df57d4606ea89d55313b4fe6a33/transformed/play-services-basement-18.4.0/AndroidManifest.xml:6:9-122
+	android:value
+		ADDED from [com.google.android.gms:play-services-basement:18.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/5e598df57d4606ea89d55313b4fe6a33/transformed/play-services-basement-18.4.0/AndroidManifest.xml:6:66-119
+	android:name
+		ADDED from [com.google.android.gms:play-services-basement:18.4.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/5e598df57d4606ea89d55313b4fe6a33/transformed/play-services-basement-18.4.0/AndroidManifest.xml:6:20-65
 uses-permission#android.permission.FOREGROUND_SERVICE
 ADDED from [androidx.work:work-runtime:2.11.2] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/860d59bc054e2f7ed0ec8a7eacaa989a/transformed/work-runtime-2.11.2/AndroidManifest.xml:26:5-77
 	android:name
@@ -560,6 +769,12 @@ uses-permission#com.marinov.openfei.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
 ADDED from [androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/c7709cb086f36a99d8cbe96b28d97d94/transformed/core-1.18.0/AndroidManifest.xml:26:5-97
 	android:name
 		ADDED from [androidx.core:core:1.18.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/c7709cb086f36a99d8cbe96b28d97d94/transformed/core-1.18.0/AndroidManifest.xml:26:22-94
+uses-library#android.ext.adservices
+ADDED from [androidx.privacysandbox.ads:ads-adservices:1.0.0-beta05] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/3f50e74d38785e5b7cda5fb93bf88eb0/transformed/ads-adservices-1.0.0-beta05/AndroidManifest.xml:23:9-25:40
+	android:required
+		ADDED from [androidx.privacysandbox.ads:ads-adservices:1.0.0-beta05] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/3f50e74d38785e5b7cda5fb93bf88eb0/transformed/ads-adservices-1.0.0-beta05/AndroidManifest.xml:25:13-37
+	android:name
+		ADDED from [androidx.privacysandbox.ads:ads-adservices:1.0.0-beta05] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/3f50e74d38785e5b7cda5fb93bf88eb0/transformed/ads-adservices-1.0.0-beta05/AndroidManifest.xml:24:13-50
 meta-data#androidx.lifecycle.ProcessLifecycleInitializer
 ADDED from [androidx.lifecycle:lifecycle-process:2.9.0] /home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/a18ba5da15e2bdf60996b727030ad6ae/transformed/lifecycle-process-2.9.0/AndroidManifest.xml:29:13-31:52
 	android:value

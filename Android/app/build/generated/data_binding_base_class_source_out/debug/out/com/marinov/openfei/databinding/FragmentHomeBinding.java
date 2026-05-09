@@ -26,6 +26,9 @@ public final class FragmentHomeBinding implements ViewBinding {
   private final SwipeRefreshLayout rootView;
 
   @NonNull
+  public final FrameLayout adContainer;
+
+  @NonNull
   public final LinearLayout aulasContainer;
 
   @NonNull
@@ -68,8 +71,8 @@ public final class FragmentHomeBinding implements ViewBinding {
   public final ViewPager2 viewPager;
 
   private FragmentHomeBinding(@NonNull SwipeRefreshLayout rootView,
-      @NonNull LinearLayout aulasContainer, @NonNull LinearLayout aulasSectionContainer,
-      @NonNull MaterialButton btnTentarNovamente,
+      @NonNull FrameLayout adContainer, @NonNull LinearLayout aulasContainer,
+      @NonNull LinearLayout aulasSectionContainer, @NonNull MaterialButton btnTentarNovamente,
       @NonNull CircularProgressIndicator carouselLoadingIndicator, @NonNull View contentContainer,
       @NonNull LinearLayout layoutSemInternet, @NonNull FrameLayout loadingContainer,
       @NonNull LinearLayout recentGradesSectionContainer,
@@ -77,6 +80,7 @@ public final class FragmentHomeBinding implements ViewBinding {
       @NonNull LinearLayout topLoadingBar, @NonNull TextView txtSemAulas,
       @NonNull TextView txtStuckHint, @NonNull ViewPager2 viewPager) {
     this.rootView = rootView;
+    this.adContainer = adContainer;
     this.aulasContainer = aulasContainer;
     this.aulasSectionContainer = aulasSectionContainer;
     this.btnTentarNovamente = btnTentarNovamente;
@@ -120,6 +124,12 @@ public final class FragmentHomeBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.adContainer;
+      FrameLayout adContainer = ViewBindings.findChildViewById(rootView, id);
+      if (adContainer == null) {
+        break missingId;
+      }
+
       id = R.id.aulasContainer;
       LinearLayout aulasContainer = ViewBindings.findChildViewById(rootView, id);
       if (aulasContainer == null) {
@@ -200,7 +210,7 @@ public final class FragmentHomeBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentHomeBinding((SwipeRefreshLayout) rootView, aulasContainer,
+      return new FragmentHomeBinding((SwipeRefreshLayout) rootView, adContainer, aulasContainer,
           aulasSectionContainer, btnTentarNovamente, carouselLoadingIndicator, contentContainer,
           layoutSemInternet, loadingContainer, recentGradesSectionContainer, swipeRefreshLayout,
           tableRecentGrades, topLoadingBar, txtSemAulas, txtStuckHint, viewPager);
