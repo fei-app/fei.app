@@ -4,7 +4,7 @@
             "outputFile": "com.marinov.openfei.app-mergeDebugResources-55:/values-large-v4/values-large-v4.xml",
             "map": [
                 {
-                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/8a2aed163f2654ea8a37bae3f48bcdbe/transformed/appcompat-1.7.0/res/values-large-v4/values-large-v4.xml",
+                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/a5153b57c323247997faf8ec48d918fa/transformed/appcompat-1.7.0/res/values-large-v4/values-large-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10",
                         "startColumns": "4,4,4,4,4,4,4,4,4",
@@ -14,7 +14,7 @@
                     }
                 },
                 {
-                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/ce66387216921258635fc12bc969b024/transformed/material-1.13.0/res/values-large-v4/values-large-v4.xml",
+                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/50f6d76a824b4b2da5016b35fe3d167c/transformed/material-1.13.0/res/values-large-v4/values-large-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",

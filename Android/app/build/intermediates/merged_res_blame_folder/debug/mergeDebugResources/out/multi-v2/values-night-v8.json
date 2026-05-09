@@ -4,23 +4,6 @@
             "outputFile": "com.marinov.openfei.app-mergeDebugResources-55:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
-                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/8a2aed163f2654ea8a37bae3f48bcdbe/transformed/appcompat-1.7.0/res/values-night-v8/values-night-v8.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,125,209,293,389,491,593,687",
-                        "endColumns": "69,83,83,95,101,101,93,88",
-                        "endOffsets": "120,204,288,384,486,588,682,771"
-                    },
-                    "to": {
-                        "startLines": "31,32,33,34,35,36,37,78",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "1482,1552,1636,1720,1816,1918,2020,5921",
-                        "endColumns": "69,83,83,95,101,101,93,88",
-                        "endOffsets": "1547,1631,1715,1811,1913,2015,2109,6005"
-                    }
-                },
-                {
                     "source": "/home/gabrielbaraglio/StudioProjects/fei.app/Android/app/src/main/res/values-night/colors.xml",
                     "from": {
                         "startLines": "8,12,3,6,2,4,5,10,16,9,7,11,15,14,22,23,13,20,21,17",
@@ -38,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/ce66387216921258635fc12bc969b024/transformed/material-1.13.0/res/values-night-v8/values-night-v8.xml",
+                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/50f6d76a824b4b2da5016b35fe3d167c/transformed/material-1.13.0/res/values-night-v8/values-night-v8.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -52,6 +35,23 @@
                         "startOffsets": "3033,3108,3219,3308,3409,3516,3623,3722,3829,3932,4059,4147,4271,4373,4475,4591,4693,4807,4935,5051,5173,5309,5429,5563,5683,5795,6010,7456,7580,7710,7832,7970,8104,8220",
                         "endColumns": "74,110,88,100,106,106,98,106,102,126,87,123,101,101,115,101,113,127,115,121,135,119,133,119,111,125,116,123,129,121,137,133,115,119",
                         "endOffsets": "3103,3214,3303,3404,3511,3618,3717,3824,3927,4054,4142,4266,4368,4470,4586,4688,4802,4930,5046,5168,5304,5424,5558,5678,5790,5916,6122,7575,7705,7827,7965,8099,8215,8335"
+                    }
+                },
+                {
+                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/a5153b57c323247997faf8ec48d918fa/transformed/appcompat-1.7.0/res/values-night-v8/values-night-v8.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,125,209,293,389,491,593,687",
+                        "endColumns": "69,83,83,95,101,101,93,88",
+                        "endOffsets": "120,204,288,384,486,588,682,771"
+                    },
+                    "to": {
+                        "startLines": "31,32,33,34,35,36,37,78",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "1482,1552,1636,1720,1816,1918,2020,5921",
+                        "endColumns": "69,83,83,95,101,101,93,88",
+                        "endOffsets": "1547,1631,1715,1811,1913,2015,2109,6005"
                     }
                 },
                 {
