@@ -29,6 +29,9 @@ public final class FragmentHomeBinding implements ViewBinding {
   public final FrameLayout adContainer;
 
   @NonNull
+  public final LinearLayout adSection;
+
+  @NonNull
   public final LinearLayout aulasContainer;
 
   @NonNull
@@ -71,8 +74,9 @@ public final class FragmentHomeBinding implements ViewBinding {
   public final ViewPager2 viewPager;
 
   private FragmentHomeBinding(@NonNull SwipeRefreshLayout rootView,
-      @NonNull FrameLayout adContainer, @NonNull LinearLayout aulasContainer,
-      @NonNull LinearLayout aulasSectionContainer, @NonNull MaterialButton btnTentarNovamente,
+      @NonNull FrameLayout adContainer, @NonNull LinearLayout adSection,
+      @NonNull LinearLayout aulasContainer, @NonNull LinearLayout aulasSectionContainer,
+      @NonNull MaterialButton btnTentarNovamente,
       @NonNull CircularProgressIndicator carouselLoadingIndicator, @NonNull View contentContainer,
       @NonNull LinearLayout layoutSemInternet, @NonNull FrameLayout loadingContainer,
       @NonNull LinearLayout recentGradesSectionContainer,
@@ -81,6 +85,7 @@ public final class FragmentHomeBinding implements ViewBinding {
       @NonNull TextView txtStuckHint, @NonNull ViewPager2 viewPager) {
     this.rootView = rootView;
     this.adContainer = adContainer;
+    this.adSection = adSection;
     this.aulasContainer = aulasContainer;
     this.aulasSectionContainer = aulasSectionContainer;
     this.btnTentarNovamente = btnTentarNovamente;
@@ -127,6 +132,12 @@ public final class FragmentHomeBinding implements ViewBinding {
       id = R.id.adContainer;
       FrameLayout adContainer = ViewBindings.findChildViewById(rootView, id);
       if (adContainer == null) {
+        break missingId;
+      }
+
+      id = R.id.adSection;
+      LinearLayout adSection = ViewBindings.findChildViewById(rootView, id);
+      if (adSection == null) {
         break missingId;
       }
 
@@ -210,10 +221,11 @@ public final class FragmentHomeBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentHomeBinding((SwipeRefreshLayout) rootView, adContainer, aulasContainer,
-          aulasSectionContainer, btnTentarNovamente, carouselLoadingIndicator, contentContainer,
-          layoutSemInternet, loadingContainer, recentGradesSectionContainer, swipeRefreshLayout,
-          tableRecentGrades, topLoadingBar, txtSemAulas, txtStuckHint, viewPager);
+      return new FragmentHomeBinding((SwipeRefreshLayout) rootView, adContainer, adSection,
+          aulasContainer, aulasSectionContainer, btnTentarNovamente, carouselLoadingIndicator,
+          contentContainer, layoutSemInternet, loadingContainer, recentGradesSectionContainer,
+          swipeRefreshLayout, tableRecentGrades, topLoadingBar, txtSemAulas, txtStuckHint,
+          viewPager);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

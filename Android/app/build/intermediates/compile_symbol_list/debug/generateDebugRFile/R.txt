@@ -88,6 +88,7 @@ int drawable shortcut_notas 0x0
 int id action_profile 0x0
 int id action_settings 0x0
 int id adContainer 0x0
+int id adSection 0x0
 int id ad_body 0x0
 int id ad_call_to_action 0x0
 int id ad_headline 0x0

@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.marinov.openfei.app-mergeDebugResources-62:/values-h480dp-land-v13/values-h480dp-land-v13.xml",
+            "outputFile": "com.marinov.openfei.app-mergeDebugResources-63:/values-h480dp-land-v13/values-h480dp-land-v13.xml",
             "map": [
                 {
-                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/50f6d76a824b4b2da5016b35fe3d167c/transformed/material-1.13.0/res/values-h480dp-land-v13/values-h480dp-land-v13.xml",
+                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/0f577d24e8a956b0e4f9dc40feb38024/transformed/material-1.13.0/res/values-h480dp-land-v13/values-h480dp-land-v13.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10",
                         "startColumns": "4,4,4,4,4,4,4,4,4",

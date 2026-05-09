@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.marinov.openfei.app-mergeDebugResources-62:/values-xlarge-v4/values-xlarge-v4.xml",
+            "outputFile": "com.marinov.openfei.app-mergeDebugResources-63:/values-xlarge-v4/values-xlarge-v4.xml",
             "map": [
                 {
-                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/a5153b57c323247997faf8ec48d918fa/transformed/appcompat-1.7.0/res/values-xlarge-v4/values-xlarge-v4.xml",
+                    "source": "/home/gabrielbaraglio/.gradle/caches/9.4.1/transforms/70409327170705120deb7a51ce0ec3c3/transformed/appcompat-1.7.0/res/values-xlarge-v4/values-xlarge-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7",
                         "startColumns": "4,4,4,4,4,4",

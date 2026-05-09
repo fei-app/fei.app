@@ -167,14 +167,36 @@
                         </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
 
-                    <!-- Container do Anúncio Nativo (entre Notas e Aulas do dia) -->
-                    <FrameLayout
-                        android:id="@+id/adContainer"
+                    <!--
+                        Seção do Anúncio Nativo.
+                        O título "Anúncio" fica aqui, fora do NativeAdView, alinhado com
+                        os demais títulos de seção (Notas, Aulas do dia).
+                        adSection controla a visibilidade de toda a seção via código.
+                        adContainer é o slot onde o NativeAdView é inserido dinamicamente.
+                    -->
+                    <LinearLayout
+                        android:id="@+id/adSection"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginHorizontal="8dp"
-                        android:visibility="gone" />
+                        android:orientation="vertical"
+                        android:layout_marginTop="24dp"
+                        android:padding="8dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Anúncio"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="22sp"
+                            android:layout_marginBottom="12dp"/>
+
+                        <FrameLayout
+                            android:id="@+id/adContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
 
                     <!-- Seção de Aulas do Dia -->
                     <LinearLayout

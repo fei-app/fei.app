@@ -89,6 +89,7 @@ drawable shortcut_notas
 id action_profile
 id action_settings
 id adContainer
+id adSection
 id ad_body
 id ad_call_to_action
 id ad_headline

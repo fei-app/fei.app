@@ -78,6 +78,10 @@ class HomeFragment : Fragment() {
     private var txtSemAulas: TextView? = null
 
     // ── AdMob ──────────────────────────────────────────────────
+    // adSection: wrapper LinearLayout que contém o título "Anúncio" + adContainer.
+    //            É ele quem some/aparece como seção inteira.
+    // adContainer: FrameLayout slot onde o NativeAdView é inserido via código.
+    private var adSection: LinearLayout? = null
     private var adContainer: FrameLayout? = null
     private var currentNativeAd: NativeAd? = null
     // ────────────────────────────────────────────────────────────
@@ -148,6 +152,7 @@ class HomeFragment : Fragment() {
         txtSemAulas = view.findViewById(R.id.txtSemAulas)
 
         // ── AdMob ──────────────────────────────────────────────
+        adSection = view.findViewById(R.id.adSection)
         adContainer = view.findViewById(R.id.adContainer)
         // ────────────────────────────────────────────────────────
     }
@@ -533,12 +538,14 @@ class HomeFragment : Fragment() {
 
                 adContainer?.removeAllViews()
                 adContainer?.addView(adView)
-                adContainer?.visibility = View.VISIBLE
+                // Revela a seção inteira (título "Anúncio" + card do anúncio)
+                adSection?.visibility = View.VISIBLE
             }
             .withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(error: LoadAdError) {
                     Log.w("HomeFragment", "Anúncio nativo falhou ao carregar: ${error.message}")
-                    adContainer?.visibility = View.GONE
+                    // Esconde a seção inteira para não deixar o título órfão
+                    adSection?.visibility = View.GONE
                 }
             })
             .withNativeAdOptions(NativeAdOptions.Builder().build())
