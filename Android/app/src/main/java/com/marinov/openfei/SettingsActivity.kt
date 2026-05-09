@@ -291,7 +291,7 @@ class SettingsActivity : AppCompatActivity() {
                 if (!apkFile.exists()) { showError("Arquivo APK não encontrado"); return@runOnUiThread }
                 val apkUri = FileProvider.getUriForFile(
                     this@SettingsActivity,
-                    "${BuildConfig.APPLICATION_ID}.provider",
+                    "${BuildConfig.APPLICATION_ID}.fileprovider",
                     apkFile
                 )
                 val installIntent = Intent(Intent.ACTION_VIEW).apply {
