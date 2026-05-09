@@ -160,13 +160,6 @@
 
                 </LinearLayout>
 
-                <!--
-                    Seção do Anúncio Nativo.
-                    O título "Anúncio" fica aqui, fora do NativeAdView, alinhado com
-                    os demais títulos de seção (Notas, Aulas do dia).
-                    adSection controla a visibilidade de toda a seção via código.
-                    adContainer é o slot onde o NativeAdView é inserido dinamicamente.
-                -->
                 <LinearLayout
                     android:id="@+id/adSection"
                     android:layout_width="match_parent"

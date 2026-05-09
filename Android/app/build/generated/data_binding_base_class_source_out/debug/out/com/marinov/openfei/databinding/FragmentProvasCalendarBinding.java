@@ -15,6 +15,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.gms.ads.AdView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.marinov.openfei.R;
@@ -25,6 +26,9 @@ import java.lang.String;
 public final class FragmentProvasCalendarBinding implements ViewBinding {
   @NonNull
   private final CoordinatorLayout rootView;
+
+  @NonNull
+  public final AdView adView;
 
   @NonNull
   public final LinearLayout barOffline;
@@ -66,12 +70,13 @@ public final class FragmentProvasCalendarBinding implements ViewBinding {
   @NonNull
   public final TextView txtSemProvas;
 
-  private FragmentProvasCalendarBinding(@NonNull CoordinatorLayout rootView,
+  private FragmentProvasCalendarBinding(@NonNull CoordinatorLayout rootView, @NonNull AdView adView,
       @NonNull LinearLayout barOffline, @NonNull ImageButton btnFiltro,
       @NonNull MaterialButton btnLogin, @Nullable FrameLayout detailContainer,
       @NonNull CircularProgressIndicator progressCircular, @NonNull RecyclerView recyclerProvas,
       @NonNull Spinner spinnerMes, @NonNull TextView txtSemDados, @NonNull TextView txtSemProvas) {
     this.rootView = rootView;
+    this.adView = adView;
     this.barOffline = barOffline;
     this.btnFiltro = btnFiltro;
     this.btnLogin = btnLogin;
@@ -110,6 +115,12 @@ public final class FragmentProvasCalendarBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.adView;
+      AdView adView = ViewBindings.findChildViewById(rootView, id);
+      if (adView == null) {
+        break missingId;
+      }
+
       id = R.id.barOffline;
       LinearLayout barOffline = ViewBindings.findChildViewById(rootView, id);
       if (barOffline == null) {
@@ -161,9 +172,9 @@ public final class FragmentProvasCalendarBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentProvasCalendarBinding((CoordinatorLayout) rootView, barOffline, btnFiltro,
-          btnLogin, detailContainer, progressCircular, recyclerProvas, spinnerMes, txtSemDados,
-          txtSemProvas);
+      return new FragmentProvasCalendarBinding((CoordinatorLayout) rootView, adView, barOffline,
+          btnFiltro, btnLogin, detailContainer, progressCircular, recyclerProvas, spinnerMes,
+          txtSemDados, txtSemProvas);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

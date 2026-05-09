@@ -15,6 +15,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -32,6 +34,7 @@ class HorariosAula : Fragment(){
     private lateinit var progressBar: CircularProgressIndicator
     private lateinit var tvMessage: TextView
     private lateinit var btnLogin: MaterialButton
+    private var adView: AdView? = null
 
     private var chipGroupDias: ChipGroup? = null
     private var scrollChips: HorizontalScrollView? = null
@@ -64,6 +67,11 @@ class HorariosAula : Fragment(){
         scrollChips   = root.findViewById(R.id.scrollChips)
         layoutDias    = root.findViewById(R.id.layoutDias)
 
+        // Inicializa AdMob
+        adView = root.findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        adView?.loadAd(adRequest)
+
         btnLogin.setOnClickListener { carregarHorarios() }
         carregarHorarios()
         requireActivity().onBackPressedDispatcher.addCallback(
@@ -78,9 +86,21 @@ class HorariosAula : Fragment(){
         return root
     }
 
+    override fun onResume() {
+        super.onResume()
+        adView?.resume()
+    }
+
+    override fun onPause() {
+        adView?.pause()
+        super.onPause()
+    }
+
     override fun onDestroyView() {
-        super.onDestroyView()
+        adView?.destroy()
+        adView = null
         viewPagerAulas.unregisterOnPageChangeCallback(pageChangeCallback)
+        super.onDestroyView()
     }
 
     private fun getDiaAtual(): String = when (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {

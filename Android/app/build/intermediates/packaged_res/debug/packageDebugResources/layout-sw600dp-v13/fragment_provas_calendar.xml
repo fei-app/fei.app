@@ -163,22 +163,46 @@
             android:layout_height="match_parent"
             android:background="@color/fundocartao" />
 
-        <!-- Painel direito: Conteúdo da prova selecionada -->
-        <FrameLayout
-            android:id="@+id/detail_container"
+        <!-- Painel direito: Conteúdo da prova selecionada COM BANNER ADMOB NO TOPO -->
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2">
 
-            <!-- Placeholder inicial -->
-            <TextView
+            <!-- Banner AdMob Fixo no topo direito -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Selecione uma prova."
-                android:textColor="?attr/colorOnSurface"/>
-        </FrameLayout>
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
+
+                <com.google.android.gms.ads.AdView
+                    xmlns:ads="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/adView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    ads:adSize="BANNER"
+                    ads:adUnitId="ca-app-pub-8734981142486691/3960746138" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/detail_container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <!-- Placeholder inicial -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="Selecione uma prova."
+                    android:textColor="?attr/colorOnSurface"/>
+            </FrameLayout>
+
+        </LinearLayout>
     </LinearLayout>
 
-    <!-- Snackbar ou outros comportamentos podem ser ancorados aqui -->
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

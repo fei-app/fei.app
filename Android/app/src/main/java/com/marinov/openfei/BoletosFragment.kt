@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,6 +30,7 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
     private lateinit var txtSemDados: TextView
     private lateinit var btnTentar: Button
 
+    private var adView: AdView? = null
     private var isRefreshing = false
     private val adapter = BoletoAdapter(emptyList()) { boleto -> onBaixarBoleto(boleto) }
 
@@ -46,6 +49,11 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
         txtSemDados = view.findViewById(R.id.txt_sem_dados)
         btnTentar = view.findViewById(R.id.btnLogin)
 
+        // Inicializa AdMob
+        adView = view.findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        adView?.loadAd(adRequest)
+
         recyclerBoletos.layoutManager = LinearLayoutManager(requireContext())
         recyclerBoletos.adapter = adapter
 
@@ -61,6 +69,22 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
         )
 
         loadBoletos()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        adView?.resume()
+    }
+
+    override fun onPause() {
+        adView?.pause()
+        super.onPause()
+    }
+
+    override fun onDestroyView() {
+        adView?.destroy()
+        adView = null
+        super.onDestroyView()
     }
 
     override fun onRefresh() {

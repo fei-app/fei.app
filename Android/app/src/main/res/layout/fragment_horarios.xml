@@ -50,6 +50,23 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
         </LinearLayout>
 
+        <!-- Banner AdMob (Abaixo da barra offline e acima dos chips) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="4dp">
+
+            <com.google.android.gms.ads.AdView
+                xmlns:ads="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/adView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                ads:adSize="BANNER"
+                ads:adUnitId="ca-app-pub-8734981142486691/3960746138" />
+        </LinearLayout>
+
         <!-- Seletor de dias (Chips) -->
         <HorizontalScrollView
             android:id="@+id/scrollChips"
@@ -58,7 +75,7 @@
             android:scrollbars="none"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            android:paddingTop="10dp"
+            android:paddingTop="4dp"
             android:paddingBottom="6dp">
 
             <com.google.android.material.chip.ChipGroup

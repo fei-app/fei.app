@@ -13,6 +13,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import androidx.viewpager2.widget.ViewPager2;
+import com.google.android.gms.ads.AdView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -24,6 +25,9 @@ import java.lang.String;
 public final class FragmentHorariosBinding implements ViewBinding {
   @NonNull
   private final CoordinatorLayout rootView;
+
+  @NonNull
+  public final AdView adView;
 
   @NonNull
   public final LinearLayout barOffline;
@@ -88,12 +92,13 @@ public final class FragmentHorariosBinding implements ViewBinding {
   @NonNull
   public final ViewPager2 viewPagerAulas;
 
-  private FragmentHorariosBinding(@NonNull CoordinatorLayout rootView,
+  private FragmentHorariosBinding(@NonNull CoordinatorLayout rootView, @NonNull AdView adView,
       @NonNull LinearLayout barOffline, @NonNull MaterialButton btnLogin,
       @Nullable ChipGroup chipGroupDias, @Nullable LinearLayout layoutDias,
       @NonNull CircularProgressIndicator progressBar, @Nullable HorizontalScrollView scrollChips,
       @NonNull TextView tvMessage, @NonNull ViewPager2 viewPagerAulas) {
     this.rootView = rootView;
+    this.adView = adView;
     this.barOffline = barOffline;
     this.btnLogin = btnLogin;
     this.chipGroupDias = chipGroupDias;
@@ -131,6 +136,12 @@ public final class FragmentHorariosBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.adView;
+      AdView adView = ViewBindings.findChildViewById(rootView, id);
+      if (adView == null) {
+        break missingId;
+      }
+
       id = R.id.barOffline;
       LinearLayout barOffline = ViewBindings.findChildViewById(rootView, id);
       if (barOffline == null) {
@@ -170,7 +181,7 @@ public final class FragmentHorariosBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentHorariosBinding((CoordinatorLayout) rootView, barOffline, btnLogin,
+      return new FragmentHorariosBinding((CoordinatorLayout) rootView, adView, barOffline, btnLogin,
           chipGroupDias, layoutDias, progressBar, scrollChips, tvMessage, viewPagerAulas);
     }
     String missingId = rootView.getResources().getResourceName(id);

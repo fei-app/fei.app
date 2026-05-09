@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.gms.ads.AdView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.marinov.openfei.R;
@@ -24,6 +25,9 @@ import java.lang.String;
 public final class FragmentNotasBinding implements ViewBinding {
   @NonNull
   private final CoordinatorLayout rootView;
+
+  @NonNull
+  public final AdView adView;
 
   @NonNull
   public final LinearLayout barOffline;
@@ -65,13 +69,14 @@ public final class FragmentNotasBinding implements ViewBinding {
   @NonNull
   public final TableLayout tableNotas;
 
-  private FragmentNotasBinding(@NonNull CoordinatorLayout rootView,
+  private FragmentNotasBinding(@NonNull CoordinatorLayout rootView, @NonNull AdView adView,
       @NonNull LinearLayout barOffline, @NonNull MaterialButton btnLogin,
       @NonNull LinearLayout contentContainer, @Nullable HorizontalScrollView horizontalScrollView,
       @NonNull MaterialCardView legendCard, @NonNull LinearLayout legendContainer,
       @NonNull TextView legendTitle, @NonNull FrameLayout loadingContainer,
       @NonNull TableLayout tableNotas) {
     this.rootView = rootView;
+    this.adView = adView;
     this.barOffline = barOffline;
     this.btnLogin = btnLogin;
     this.contentContainer = contentContainer;
@@ -110,6 +115,12 @@ public final class FragmentNotasBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.adView;
+      AdView adView = ViewBindings.findChildViewById(rootView, id);
+      if (adView == null) {
+        break missingId;
+      }
+
       id = R.id.barOffline;
       LinearLayout barOffline = ViewBindings.findChildViewById(rootView, id);
       if (barOffline == null) {
@@ -161,7 +172,7 @@ public final class FragmentNotasBinding implements ViewBinding {
         break missingId;
       }
 
-      return new FragmentNotasBinding((CoordinatorLayout) rootView, barOffline, btnLogin,
+      return new FragmentNotasBinding((CoordinatorLayout) rootView, adView, barOffline, btnLogin,
           contentContainer, horizontalScrollView, legendCard, legendContainer, legendTitle,
           loadingContainer, tableNotas);
     }

@@ -3913,6 +3913,7 @@ int id actions 0x7f090047
 int id activity_chooser_view_content 0x7f090048
 int id adContainer 0x7f090049
 int id adSection 0x7f0902ac
+int id adView 0x7f0902ad
 int id ad_body 0x7f09004a
 int id ad_call_to_action 0x7f09004b
 int id ad_headline 0x7f09004c

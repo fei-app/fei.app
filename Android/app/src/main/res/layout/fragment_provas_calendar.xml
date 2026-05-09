@@ -50,13 +50,29 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
         </LinearLayout>
 
+        <!-- Banner AdMob (Abaixo da barra offline e acima do seletor) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="4dp">
+
+            <com.google.android.gms.ads.AdView
+                xmlns:ads="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/adView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                ads:adSize="BANNER"
+                ads:adUnitId="ca-app-pub-8734981142486691/3960746138" />
+        </LinearLayout>
+
         <!-- Contêiner para Spinner e Botão de Filtro -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:gravity="center_vertical">
@@ -68,8 +84,7 @@
                 android:layout_weight="1"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/fundocartao"
-                >
+                app:cardBackgroundColor="@color/fundocartao">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -151,5 +166,5 @@
         android:layout_height="48dp"
         android:layout_gravity="center"
         android:visibility="gone"
-        app:indicatorColor="@color/colorPrimary"/>
+        app:indicatorColor="?attr/colorPrimary"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

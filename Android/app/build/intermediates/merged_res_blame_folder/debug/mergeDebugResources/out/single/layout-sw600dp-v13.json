@@ -1,11 +1,11 @@
 [
     {
-        "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-64:/layout-sw600dp-v13/fragment_materia_prova.xml",
-        "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-67:/layout-sw600dp/fragment_materia_prova.xml"
-    },
-    {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-64:/layout-sw600dp-v13/activity_settings.xml",
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-67:/layout-sw600dp/activity_settings.xml"
+    },
+    {
+        "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-64:/layout-sw600dp-v13/fragment_materia_prova.xml",
+        "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-67:/layout-sw600dp/fragment_materia_prova.xml"
     },
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-64:/layout-sw600dp-v13/fragment_home.xml",
@@ -16,12 +16,12 @@
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-67:/layout-sw600dp/fragment_provas_calendar.xml"
     },
     {
-        "merged": "com.marinov.openfei.app-mergeDebugResources-64:/layout-sw600dp-v13/fragment_home.xml",
-        "source": "com.marinov.openfei.app-main-67:/layout-sw600dp/fragment_home.xml"
-    },
-    {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-64:/layout-sw600dp-v13/fragment_profile.xml",
         "source": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-main-67:/layout-sw600dp/fragment_profile.xml"
+    },
+    {
+        "merged": "com.marinov.openfei.app-mergeDebugResources-64:/layout-sw600dp-v13/fragment_more.xml",
+        "source": "com.marinov.openfei.app-main-67:/layout-sw600dp/fragment_more.xml"
     },
     {
         "merged": "/home/gabrielbaraglio/.gradle/daemon/9.4.1/com.marinov.openfei.app-mergeDebugResources-64:/layout-sw600dp-v13/fragment_horarios.xml",

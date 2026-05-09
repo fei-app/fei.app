@@ -17,6 +17,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -32,6 +34,7 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
     private lateinit var legendCard: MaterialCardView
     private lateinit var legendContainer: LinearLayout
     private lateinit var legendTitle: TextView
+    private var adView: AdView? = null
     private var isRefreshing = false
     private var isFirstLoad = true
 
@@ -54,6 +57,12 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
         legendContainer = view.findViewById(R.id.legendContainer)
         legendTitle = view.findViewById(R.id.legendTitle)
         val btnLogin: Button = view.findViewById(R.id.btnLogin)
+
+        // Inicializa AdMob
+        adView = view.findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        adView?.loadAd(adRequest)
+
         btnLogin.setOnClickListener { loadNotas() }
 
         requireActivity().onBackPressedDispatcher.addCallback(
@@ -67,6 +76,22 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
 
         isFirstLoad = savedInstanceState == null
         loadNotas()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        adView?.resume()
+    }
+
+    override fun onPause() {
+        adView?.pause()
+        super.onPause()
+    }
+
+    override fun onDestroyView() {
+        adView?.destroy()
+        adView = null
+        super.onDestroyView()
     }
 
     override fun onRefresh() {

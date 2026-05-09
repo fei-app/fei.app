@@ -16,6 +16,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +43,7 @@ class CalendarioProvas : Fragment() {
     private lateinit var spinnerMes: Spinner
     private lateinit var btnFiltro: ImageButton
     private lateinit var adapter: ProvasCalendarioAdapter
+    private var adView: AdView? = null
 
     private var todasProvas: List<Dados.ProvaCalendario> = emptyList()
     private var mesSelecionado: Int = 1
@@ -69,6 +72,11 @@ class CalendarioProvas : Fragment() {
         btnLogin = view.findViewById(R.id.btnLogin)
         btnFiltro = view.findViewById(R.id.btnFiltro)
 
+        // Inicializa AdMob
+        adView = view.findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        adView?.loadAd(adRequest)
+
         configurarSpinnerMeses()
         setupRecyclerView()
 
@@ -88,6 +96,22 @@ class CalendarioProvas : Fragment() {
         }
 
         carregarDados()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        adView?.resume()
+    }
+
+    override fun onPause() {
+        adView?.pause()
+        super.onPause()
+    }
+
+    override fun onDestroyView() {
+        adView?.destroy()
+        adView = null
+        super.onDestroyView()
     }
 
     private fun configurarSpinnerMeses() {

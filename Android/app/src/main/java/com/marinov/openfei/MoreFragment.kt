@@ -102,7 +102,7 @@ class MoreFragment : Fragment(), MainActivity.RefreshableFragment {
             openLink("https://interage.fei.org.br/secureserver/portal/graduacao/home")
         }
         view.findViewById<View>(R.id.navigation_provas).setOnClickListener {
-        (activity as MainActivity).openCustomFragment(MaterialArquivadoFragment())
+            (activity as MainActivity).openCustomFragment(MaterialArquivadoFragment())
         }
         btnReloadProfile.setOnClickListener {
             (activity as? MainActivity)?.openCustomFragment(ProfileFragment())
