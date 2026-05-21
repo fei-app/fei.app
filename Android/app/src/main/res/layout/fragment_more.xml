@@ -407,32 +407,6 @@
                         android:text="Site completo"
                         android:textAppearance="?android:attr/textAppearanceListItem" />
                 </LinearLayout>
-                <!-- Materiais arquivados -->
-                <LinearLayout
-                    android:id="@+id/navigation_provas"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingVertical="16dp"
-                    android:paddingHorizontal="12dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?android:attr/selectableItemBackground">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_texto"
-                        android:contentDescription="Provas e materiais dos anos anteriores"
-                        android:layout_marginEnd="16dp"
-                        app:tint="?attr/colorOnSurface" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Materiais arquivados"
-                        android:textAppearance="?android:attr/textAppearanceListItem" />
-                </LinearLayout>
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
