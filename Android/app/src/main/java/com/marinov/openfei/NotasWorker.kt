@@ -9,6 +9,8 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,16 +21,15 @@ class NotasWorker(appContext: Context, workerParams: WorkerParameters) :
     companion object {
         private const val TAG = "NotasWorker"
         const val EXTRA_DESTINATION = "destination"
+        private const val NOTIFICATION_ID = 4001 // Correção: ID fixo e único
     }
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         Log.d(TAG, "Worker iniciado. Verificando novas notas...")
 
-        // Inicializa o objeto Dados com o contexto da aplicação
         Dados.init(applicationContext)
 
         return@withContext try {
-            // Chama o método que retorna apenas as notas que foram alteradas (novas ou modificadas)
             val notasAlteradas = Dados.atualizarNotas(online = true)
 
             if (notasAlteradas.isNotEmpty()) {
@@ -40,24 +41,25 @@ class NotasWorker(appContext: Context, workerParams: WorkerParameters) :
 
             Result.success()
         } catch (_: SessionExpiredException) {
-            Log.w(TAG, "Sessão expirada ao verificar notas. Nenhuma notificação será enviada.")
-            Result.success()
+            Log.w(TAG, "Sessão expirada ao verificar notas. Enfileirando LoginWorker...")
+            // Correção: Se a sessão expirar, agenda o renovamento de login e retenta
+            WorkManager.getInstance(applicationContext).enqueue(
+                OneTimeWorkRequestBuilder<LoginWorker>().build()
+            )
+            Result.retry()
         } catch (e: Exception) {
             Log.e(TAG, "Erro ao verificar notas", e)
-            // Em caso de erro de rede ou outro, tenta novamente mais tarde
             Result.retry()
         }
     }
 
     private fun sendNotification(notasAlteradas: List<Dados.Nota>) {
-        // Constrói o texto detalhado com as informações de cada nota alterada
         val notificationText = buildString {
             notasAlteradas.forEach { nota ->
                 append("${nota.nomeDisciplina} (${nota.codigoDisciplina}) - ${nota.tipoProva}: ${nota.valor}\n")
             }
         }.trim()
 
-        // Intent para abrir a MainActivity e direcionar para o fragmento de notas
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             putExtra(EXTRA_DESTINATION, "notas")
@@ -89,6 +91,6 @@ class NotasWorker(appContext: Context, workerParams: WorkerParameters) :
             )
         }
 
-        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
+        notificationManager.notify(NOTIFICATION_ID, notification)
     }
 }

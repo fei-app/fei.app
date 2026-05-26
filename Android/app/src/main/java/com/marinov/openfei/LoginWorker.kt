@@ -9,7 +9,8 @@ import androidx.work.WorkerParameters
 class LoginWorker(appContext: Context, workerParams: WorkerParameters) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        val prefs = applicationContext.getSharedPreferences(LoginActivity.PREFS_LOGIN, Context.MODE_PRIVATE)
+        // Correção: Agora lê os dados do EncryptedSharedPreferences
+        val prefs = LoginActivity.getEncryptedPrefs(applicationContext)
         val user = prefs.getString(LoginActivity.KEY_USER, "")
         val pass = prefs.getString(LoginActivity.KEY_PASS, "")
 
@@ -26,8 +27,14 @@ class LoginWorker(appContext: Context, workerParams: WorkerParameters) : Corouti
                 Result.success()
             } else {
                 Log.e("LoginWorker", "Falha ao renovar login em background: ${result.errorMessage}")
-                // Se falhou, já foi setado false dentro de performLogin
-                Result.retry()
+                // Correção: Diferenciar falha de credenciais (falha definitiva) de erro de rede (retry)
+                if (result.errorMessage.contains("incorretos", ignoreCase = true) ||
+                    result.errorMessage.contains("senha", ignoreCase = true)
+                ) {
+                    Result.failure()
+                } else {
+                    Result.retry()
+                }
             }
         } catch (e: Exception) {
             Log.e("LoginWorker", "Exceção inesperada no LoginWorker", e)

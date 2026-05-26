@@ -15,6 +15,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.net.toUri
+import com.judemanutd.autostarter.AutoStartPermissionHelper
 
 object PermissionHelper {
 
@@ -31,6 +32,16 @@ object PermissionHelper {
 
         solicitarPermissoesNecessarias(activity)
         solicitarIsencaoOtimizacaoBateria(activity)
+
+        // Correção: Solicitar whitelist em OEMs específicos (Xiaomi, Samsung, etc)
+        // para garantir o funcionamento em background
+        try {
+            if (AutoStartPermissionHelper.getInstance().isAutoStartPermissionAvailable(activity)) {
+                AutoStartPermissionHelper.getInstance().getAutoStartPermission(activity)
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Falha ao solicitar permissão de AutoStart (OEM)", e)
+        }
 
         prefs.edit { putBoolean(PREF_KEY_PERMISSIONS_REQUESTED, true) }
     }

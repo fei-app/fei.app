@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import kotlinx.coroutines.CompletableDeferred
 
 class UpdateCheckWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
@@ -21,21 +22,28 @@ class UpdateCheckWorker(context: Context, params: WorkerParameters) : CoroutineW
     }
 
     override suspend fun doWork(): Result {
+        val deferred = CompletableDeferred<Result>()
+
         UpdateChecker.checkForUpdate(applicationContext, false, object : UpdateChecker.UpdateListener {
             @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
             override fun onUpdateAvailable(url: String, version: String, releaseNotes: String) {
                 showNotification(version)
+                deferred.complete(Result.success())
             }
 
             override fun onUpToDate() {
-                // Não é necessário ação
+                // Não é necessário ação, mas o worker concluiu com sucesso
+                deferred.complete(Result.success())
             }
 
             override fun onError(message: String) {
-                // Tratar erro conforme necessário
+                // Tratar erro conforme necessário e indicar falha temporária
+                deferred.complete(Result.retry())
             }
         })
-        return Result.success()
+
+        // Aguarda a resposta (mesmo que assíncrona) antes de matar a thread do worker
+        return deferred.await()
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)

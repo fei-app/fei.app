@@ -27,9 +27,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -38,9 +35,7 @@ import com.google.android.material.navigationrail.NavigationRailView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.TimeUnit
 import androidx.core.view.isVisible
-import com.marinov.openfei.R
 
 class MainActivity : AppCompatActivity() {
 
@@ -143,12 +138,8 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Iniciar workers (independente de permissões)
-        iniciarUpdateWorker()
-        iniciarNotasWorker()
-        iniciarCalendarioWorker()
-        iniciarLoginWorker()
-        iniciarBoletosWorker()
+        // Chama o objeto Helper que criamos para gerenciar os agendamentos!
+        WorkerManagerHelper.iniciarWorkers(this)
 
         if (savedInstanceState == null) {
             navigateToHome()
@@ -158,7 +149,7 @@ class MainActivity : AppCompatActivity() {
     // ===================== ESTADO DE LOGIN =====================
 
     private fun isUserLoggedIn(): Boolean {
-        val prefs = getSharedPreferences(LoginActivity.PREFS_LOGIN, MODE_PRIVATE)
+        val prefs = LoginActivity.getEncryptedPrefs(this)
         return prefs.getBoolean(LoginActivity.KEY_IS_LOGGED_IN, false)
     }
 
@@ -194,7 +185,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun launchLogin() {
-        getSharedPreferences(LoginActivity.PREFS_LOGIN, MODE_PRIVATE).edit {
+        LoginActivity.getEncryptedPrefs(this).edit {
             putBoolean(LoginActivity.KEY_IS_LOGGED_IN, false)
         }
         startActivity(
@@ -393,53 +384,6 @@ class MainActivity : AppCompatActivity() {
 
     fun navigateToHome() {
         openFragment(R.id.navigation_home)
-    }
-
-    // ===================== WORKERS =====================
-
-    private fun iniciarUpdateWorker() {
-        val updateWork = PeriodicWorkRequest.Builder(
-            UpdateCheckWorker::class.java, 120, TimeUnit.MINUTES
-        ).build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "UpdateCheckWorker", ExistingPeriodicWorkPolicy.KEEP, updateWork
-        )
-    }
-
-    private fun iniciarNotasWorker() {
-        val notasWork = PeriodicWorkRequest.Builder(
-            NotasWorker::class.java, 20, TimeUnit.MINUTES
-        ).build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "NotasWorkerTask", ExistingPeriodicWorkPolicy.KEEP, notasWork
-        )
-    }
-
-    private fun iniciarCalendarioWorker() {
-        val calendarioWork = PeriodicWorkRequest.Builder(
-            HorarioUpdateWorker::class.java, 20, TimeUnit.MINUTES
-        ).build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "CalendarioWorkerTask", ExistingPeriodicWorkPolicy.KEEP, calendarioWork
-        )
-    }
-
-    private fun iniciarLoginWorker() {
-        val loginWork = PeriodicWorkRequest.Builder(
-            LoginWorker::class.java, 15, TimeUnit.MINUTES
-        ).build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "LoginWorkerTask", ExistingPeriodicWorkPolicy.KEEP, loginWork
-        )
-    }
-
-    private fun iniciarBoletosWorker() {
-        val boletosWork = PeriodicWorkRequest.Builder(
-            BoletosWorker::class.java, 20, TimeUnit.MINUTES
-        ).build()
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "BoletosWorkerTask", ExistingPeriodicWorkPolicy.KEEP, boletosWork
-        )
     }
 
     override fun onRequestPermissionsResult(

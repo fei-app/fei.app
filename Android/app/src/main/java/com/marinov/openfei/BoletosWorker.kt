@@ -9,6 +9,8 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,6 +22,7 @@ class BoletosWorker(appContext: Context, workerParams: WorkerParameters) :
         private const val TAG = "BoletosWorker"
         const val EXTRA_DESTINATION = "destination"
         private const val REQUEST_CODE_BOLETOS = 300
+        private const val NOTIFICATION_ID = 3001 // Correção: ID fixo e único
     }
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
@@ -39,8 +42,12 @@ class BoletosWorker(appContext: Context, workerParams: WorkerParameters) :
 
             Result.success()
         } catch (_: SessionExpiredException) {
-            Log.w(TAG, "Sessão expirada ao verificar boletos. Nenhuma notificação será enviada.")
-            Result.success()
+            Log.w(TAG, "Sessão expirada ao verificar boletos. Enfileirando LoginWorker...")
+            // Correção: Se a sessão expirar, agenda o renovamento de login e retenta
+            WorkManager.getInstance(applicationContext).enqueue(
+                OneTimeWorkRequestBuilder<LoginWorker>().build()
+            )
+            Result.retry()
         } catch (e: Exception) {
             Log.e(TAG, "Erro ao verificar boletos", e)
             Result.retry()
@@ -87,6 +94,6 @@ class BoletosWorker(appContext: Context, workerParams: WorkerParameters) :
             )
         }
 
-        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
+        notificationManager.notify(NOTIFICATION_ID, notification)
     }
 }

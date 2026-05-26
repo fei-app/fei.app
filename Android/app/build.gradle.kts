@@ -10,7 +10,7 @@ android {
         minSdk = 30
         targetSdk = 37
         versionCode = 1
-        versionName = "2.2.1"
+        versionName = "2.2.2"
         buildConfigField("String", "GITLAB_PAT", "\"${project.findProperty("GITLAB_PAT") ?: ""}\"")
     }
 
@@ -48,4 +48,6 @@ dependencies {
     annotationProcessor (libs.compiler)
     implementation (libs.swiperefreshlayout)
     implementation(libs.play.services.ads)
+    implementation(libs.security.crypto)
+    implementation(libs.autostarter)
 }

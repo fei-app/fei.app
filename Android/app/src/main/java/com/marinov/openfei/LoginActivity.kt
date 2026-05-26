@@ -1,12 +1,16 @@
 package com.marinov.openfei
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
@@ -29,6 +33,21 @@ class LoginActivity : AppCompatActivity() {
         const val KEY_USER = "saved_user"
         const val KEY_PASS = "saved_pass"
         const val KEY_IS_LOGGED_IN = "is_logged_in"
+
+        // Correção: Método auxiliar para obter as SharedPreferences criptografadas
+        fun getEncryptedPrefs(context: Context): SharedPreferences {
+            val masterKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            return EncryptedSharedPreferences.create(
+                context,
+                PREFS_LOGIN,
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +69,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loadSavedCredentials() {
-        val prefs = getSharedPreferences(PREFS_LOGIN, MODE_PRIVATE)
+        val prefs = getEncryptedPrefs(this)
         val savedUser = prefs.getString(KEY_USER, "")
         val savedPass = prefs.getString(KEY_PASS, "")
 
@@ -94,7 +113,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun saveCredentialsAndLoginState(user: String, pass: String) {
-        val prefs = getSharedPreferences(PREFS_LOGIN, MODE_PRIVATE)
+        val prefs = getEncryptedPrefs(this)
         prefs.edit {
             putBoolean(KEY_IS_LOGGED_IN, true)
             putString(KEY_USER, user)

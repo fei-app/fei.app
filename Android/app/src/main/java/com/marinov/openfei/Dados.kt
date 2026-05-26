@@ -93,13 +93,6 @@ object Dados {
         val tipoProva: String
     )
 
-    /**
-     * Representa um boleto/título de cobrança.
-     * @param vencimento Data de vencimento (ex: "08/05/2026")
-     * @param status     "PAGO" ou "ABERTO"
-     * @param dataPagamento Data em que foi pago (vazia quando ABERTO)
-     * @param tituloId   Valor do checkbox "titulos" no formulário; vazio para PAGO
-     */
     data class Boleto(
         val vencimento: String,
         val status: String,
@@ -148,6 +141,13 @@ object Dados {
         try {
             val novasNotas = fetchNotasFromServer()
             val antigasNotas = getCachedNotas()
+
+            // Correção: Evitar falso positivo na primeira carga
+            if (antigasNotas.isEmpty()) {
+                saveNotasCache(novasNotas)
+                return emptyList()
+            }
+
             val mapaAntigas = antigasNotas.associateBy { "${it.codigoDisciplina}|${it.tipoProva}" }
             val notasAlteradas = novasNotas.filter { nova ->
                 val chave = "${nova.codigoDisciplina}|${nova.tipoProva}"
@@ -210,17 +210,19 @@ object Dados {
             val mapaNomes = disciplinas.associate { it.codigo to it.nome }
             val novasComNomes = novasAulas.map { it.copy(nomeDisciplina = mapaNomes[it.codigoDisciplina] ?: it.codigoDisciplina) }
             val antigasAulas = getCachedAulas()
-            if (antigasAulas.size != novasComNomes.size) {
+
+            // Correção: Evitar notificação no primeiro download
+            if (antigasAulas.isEmpty()) {
                 saveAulasCache(novasComNomes)
-                return true
+                return false
             }
-            for (i in novasComNomes.indices) {
-                if (novasComNomes[i] != antigasAulas[i]) {
-                    saveAulasCache(novasComNomes)
-                    return true
-                }
+
+            // Correção: Comparação por Set para ignorar ordem e evitar falsos positivos
+            val alterado = novasComNomes.toSet() != antigasAulas.toSet()
+            if (alterado) {
+                saveAulasCache(novasComNomes)
             }
-            return false
+            return alterado
         } catch (e: SessionExpiredException) {
             throw e
         } catch (e: Exception) {
@@ -255,11 +257,6 @@ object Dados {
 
     // ===================== BOLETOS =====================
 
-    /**
-     * Baixa a lista de boletos do servidor (ou do cache se offline) e a salva localmente.
-     * @param online Se true, busca do servidor; se false, retorna o cache.
-     * @return Lista de boletos com vencimento, status, data de pagamento e id do título.
-     */
     suspend fun getBoletos(online: Boolean): List<Boleto> {
         return if (online) {
             try {
@@ -277,15 +274,17 @@ object Dados {
         }
     }
 
-    /**
-     * Verifica se houve alteração nos boletos comparando os dados online com o cache.
-     * Salva o cache caso haja alteração.
-     * @return true se houver qualquer diferença (novo boleto, mudança de status, etc.)
-     */
     suspend fun atualizaBoletos(): Boolean {
         return try {
             val novos = fetchBoletosFromServer()
             val antigos = getCachedBoletos()
+
+            // Correção: Evitar notificação em cache vazio
+            if (antigos.isEmpty()) {
+                saveBoletosCache(novos)
+                return false
+            }
+
             val alterado = novos.size != antigos.size ||
                     novos.zip(antigos).any { (novo, antigo) ->
                         novo.vencimento != antigo.vencimento ||
@@ -302,15 +301,8 @@ object Dados {
         }
     }
 
-    /**
-     * Gera e baixa o boleto para um título em aberto.
-     * Faz o POST equivalente a marcar o checkbox e clicar em "Gerar Boletos" no site.
-     * @param tituloId Valor do campo "titulos" do formulário (ex: "0325841")
-     * @return Uri do arquivo PDF salvo no cache, ou null em caso de erro.
-     */
     suspend fun baixaBoleto(tituloId: String, vencimento: String): android.net.Uri? = withContext(Dispatchers.IO) {
         try {
-            // Monta o nome do arquivo a partir do vencimento: "08/05/2026" → "Boleto_05_2026.pdf"
             val partes = vencimento.split("/")
             val nomeArquivo = if (partes.size == 3) {
                 "${partes[2]}_${partes[1]}.pdf"
@@ -318,7 +310,6 @@ object Dados {
                 "$tituloId.pdf"
             }
 
-            // 1. Carrega a página para obter um CSRF token fresco
             val pageDoc = fetchPage(URL_BOLETOS)
             val csrfToken = pageDoc
                 .selectFirst("#form-gerar-boletos input[name=__RequestVerificationToken]")
@@ -338,7 +329,6 @@ object Dados {
                 append(URLEncoder.encode(tituloId, "UTF-8"))
             }.toByteArray(Charsets.UTF_8)
 
-            // 2. Faz o POST para gerar o boleto
             var conn = URL(URL_GERAR_BOLETO).openConnection() as HttpURLConnection
             conn.instanceFollowRedirects = false
             conn.requestMethod = "POST"
@@ -356,7 +346,6 @@ object Dados {
 
             var responseCode = conn.responseCode
 
-            // 3. Segue redirecionamentos manualmente (POST pode redirecionar para GET)
             var redirectCount = 0
             while (responseCode in 301..302 && redirectCount < 5) {
                 val location = conn.getHeaderField("Location") ?: break
@@ -377,7 +366,6 @@ object Dados {
 
             Log.d("Dados", "BaixaBoleto: HTTP $responseCode, Content-Type=${conn.contentType}")
 
-            // 4. Salva em Downloads/BoletosFEI/<nomeArquivo>
             val downloadsDir = android.os.Environment.getExternalStoragePublicDirectory(
                 android.os.Environment.DIRECTORY_DOWNLOADS
             )
@@ -391,7 +379,6 @@ object Dados {
 
             Log.d("Dados", "Boleto salvo: ${outputFile.absolutePath} (${outputFile.length()} bytes)")
 
-            // 5. Notifica o MediaStore para o arquivo aparecer em gerenciadores de arquivos
             android.media.MediaScannerConnection.scanFile(
                 appContext,
                 arrayOf(outputFile.absolutePath),
@@ -399,7 +386,6 @@ object Dados {
                 null
             )
 
-            // 6. Retorna Uri via FileProvider (usando external-path "downloads" do file_paths.xml)
             FileProvider.getUriForFile(
                 appContext,
                 "${appContext.packageName}.fileprovider",
@@ -656,10 +642,6 @@ object Dados {
         return provas
     }
 
-    /**
-     * Extrai boletos da tabela do formulário na página de tesouraria.
-     * Seletor de referência: document.querySelector("#form-gerar-boletos")
-     */
     private suspend fun fetchBoletosFromServer(): List<Boleto> {
         val doc = fetchPage(URL_BOLETOS)
         val form = doc.selectFirst("#form-gerar-boletos")

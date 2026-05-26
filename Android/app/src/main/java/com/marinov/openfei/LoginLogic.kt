@@ -43,6 +43,9 @@ object LoginLogic {
             val docPost = resPost.parse()
             val isSuccess = docPost.select("#btn-login").isEmpty() // Se o botão sumiu, logou com sucesso
 
+            // Obtém as SharedPreferences Criptografadas
+            val prefs = LoginActivity.getEncryptedPrefs(context)
+
             if (isSuccess) {
                 // 3. Salvar os cookies de sessão no CookieManager com expiração de 15 minutos
                 val cookieManager = CookieManager.getInstance()
@@ -55,8 +58,8 @@ object LoginLogic {
                 }
                 cookieManager.flush()
 
-                // 4. Atualizar estado de login nas SharedPreferences
-                context.getSharedPreferences(LoginActivity.PREFS_LOGIN, Context.MODE_PRIVATE).edit {
+                // 4. Atualizar estado de login e credenciais no storage seguro
+                prefs.edit {
                     putBoolean(LoginActivity.KEY_IS_LOGGED_IN, true)
                     putString(LoginActivity.KEY_USER, user)
                     putString(LoginActivity.KEY_PASS, pass)
@@ -65,7 +68,7 @@ object LoginLogic {
                 return@withContext LoginResult(true)
             } else {
                 // Falha no login → garantir que estado fique como false
-                context.getSharedPreferences(LoginActivity.PREFS_LOGIN, Context.MODE_PRIVATE).edit {
+                prefs.edit {
                     putBoolean(LoginActivity.KEY_IS_LOGGED_IN, false)
                 }
                 val errorMsg = docPost.select(".field-validation-error").text()
@@ -73,7 +76,7 @@ object LoginLogic {
             }
         } catch (e: Exception) {
             // Em caso de erro, também marcamos como não logado
-            context.getSharedPreferences(LoginActivity.PREFS_LOGIN, Context.MODE_PRIVATE).edit {
+            LoginActivity.getEncryptedPrefs(context).edit {
                 putBoolean(LoginActivity.KEY_IS_LOGGED_IN, false)
             }
             return@withContext LoginResult(false, "Erro de conexão: ${e.message}")
