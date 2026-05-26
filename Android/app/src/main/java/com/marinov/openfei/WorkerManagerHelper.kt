@@ -40,8 +40,6 @@ object WorkerManagerHelper {
 
         val workManager = WorkManager.getInstance(appContext)
 
-        // Usar a política KEEP garante que, se o worker já estiver agendado, não será duplicado.
-        // Se o sistema esqueceu dele no boot, ele será recriado.
         workManager.enqueueUniquePeriodicWork("UpdateCheckWorker", ExistingPeriodicWorkPolicy.KEEP, updateWork)
         workManager.enqueueUniquePeriodicWork("NotasWorkerTask", ExistingPeriodicWorkPolicy.KEEP, notasWork)
         workManager.enqueueUniquePeriodicWork("CalendarioWorkerTask", ExistingPeriodicWorkPolicy.KEEP, calendarioWork)
