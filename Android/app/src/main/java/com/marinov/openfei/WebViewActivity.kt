@@ -1,7 +1,6 @@
 package com.marinov.openfei
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.DownloadManager
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -27,6 +26,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 
 class WebViewActivity : AppCompatActivity() {
 
@@ -40,7 +40,7 @@ class WebViewActivity : AppCompatActivity() {
 
     // Launcher para o seletor de arquivos (Upload)
     private val fileChooserLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             val data = result.data
             val results: Array<Uri>? = if (data?.data != null) {
                 arrayOf(data.data!!)
@@ -96,7 +96,7 @@ class WebViewActivity : AppCompatActivity() {
                 val intent = fileChooserParams?.createIntent()
                 try {
                     fileChooserLauncher.launch(intent)
-                } catch (e: ActivityNotFoundException) {
+                } catch (_: ActivityNotFoundException) {
                     this@WebViewActivity.filePathCallback = null
                     Toast.makeText(this@WebViewActivity, "Nenhum aplicativo para selecionar arquivos encontrado.", Toast.LENGTH_LONG).show()
                     return false
@@ -122,7 +122,7 @@ class WebViewActivity : AppCompatActivity() {
         // Suporte para Download de Arquivos
         webView.setDownloadListener { url, userAgent, contentDisposition, mimetype, _ ->
             try {
-                val request = DownloadManager.Request(Uri.parse(url))
+                val request = DownloadManager.Request(url.toUri())
                 request.setMimeType(mimetype)
 
                 // Repassar Cookies de sessão para baixar arquivos protegidos
@@ -141,7 +141,7 @@ class WebViewActivity : AppCompatActivity() {
                 dm.enqueue(request)
 
                 Toast.makeText(applicationContext, "Download iniciado", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 Toast.makeText(applicationContext, "Erro ao iniciar download", Toast.LENGTH_SHORT).show()
             }
         }
@@ -149,7 +149,7 @@ class WebViewActivity : AppCompatActivity() {
 
     private fun handleUrlOverride(url: String?, context: Context?): Boolean {
         if (url == null || context == null) return false
-        val uri = Uri.parse(url)
+        val uri = url.toUri()
         val host = uri.host ?: return false
 
         // Verifica se é domínio da FEI
@@ -161,7 +161,7 @@ class WebViewActivity : AppCompatActivity() {
         try {
             val intent = Intent(Intent.ACTION_VIEW, uri)
             context.startActivity(intent)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Toast.makeText(context, "Nenhum navegador encontrado.", Toast.LENGTH_SHORT).show()
         }
         return true // Informa ao WebView que interceptamos a chamada

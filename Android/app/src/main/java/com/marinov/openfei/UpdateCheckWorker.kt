@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -77,14 +76,12 @@ class UpdateCheckWorker(context: Context, params: WorkerParameters) : CoroutineW
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Atualizações do software",
-                NotificationManager.IMPORTANCE_HIGH
-            )
-            val manager = applicationContext.getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(channel)
-        }
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Atualizações do software",
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        val manager = applicationContext.getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(channel)
     }
 }

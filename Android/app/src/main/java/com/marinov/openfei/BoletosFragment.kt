@@ -166,14 +166,14 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
                     flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
                 }
                 startActivity(intent)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 try {
                     val fallback = Intent(Intent.ACTION_VIEW).apply {
                         setDataAndType(uri, "*/*")
                         flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
                     }
                     startActivity(fallback)
-                } catch (ex: Exception) {
+                } catch (_: Exception) {
                     Toast.makeText(
                         requireContext(),
                         "Nenhum aplicativo para abrir PDF encontrado.",

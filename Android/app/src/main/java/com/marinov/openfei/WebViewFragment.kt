@@ -33,6 +33,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
+import androidx.core.net.toUri
 
 class WebViewFragment : Fragment() {
     private lateinit var webView: WebView
@@ -162,7 +163,7 @@ class WebViewFragment : Fragment() {
         // Suporte a Download
         webView.setDownloadListener { url, userAgent, contentDisposition, mimetype, _ ->
             try {
-                val request = DownloadManager.Request(Uri.parse(url))
+                val request = DownloadManager.Request(url.toUri())
                 request.setMimeType(mimetype)
 
                 // Repassar Cookies de sessão
@@ -181,7 +182,7 @@ class WebViewFragment : Fragment() {
                 dm.enqueue(request)
 
                 Toast.makeText(requireContext(), "Download iniciado", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 Toast.makeText(requireContext(), "Erro ao iniciar download", Toast.LENGTH_SHORT).show()
             }
         }
@@ -201,7 +202,7 @@ class WebViewFragment : Fragment() {
                 val intent = fileChooserParams?.createIntent()
                 try {
                     fileChooserLauncher.launch(intent)
-                } catch (e: ActivityNotFoundException) {
+                } catch (_: ActivityNotFoundException) {
                     this@WebViewFragment.filePathCallback = null
                     Toast.makeText(requireContext(), "Nenhum aplicativo para selecionar arquivos encontrado.", Toast.LENGTH_LONG).show()
                     return false
@@ -221,7 +222,7 @@ class WebViewFragment : Fragment() {
             return true // Interceptado
         }
 
-        val uri = Uri.parse(url)
+        val uri = url.toUri()
         val host = uri.host ?: return false
 
         // Verifica se é domínio da FEI
@@ -233,7 +234,7 @@ class WebViewFragment : Fragment() {
         try {
             val intent = Intent(Intent.ACTION_VIEW, uri)
             requireContext().startActivity(intent)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Toast.makeText(requireContext(), "Nenhum navegador encontrado.", Toast.LENGTH_SHORT).show()
         }
         return true // Interceptado

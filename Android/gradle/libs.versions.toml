@@ -1,5 +1,6 @@
 [versions]
 autostarter = "1.1.0"
+biometric = "1.1.0"
 kotlin             = "2.3.21"
 agp                = "9.2.1"
 material           = "1.14.0"
@@ -15,12 +16,14 @@ gson               = "2.14.0"
 work-runtime-ktx   = "2.11.2"
 glide              = "5.0.7"
 
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android      = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
 [libraries]
 autostarter = { module = "com.github.judemanutd:autostarter", version.ref = "autostarter" }
+biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 material              = { group = "com.google.android.material",  name = "material",              version.ref = "material" }
 constraintlayout      = { group = "androidx.constraintlayout",    name = "constraintlayout",      version.ref = "constraintlayout" }
 navigation-fragment   = { group = "androidx.navigation",         name = "navigation-fragment-ktx", version.ref = "navigation" }

@@ -4,9 +4,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
 import androidx.security.crypto.EncryptedSharedPreferences
@@ -28,13 +34,14 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var btnLogin: MaterialButton
     private lateinit var progressIndicator: CircularProgressIndicator
 
+    private var isPasswordVisible = false
+
     companion object {
         const val PREFS_LOGIN = "login_prefs"
         const val KEY_USER = "saved_user"
         const val KEY_PASS = "saved_pass"
         const val KEY_IS_LOGGED_IN = "is_logged_in"
 
-        // Correção: Método auxiliar para obter as SharedPreferences criptografadas
         fun getEncryptedPrefs(context: Context): SharedPreferences {
             val masterKey = MasterKey.Builder(context)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -54,6 +61,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         PermissionHelper.solicitarPermissoesIniciais(this)
+
         etUser = findViewById(R.id.et_user)
         etPass = findViewById(R.id.et_password)
         tilUser = findViewById(R.id.til_user)
@@ -62,11 +70,98 @@ class LoginActivity : AppCompatActivity() {
         progressIndicator = findViewById(R.id.progress_indicator)
 
         loadSavedCredentials()
+        setupPasswordToggle()
 
         btnLogin.setOnClickListener {
             initiateLoginFlow()
         }
     }
+
+    private fun setupPasswordToggle() {
+        tilPass.setEndIconOnClickListener {
+            if (isPasswordVisible) {
+                // Senha já visível → esconde diretamente, sem autenticação
+                togglePasswordVisibility()
+                return@setEndIconOnClickListener
+            }
+
+            // Senha oculta → exige autenticação antes de revelar
+            val biometricManager = BiometricManager.from(this)
+            val canAuthenticate = biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
+
+            if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
+                showBiometricPrompt()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Configure um bloqueio de tela para visualizar a senha",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+    private fun showBiometricPrompt() {
+        val executor = ContextCompat.getMainExecutor(this)
+
+        val callback = object : BiometricPrompt.AuthenticationCallback() {
+
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                super.onAuthenticationSucceeded(result)
+                togglePasswordVisibility()
+            }
+
+            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                super.onAuthenticationError(errorCode, errString)
+                val silentErrors = setOf(
+                    BiometricPrompt.ERROR_USER_CANCELED,
+                    BiometricPrompt.ERROR_NEGATIVE_BUTTON,
+                    BiometricPrompt.ERROR_CANCELED
+                )
+                if (errorCode !in silentErrors) {
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Erro de autenticação: $errString",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+        }
+
+        val biometricPrompt = BiometricPrompt(this, executor, callback)
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Verificar identidade")
+            .setSubtitle("Autentique-se para visualizar a senha")
+            .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
+            .build()
+
+        biometricPrompt.authenticate(promptInfo)
+    }
+
+    private fun togglePasswordVisibility() {
+        isPasswordVisible = !isPasswordVisible
+
+        // Salva o texto e posição do cursor antes de qualquer modificação
+        val savedText = etPass.text?.toString() ?: ""
+        val cursorPos = etPass.selectionEnd.coerceAtLeast(0)
+
+        // Troca a transformação (oculto ↔ visível)
+        etPass.transformationMethod =
+            if (isPasswordVisible) null
+            else PasswordTransformationMethod.getInstance()
+
+        // Reaplicar o texto dispara o TextWatcher interno do TextInputLayout
+        // (PasswordToggleEndIconDelegate), que atualiza o ícone do olho
+        // automaticamente sem precisar de setEndIconChecked ou drawable manual.
+        etPass.setText(savedText)
+        etPass.setSelection(cursorPos.coerceAtMost(savedText.length))
+    }
+
+    // -------------------------------------------------------------------------
+    // Restante da lógica original sem alterações
+    // -------------------------------------------------------------------------
 
     private fun loadSavedCredentials() {
         val prefs = getEncryptedPrefs(this)

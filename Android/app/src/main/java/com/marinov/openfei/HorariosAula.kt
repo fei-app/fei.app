@@ -246,7 +246,7 @@ class HorariosAula : Fragment(){
                     configurarViewPager()
                 }
 
-            } catch (e: SessionExpiredException) {
+            } catch (_: SessionExpiredException) {
                 Log.w("HorariosAula", "Sessão expirada durante carregamento de horários")
                 progressBar.visibility = View.GONE
                 withContext(Dispatchers.Main) { mainActivity.checkConnectionAndSession() }

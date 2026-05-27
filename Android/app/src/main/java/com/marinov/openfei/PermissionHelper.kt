@@ -60,14 +60,6 @@ object PermissionHelper {
         }
 
         // 2. Armazenamento Externo (Android 9 ou inferior) - Necessário para DownloadManager em SDKs antigos
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            if (ContextCompat.checkSelfPermission(
-                    activity, Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                permissoesParaSolicitar.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            }
-        }
 
         if (permissoesParaSolicitar.isNotEmpty()) {
             Log.d(TAG, "Solicitando permissões: $permissoesParaSolicitar")

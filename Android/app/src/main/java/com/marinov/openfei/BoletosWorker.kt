@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
@@ -84,15 +83,13 @@ class BoletosWorker(appContext: Context, workerParams: WorkerParameters) :
         val notificationManager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.createNotificationChannel(
-                NotificationChannel(
-                    channelId,
-                    "Atualizações de Boletos",
-                    NotificationManager.IMPORTANCE_DEFAULT
-                )
+        notificationManager.createNotificationChannel(
+            NotificationChannel(
+                channelId,
+                "Atualizações de Boletos",
+                NotificationManager.IMPORTANCE_DEFAULT
             )
-        }
+        )
 
         notificationManager.notify(NOTIFICATION_ID, notification)
     }

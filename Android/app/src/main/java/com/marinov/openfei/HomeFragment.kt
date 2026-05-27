@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Typeface
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -22,6 +21,7 @@ import android.widget.TableRow
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
@@ -231,7 +231,7 @@ class HomeFragment : Fragment() {
                 }
                 MainActivity.STATUS_OFFLINE -> {
                     // Caso C: sem conexão → dados em cache já estão exibidos; apenas sinaliza offline.
-                    if (!isFragmentDestroyed) showOfflineState()
+                    showOfflineState()
                 }
                 MainActivity.STATUS_ONLINE_OK -> {
                     // Caso B: online + logado → busca dados atualizados do servidor.
@@ -287,10 +287,10 @@ class HomeFragment : Fragment() {
                     }
                 } else {
                     Log.e("HomeFragment", "Página home retornou null")
-                    if (!isFragmentDestroyed) handleDataFetchError(Exception("Página retornou null"))
+                    if (!isFragmentDestroyed) handleDataFetchError()
                 }
 
-            } catch (e: SessionExpiredException) {
+            } catch (_: SessionExpiredException) {
                 Log.w("HomeFragment", "Sessão expirada durante fetch")
                 withContext(Dispatchers.Main) {
                     if (!isFragmentDestroyed) mainActivity.checkConnectionAndSession()
@@ -298,7 +298,7 @@ class HomeFragment : Fragment() {
             } catch (e: Exception) {
                 Log.e("HomeFragment", "Erro ao buscar dados: ${e.message}", e)
                 withContext(Dispatchers.Main) {
-                    if (!isFragmentDestroyed) handleDataFetchError(e)
+                    if (!isFragmentDestroyed) handleDataFetchError()
                 }
             } finally {
                 withContext(Dispatchers.Main) {
@@ -393,12 +393,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    fun onLoginSuccess() {
-        Log.d("HomeFragment", "Login bem-sucedido - forçando recarregamento")
-        clearCache()
-        loadInitialData()
-    }
-
     private fun configureCarouselHeight() {
         val viewPager = this.viewPager ?: return
         val context = context ?: return
@@ -427,7 +421,7 @@ class HomeFragment : Fragment() {
         carouselItems.addAll(newCarousel)
     }
 
-    private fun handleDataFetchError(e: Exception) {
+    private fun handleDataFetchError() {
         if (isFragmentDestroyed) return
         if (carouselItems.isEmpty()) showOfflineState()
     }
@@ -449,11 +443,6 @@ class HomeFragment : Fragment() {
         carouselItems.clear()
         carouselItems.addAll(Gson().fromJson(json, type))
         return true
-    }
-
-    private fun clearCache() {
-        context?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)?.edit { clear() }
-        carouselItems.clear()
     }
 
     private fun showLoadingState() {
@@ -586,7 +575,7 @@ class HomeFragment : Fragment() {
 
             holder.itemView.setOnClickListener {
                 item.linkUrl?.let { link ->
-                    try { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link))) }
+                    try { startActivity(Intent(Intent.ACTION_VIEW, link.toUri())) }
                     catch (e: Exception) { Log.e("HomeFragment", "Erro ao abrir link: $link", e) }
                 }
             }
