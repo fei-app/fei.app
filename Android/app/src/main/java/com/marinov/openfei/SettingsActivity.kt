@@ -156,7 +156,9 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun clearAllCacheData() {
-        getSharedPreferences("DadosFEI", MODE_PRIVATE).edit().clear().apply()
+        Dados.init(applicationContext)
+        Dados.clearAllCacheFiles()
+
         getSharedPreferences("HomeFragmentCache", MODE_PRIVATE).edit().clear().apply()
         CookieManager.getInstance().removeAllCookies(null)
         CookieManager.getInstance().flush()
@@ -164,7 +166,6 @@ class SettingsActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             android.webkit.WebView.clearClientCertPreferences(null)
         }
-        // Limpa o cache do WebView (assíncrono)
         val context = applicationContext
         android.webkit.WebView(context).apply {
             clearCache(true)
@@ -174,7 +175,7 @@ class SettingsActivity : AppCompatActivity() {
         }
         CoroutineScope(Dispatchers.IO).launch {
             Glide.get(context).clearDiskCache()
-          }
+        }
         Glide.get(context).clearMemory()
     }
 

@@ -26,7 +26,6 @@ object Dados {
 
     private const val PREFS_NAME = "DadosFEI"
     private const val KEY_DISCIPLINAS = "disciplinas_cache"
-    private const val KEY_NOTAS = "notas_cache"
     private const val KEY_PERFIL = "perfil_cache"
     private const val KEY_AULAS = "aulas_cache"
     private const val KEY_CALENDARIO_PROVAS = "calendario_provas_cache"
@@ -690,6 +689,27 @@ object Dados {
 
     // ===================== CACHE =====================
 
+    fun clearAllCacheFiles() {
+        listOf(
+            "notas_cache.json",
+            "disciplinas_cache.json",
+            "aulas_cache.json",
+            "provas_cache.json",
+            "boletos_cache.json",
+            "perfil_cache.json"
+        ).forEach { nome ->
+            File(appContext.filesDir, nome).delete()
+        }
+        prefs.edit {
+            remove(KEY_LAST_UPDATE_NOTAS)
+            remove(KEY_LAST_UPDATE_DISCIPLINAS)
+            remove(KEY_LAST_UPDATE_AULAS)
+            remove(KEY_LAST_UPDATE_CALENDARIO_PROVAS)
+            remove(KEY_LAST_UPDATE_BOLETOS)
+            remove(KEY_LAST_UPDATE_PERFIL)
+        }
+    }
+
     private fun saveDisciplinasCache(disciplinas: List<Disciplina>) {
         prefs.edit {
             putString(KEY_DISCIPLINAS, gson.toJson(disciplinas))
@@ -706,17 +726,17 @@ object Dados {
     }
 
     private fun saveNotasCache(notas: List<Nota>) {
-        prefs.edit {
-            putString(KEY_NOTAS, gson.toJson(notas))
-                .putLong(KEY_LAST_UPDATE_NOTAS, System.currentTimeMillis())
-        }
+        val file = File(appContext.filesDir, "notas_cache.json")
+        file.writeText(gson.toJson(notas))
+        prefs.edit { putLong(KEY_LAST_UPDATE_NOTAS, System.currentTimeMillis()) }
     }
 
     private fun getCachedNotas(): List<Nota> {
-        val json = prefs.getString(KEY_NOTAS, null) ?: return emptyList()
+        val file = File(appContext.filesDir, "notas_cache.json")
+        if (!file.exists()) return emptyList()
         return try {
             val type = object : TypeToken<List<Nota>>() {}.type
-            gson.fromJson(json, type) ?: emptyList()
+            gson.fromJson(file.readText(), type) ?: emptyList()
         } catch (_: Exception) { emptyList() }
     }
 
