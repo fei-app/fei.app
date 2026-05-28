@@ -1,0 +1,182 @@
+import sys
+import threading
+import asyncio
+import gi
+gi.require_version('Gtk', '4.0')
+from gi.repository import Gtk, Gio, GLib
+from pathlib import Path
+from session_manager import SessionManager
+from config_manager import ConfigManager
+from cache_manager import CacheManager
+from ui.login_window import LoginWindow
+from ui.home_window import HomeWindow
+from ui.calendario_window import CalendarioWindow
+from ui.horario_window import HorarioWindow
+from ui.notas_window import NotasWindow
+from ui.boletos_window import BoletosWindow
+
+
+class OpenFEIApp(Gtk.Application):
+    def __init__(self):
+        super().__init__(application_id='com.marinov.openfei',
+                         flags=Gio.ApplicationFlags.FLAGS_NONE)
+        self.cache = CacheManager(Path.home() / '.cache' / 'openfei')
+        self.config = ConfigManager(Path.home() / '.config' / 'openfei')
+        self.session_mgr = SessionManager(Path.home() / '.cache' / 'openfei' / 'cookies.json')
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
+        self.session = None
+        threading.Thread(target=self.loop.run_forever, daemon=True).start()
+
+    def run_async(self, coro, callback=None):
+        future = asyncio.run_coroutine_threadsafe(coro, self.loop)
+        if callback:
+            def _on_done(fut):
+                try:
+                    result = fut.result()
+                except Exception as e:
+                    result = e
+                GLib.idle_add(callback, result)
+            future.add_done_callback(_on_done)
+
+    async def _init_session(self):
+        self.session = await self.session_mgr.get_session()
+        return True
+
+    def _on_session_ready(self, result):
+        if isinstance(result, Exception):
+            print(f"[ERRO] Falha ao criar sessão HTTP: {result}", flush=True)
+            self.show_login_screen()
+            return
+
+        print("[INFO] Sessão HTTP criada com sucesso.", flush=True)
+
+        # Tenta auto-login se houver credenciais salvas
+        cfg = self.config.load()
+        if cfg.get('auto_login') and cfg.get('user') and cfg.get('password'):
+            print("[INFO] Credenciais salvas encontradas, tentando auto-login...", flush=True)
+            self.run_async(
+                self._try_auto_login(cfg['user'], cfg['password']),
+                self._on_auto_login_result
+            )
+        else:
+            self.show_login_screen()
+
+    async def _try_auto_login(self, user, password):
+        from login_logic import LoginLogic
+        return await LoginLogic.perform_login(user, password, self.session)
+
+    def _on_auto_login_result(self, result):
+        if isinstance(result, Exception) or not result.success:
+            print("[INFO] Auto-login falhou, exibindo tela de login.", flush=True)
+            self.show_login_screen()
+        else:
+            print("[INFO] Auto-login bem-sucedido.", flush=True)
+            self.show_home_screen()
+
+    def do_activate(self):
+        self.window = Gtk.ApplicationWindow(application=self)
+        self.window.set_title("OpenFEI")
+        self.window.set_default_size(800, 600)
+
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_path('style.css')
+        Gtk.StyleContext.add_provider_for_display(
+            self.window.get_display(),
+            css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+
+        self.stack = Gtk.Stack()
+        self.window.set_child(self.stack)
+
+        self.run_async(self._init_session(), self._on_session_ready)
+        self.window.present()
+
+    # ---- Navegação ----
+
+    def show_login_screen(self):
+        self._replace_screen(
+            'login',
+            LoginWindow(self, self.run_async, self.on_login_success)
+        )
+
+    def show_home_screen(self):
+        self._replace_screen(
+            'home',
+            HomeWindow(self, self.on_logout, self._nav_to)
+        )
+
+    def show_calendario_screen(self):
+        self._replace_screen(
+            'calendario',
+            CalendarioWindow(self, self.session, self.run_async, self.show_home_screen)
+        )
+
+    def show_horario_screen(self):
+        self._replace_screen(
+            'horario',
+            HorarioWindow(self, self.session, self.run_async, self.show_home_screen)
+        )
+
+    def show_notas_screen(self):
+        self._replace_screen(
+            'notas',
+            NotasWindow(self, self.session, self.run_async, self.show_home_screen)
+        )
+
+    def show_boletos_screen(self):
+        self._replace_screen(
+            'boletos',
+            BoletosWindow(self, self.session, self.run_async, self.show_home_screen)
+        )
+
+    def _nav_to(self, destino: str):
+        rotas = {
+            'calendario': self.show_calendario_screen,
+            'horario':    self.show_horario_screen,
+            'notas':      self.show_notas_screen,
+            'boletos':    self.show_boletos_screen,
+        }
+        if destino in rotas:
+            rotas[destino]()
+
+    def _replace_screen(self, name: str, widget: Gtk.Widget):
+        """Remove a tela anterior de mesmo nome (se existir) e adiciona a nova."""
+        existing = self.stack.get_child_by_name(name)
+        if existing:
+            self.stack.remove(existing)
+        self.stack.add_named(widget, name)
+        self.stack.set_visible_child_name(name)
+
+    # ---- Callbacks de autenticação ----
+
+    def on_login_success(self, user, password, remember):
+        cfg = {'auto_login': remember}
+        if remember:
+            cfg['user'] = user
+            cfg['password'] = password
+        self.config.save(cfg)
+        self.show_home_screen()
+
+    def on_logout(self):
+        # Limpa credenciais salvas e volta para o login
+        cfg = self.config.load()
+        cfg['auto_login'] = False
+        cfg.pop('user', None)
+        cfg.pop('password', None)
+        self.config.save(cfg)
+        self.show_login_screen()
+
+    def do_shutdown(self):
+        if self.session is not None:
+            self.loop.call_soon_threadsafe(
+                lambda: asyncio.ensure_future(self.session_mgr.close(), loop=self.loop)
+            )
+        self.loop.call_soon_threadsafe(self.loop.stop)
+        Gtk.Application.do_shutdown(self)
+
+
+if __name__ == '__main__':
+    app = OpenFEIApp()
+    app.run(sys.argv)
