@@ -36,7 +36,6 @@ object Dados {
     private const val KEY_LAST_UPDATE_CALENDARIO_PROVAS = "last_update_calendario_provas"
     private const val KEY_BOLETOS = "boletos_cache"
     private const val KEY_LAST_UPDATE_BOLETOS = "last_update_boletos"
-
     private const val URL_DISCIPLINAS = "https://interage.fei.org.br/secureserver/portal/graduacao/sala-dos-professores/consultas/tabela-de-aulas"
     private const val URL_NOTAS = "https://interage.fei.org.br/secureserver/portal/graduacao/secretaria/consultas/notas"
     private const val URL_PERFIL = "https://interage.fei.org.br/secureserver/portal/graduacao/secretaria/dados-pessoais"
@@ -44,9 +43,7 @@ object Dados {
     private const val URL_CALENDARIO_PROVAS = "https://interage.fei.org.br/secureserver/portal/graduacao/sala-dos-professores/informacoes-academicas/provas"
     private const val URL_BOLETOS = "https://interage.fei.org.br/secureserver/portal/graduacao/tesouraria/consultas/boletos"
     private const val URL_GERAR_BOLETO = "https://interage.fei.org.br/secureserver/portal/graduacao/tesouraria/consultas/boletos/titulos/gerar"
-
     private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 16; sdk_gphone64_x86_64 Build/BE2A.250530.026.D1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/133.0.6943.137 Mobile Safari/537.36"
-
     private lateinit var appContext: Context
     private val gson = Gson()
     private val prefs: SharedPreferences by lazy { appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE) }
@@ -56,7 +53,6 @@ object Dados {
     }
 
     // ===================== MODELOS DE DADOS =====================
-
     data class Disciplina(val codigo: String, val nome: String)
 
     data class Nota(
@@ -100,7 +96,6 @@ object Dados {
     )
 
     // ===================== FUNÇÕES PÚBLICAS =====================
-
     suspend fun obterDisciplinas(online: Boolean): List<Disciplina> {
         return if (online) {
             try {
@@ -141,7 +136,6 @@ object Dados {
             val novasNotas = fetchNotasFromServer()
             val antigasNotas = getCachedNotas()
 
-            // Correção: Evitar falso positivo na primeira carga
             if (antigasNotas.isEmpty()) {
                 saveNotasCache(novasNotas)
                 return emptyList()
@@ -210,13 +204,11 @@ object Dados {
             val novasComNomes = novasAulas.map { it.copy(nomeDisciplina = mapaNomes[it.codigoDisciplina] ?: it.codigoDisciplina) }
             val antigasAulas = getCachedAulas()
 
-            // Correção: Evitar notificação no primeiro download
             if (antigasAulas.isEmpty()) {
                 saveAulasCache(novasComNomes)
                 return false
             }
 
-            // Correção: Comparação por Set para ignorar ordem e evitar falsos positivos
             val alterado = novasComNomes.toSet() != antigasAulas.toSet()
             if (alterado) {
                 saveAulasCache(novasComNomes)
@@ -255,7 +247,6 @@ object Dados {
     }
 
     // ===================== BOLETOS =====================
-
     suspend fun getBoletos(online: Boolean): List<Boleto> {
         return if (online) {
             try {
@@ -278,7 +269,6 @@ object Dados {
             val novos = fetchBoletosFromServer()
             val antigos = getCachedBoletos()
 
-            // Correção: Evitar notificação em cache vazio
             if (antigos.isEmpty()) {
                 saveBoletosCache(novos)
                 return false
@@ -317,9 +307,7 @@ object Dados {
                     Log.e("Dados", "CSRF token não encontrado na página de boletos")
                     return@withContext null
                 }
-
             val cookieStr = CookieManager.getInstance().getCookie(URL_BOLETOS) ?: ""
-
             val postData = buildString {
                 append("__RequestVerificationToken=")
                 append(URLEncoder.encode(csrfToken, "UTF-8"))
@@ -342,9 +330,7 @@ object Dados {
             conn.setRequestProperty("Referer", URL_BOLETOS)
             conn.setRequestProperty("Accept", "application/pdf,text/html,*/*")
             conn.outputStream.use { it.write(postData) }
-
             var responseCode = conn.responseCode
-
             var redirectCount = 0
             while (responseCode in 301..302 && redirectCount < 5) {
                 val location = conn.getHeaderField("Location") ?: break
@@ -396,8 +382,137 @@ object Dados {
         }
     }
 
-    // ===================== FUNÇÕES PRIVADAS DE REDE =====================
+    fun obterCalendarioProvasCache(): List<ProvaCalendario> = getCachedProvasCalendario()
 
+    fun ordenarNotasParaHome(
+        notas: List<Nota>,
+        provas: List<ProvaCalendario>
+    ): List<Nota> {
+        val tiposConhecidos = setOf("P1", "P2", "P3")
+
+        fun normalizar(cod: String) = cod.trim().uppercase()
+
+        fun dataParaInt(data: String): Int {
+            val partes = data.split("/")
+            if (partes.size < 2) return Int.MIN_VALUE
+            val dia = partes[0].toIntOrNull() ?: return Int.MIN_VALUE
+            val mes = partes[1].toIntOrNull() ?: return Int.MIN_VALUE
+            return mes * 100 + dia
+        }
+
+        fun tipoPeso(tipo: String): Int = when (tipo) {
+            "P3" -> 3
+            "P2" -> 2
+            "P1" -> 1
+            else -> 0
+        }
+
+        val hoje = Calendar.getInstance()
+        val hojeInt = (hoje.get(Calendar.MONTH) + 1) * 100 + hoje.get(Calendar.DAY_OF_MONTH)
+
+        val disciplinasComP3 = notas
+            .filter { it.tipoProva == "P3" && it.valor.isNotEmpty() }
+            .map { normalizar(it.codigoDisciplina) }
+            .toSet()
+
+        val provasValidas = provas.filter { prova ->
+            val dataInt = dataParaInt(prova.dataProva)
+            if (dataInt == Int.MIN_VALUE || dataInt > hojeInt) return@filter false
+            if (prova.tipoProva == "P3" && normalizar(prova.disciplina) !in disciplinasComP3) return@filter false
+            true
+        }
+
+        data class TipoPrincipal(val tipo: String, val data: Int)
+
+        val tipoPrincipalPorDisciplina: Map<String, TipoPrincipal?> = provasValidas
+            .groupBy { normalizar(it.disciplina) }
+            .mapValues { (_, lista) ->
+                val melhorPorTipo = lista
+                    .groupBy { it.tipoProva }
+                    .mapValues { (_, provasTipo) -> provasTipo.maxOf { dataParaInt(it.dataProva) } }
+                val tipoEscolhido = melhorPorTipo.keys.maxByOrNull { tipoPeso(it) } ?: return@mapValues null
+                TipoPrincipal(tipoEscolhido, melhorPorTipo[tipoEscolhido]!!)
+            }
+
+        val calendarioExato: Map<String, Int> = provasValidas
+            .associate { "${normalizar(it.disciplina)}|${it.tipoProva}" to dataParaInt(it.dataProva) }
+
+        val notasLancadas = notas.filter { it.valor.isNotEmpty() }
+
+        val grupos: Map<String, List<Nota>> = notas.groupBy { normalizar(it.codigoDisciplina) }
+
+        fun chaveOrdenacao(codigoNormalizado: String): String? {
+            val tp = tipoPrincipalPorDisciplina[codigoNormalizado] ?: return null
+            val principalLancada = notasLancadas.any {
+                normalizar(it.codigoDisciplina) == codigoNormalizado && it.tipoProva == tp.tipo
+            }
+            val flag = if (principalLancada) 1 else 0
+            val dataFormatada = tp.data.toString().padStart(5, '0')
+            return "${tipoPeso(tp.tipo)}|$flag|$dataFormatada|$codigoNormalizado"
+        }
+
+        // Disciplinas com tipo principal, ordenadas pela chave (decrescente)
+        val disciplinasComCalendario = grupos.keys
+            .filter { cod -> tipoPrincipalPorDisciplina.containsKey(cod) }
+            .sortedByDescending { cod: String -> chaveOrdenacao(cod) ?: "" }
+
+        val resultado = mutableListOf<Nota>()
+        val avulsas = mutableListOf<Nota>()
+
+        for (codigoNormalizado in disciplinasComCalendario) {
+            val notasDaDisciplina = grupos[codigoNormalizado] ?: continue
+            val tp = tipoPrincipalPorDisciplina[codigoNormalizado]!!
+
+            // 1. Nota do tipo principal (se lançada)
+            notasDaDisciplina
+                .filter { it.tipoProva == tp.tipo && it.valor.isNotEmpty() }
+                .sortedBy { it.nomeDisciplina }
+                .let { resultado.addAll(it) }
+
+            // 2. Notas desconhecidas da disciplina
+            notasDaDisciplina
+                .filter { it.tipoProva !in tiposConhecidos && it.valor.isNotEmpty() }
+                .sortedBy { it.nomeDisciplina }
+                .let { resultado.addAll(it) }
+
+            // 3. Outras conhecidas → avulsas
+            val outrasConhecidas = notasDaDisciplina
+                .filter { it.tipoProva in tiposConhecidos && it.tipoProva != tp.tipo && it.valor.isNotEmpty() }
+            avulsas.addAll(outrasConhecidas)
+        }
+
+        // Disciplinas sem tipo principal → todas as notas viram avulsas
+        val setComCalendario = disciplinasComCalendario.toSet()
+        for ((codigoNormalizado, lista) in grupos) {
+            if (codigoNormalizado !in setComCalendario) {
+                avulsas.addAll(lista.filter { it.valor.isNotEmpty() })
+            }
+        }
+
+        // Ordenação das avulsas: data, tipo, nome
+        val ancoraPorDisciplina: Map<String, Int> = provasValidas
+            .groupBy { normalizar(it.disciplina) }
+            .mapValues { (_, lista) -> lista.maxOf { dataParaInt(it.dataProva) } }
+
+        fun dataReferencia(nota: Nota): Int {
+            val codNorm = normalizar(nota.codigoDisciplina)
+            return if (nota.tipoProva in tiposConhecidos) {
+                calendarioExato["$codNorm|${nota.tipoProva}"] ?: Int.MIN_VALUE
+            } else {
+                ancoraPorDisciplina[codNorm] ?: Int.MIN_VALUE
+            }
+        }
+
+        avulsas.sortWith(
+            compareByDescending<Nota> { dataReferencia(it) }
+                .thenByDescending { tipoPeso(it.tipoProva) }
+                .thenBy { it.nomeDisciplina }
+        )
+
+        resultado.addAll(avulsas)
+        return resultado
+    }
+    // ===================== FUNÇÕES PRIVADAS DE REDE =====================
     @Throws(IOException::class)
     private suspend fun fetchPage(url: String): Document = withContext(Dispatchers.IO) {
         val cookies = CookieManager.getInstance().getCookie(url)
@@ -511,12 +626,10 @@ object Dados {
 
         val aulasPorDia = mutableMapOf<String, MutableList<Aula>>()
         colunasPorDia.keys.forEach { dia -> aulasPorDia[dia] = mutableListOf() }
-
         for (rowIdx in 2 until linhas.size) {
             val row = linhas[rowIdx]
             val cells = row.select("td")
             if (cells.size < 20) continue
-
             val horaTexto = cells[0].text().trim()
             val horarioPadrao = extrairHorario(horaTexto)
 
@@ -532,7 +645,6 @@ object Dados {
             for ((dia, colunas) in colunasPorDia) {
                 val (colDisc, colSala) = colunas
                 if (colDisc >= cells.size || colSala >= cells.size) continue
-
                 val cellDisc = cells[colDisc]
                 val cellSala = cells[colSala]
 
@@ -574,7 +686,6 @@ object Dados {
     private suspend fun fetchCalendarioProvasFromServer(): List<ProvaCalendario> {
         val disciplinas = obterDisciplinas(online = true)
         val mapaNomes = disciplinas.associate { it.codigo to it.nome }
-
         val doc = fetchPage(URL_CALENDARIO_PROVAS)
         val accordion = doc.selectFirst("#accordion-provas")
             ?: throw SessionExpiredException("Accordion de provas não encontrado")
@@ -585,7 +696,6 @@ object Dados {
         for (panel in panels) {
             val tituloLink = panel.selectFirst(".panel-title a")
             val titulo = tituloLink?.text()?.trim() ?: continue
-
             val tipoProva = when {
                 titulo.contains("(P1)") -> "P1"
                 titulo.contains("(P2)") -> "P2"
@@ -657,7 +767,6 @@ object Dados {
             val status = linha.selectFirst("td[class*=Status]")?.text()?.trim() ?: continue
             val dataPagamento = linha.selectFirst("td[class*=Data]")?.text()?.trim() ?: ""
             val tituloId = linha.selectFirst("input[name=titulos]")?.`val`()?.trim() ?: ""
-
             if (vencimento.isNotEmpty() && status.isNotEmpty()) {
                 boletos.add(Boleto(vencimento, status, dataPagamento, tituloId))
             }
@@ -688,7 +797,6 @@ object Dados {
     }
 
     // ===================== CACHE =====================
-
     fun clearAllCacheFiles() {
         listOf(
             "notas_cache.json",

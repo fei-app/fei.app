@@ -201,16 +201,17 @@ class HomeFragment : Fragment() {
         val mainActivity = activity as? MainActivity ?: return
 
         lifecycleScope.launch {
-            // Passo 1: carrega notas e aulas do cache local antes de qualquer chamada de rede,
-            // evitando o "piscar" onde as seções somem enquanto aguardam o servidor.
+            // Passo 1: carrega notas, aulas e calendário do cache local antes de qualquer chamada
+            // de rede, evitando o "piscar" onde as seções somem enquanto aguardam o servidor.
             val cachedNotas  = withContext(Dispatchers.IO) { Dados.obterNotas(online = false) }
             val cachedAulas  = withContext(Dispatchers.IO) { Dados.retornaAulasDia(online = false) }
+            val cachedProvas = withContext(Dispatchers.IO) { Dados.obterCalendarioProvasCache() }
 
             if (!isFragmentDestroyed) {
                 val hasCachedData = hasCarouselCache || cachedNotas.isNotEmpty() || cachedAulas.isNotEmpty()
                 if (hasCachedData) {
                     // Preenche UI com dados em cache — serão sobrepostos silenciosamente pelo fetch
-                    setupNotasTable(cachedNotas)
+                    setupNotasTable(cachedNotas, cachedProvas)
                     setupAulasDia(cachedAulas)
                     showContentState()
                 } else {
@@ -259,9 +260,14 @@ class HomeFragment : Fragment() {
                     val carrosselDeferred = async(Dispatchers.IO) { fetchPageData(HOME_URL) }
                     val notasDeferred     = async { Dados.obterNotas(online = true) }
                     val aulasDeferred     = async { Dados.retornaAulasDia(online = true) }
+                    val provasDeferred    = async { Dados.obterCalendarioProvas(online = true) }
 
                     try {
-                        Triple(carrosselDeferred.await(), notasDeferred.await(), aulasDeferred.await())
+                        val carousel = carrosselDeferred.await()
+                        val notas    = notasDeferred.await()
+                        val aulas    = aulasDeferred.await()
+                        val provas   = provasDeferred.await()
+                        Triple(carousel, notas, Pair(aulas, provas))
                     } catch (e: SessionExpiredException) {
                         coroutineContext.cancelChildren()
                         throw e
@@ -270,7 +276,8 @@ class HomeFragment : Fragment() {
 
                 if (isFragmentDestroyed) return@launch
 
-                val (homeDoc, notas, aulasDia) = result
+                val (homeDoc, notas, aulasPair) = result
+                val (aulasDia, provas) = aulasPair
 
                 if (homeDoc != null) {
                     processPageContent(homeDoc)
@@ -282,7 +289,7 @@ class HomeFragment : Fragment() {
                             carouselLoadingIndicator?.visibility = View.GONE
                             viewPager?.visibility = View.VISIBLE
                         }
-                        setupNotasTable(notas)
+                        setupNotasTable(notas, provas)
                         setupAulasDia(aulasDia)
                     }
                 } else {
@@ -326,7 +333,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun setupNotasTable(notas: List<Dados.Nota>) {
+    private fun setupNotasTable(notas: List<Dados.Nota>, provas: List<Dados.ProvaCalendario>) {
         if (isFragmentDestroyed || tableRecentGrades == null) return
         val context = context ?: return
         tableRecentGrades?.removeAllViews()
@@ -337,7 +344,7 @@ class HomeFragment : Fragment() {
             return
         }
 
-        val sortedNotas = notasPreenchidas.sortedWith(compareBy({ it.nomeDisciplina }, { it.tipoProva }))
+        val sortedNotas = Dados.ordenarNotasParaHome(notasPreenchidas, provas)
         recentGradesSectionContainer?.visibility = View.VISIBLE
 
         val headerRow = TableRow(context).apply {
