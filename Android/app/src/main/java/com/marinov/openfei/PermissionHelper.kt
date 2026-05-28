@@ -49,7 +49,6 @@ object PermissionHelper {
     private fun solicitarPermissoesNecessarias(activity: Activity) {
         val permissoesParaSolicitar = mutableListOf<String>()
 
-        // 1. Notificações (Android 13+) - Importante para acompanhar progresso de Downloads
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     activity, Manifest.permission.POST_NOTIFICATIONS
@@ -58,8 +57,6 @@ object PermissionHelper {
                 permissoesParaSolicitar.add(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
-
-        // 2. Armazenamento Externo (Android 9 ou inferior) - Necessário para DownloadManager em SDKs antigos
 
         if (permissoesParaSolicitar.isNotEmpty()) {
             Log.d(TAG, "Solicitando permissões: $permissoesParaSolicitar")
