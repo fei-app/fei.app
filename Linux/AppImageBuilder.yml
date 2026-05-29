@@ -1,0 +1,33 @@
+version: 1
+
+AppDir:
+  path: ./AppDir
+
+  app_info:
+    id: com.marinov.openfei
+    name: OpenFEI
+    icon: openfei
+    version: 1.0.0
+    exec: usr/bin/python3
+    exec_args: "$APPDIR/usr/share/openfei/main.py $@"
+
+  runtime:
+    env:
+      PYTHONPATH: "$APPDIR/usr/share/openfei:$APPDIR/usr/lib/python3/dist-packages"
+      GI_TYPELIB_PATH: "$APPDIR/usr/lib64/girepository-1.0:$APPDIR/usr/lib/girepository-1.0"
+      LD_LIBRARY_PATH: "$APPDIR/usr/lib64:$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu"
+      GSETTINGS_SCHEMA_DIR: "$APPDIR/usr/share/glib-2.0/schemas"
+      XDG_DATA_DIRS: "$APPDIR/usr/share:$XDG_DATA_DIRS"
+
+  files:
+    exclude:
+      - usr/share/man
+      - usr/share/doc
+      - usr/share/gtk-doc
+      - "*.pyc"
+      - "__pycache__"
+
+AppImage:
+  arch: x86_64
+  update-information: None
+  sign-key: None

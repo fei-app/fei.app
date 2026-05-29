@@ -2,6 +2,7 @@ import sys
 import threading
 import asyncio
 import gi
+import os
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, Gio, GLib
 from pathlib import Path
@@ -18,15 +19,25 @@ from ui.boletos_window import BoletosWindow
 
 class OpenFEIApp(Gtk.Application):
     def __init__(self):
+        # Mudamos para NON_UNIQUE para blindar o AppImage contra conflitos de DBus/Instâncias
         super().__init__(application_id='com.marinov.openfei',
-                         flags=Gio.ApplicationFlags.FLAGS_NONE)
+                         flags=Gio.ApplicationFlags.NON_UNIQUE)
+        
+        # Inicialização limpa de todas as variáveis
         self.cache = CacheManager(Path.home() / '.cache' / 'openfei')
         self.config = ConfigManager(Path.home() / '.config' / 'openfei')
         self.session_mgr = SessionManager(Path.home() / '.cache' / 'openfei' / 'cookies.json')
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
         self.session = None
+        self.window = None
+        self.stack = None
+        
         threading.Thread(target=self.loop.run_forever, daemon=True).start()
+
+        # Conectamos via sinais para garantir a ordem de execução perfeita do GTK
+        self.connect('activate', self.on_activate)
+        self.connect('shutdown', self.on_shutdown)
 
     def run_async(self, coro, callback=None):
         future = asyncio.run_coroutine_threadsafe(coro, self.loop)
@@ -67,18 +78,23 @@ class OpenFEIApp(Gtk.Application):
         else:
             self.show_home_screen()
 
-    def do_activate(self):
-        self.window = Gtk.ApplicationWindow(application=self)
+    def on_activate(self, app):
+        # Criamos a janela vinculada ao app recebido pelo sinal com total segurança
+        self.window = Gtk.ApplicationWindow(application=app)
         self.window.set_title("OpenFEI")
         self.window.set_default_size(800, 600)
 
+        Gtk.Window.set_default_icon_name('com.marinov.openfei')
+
         css_provider = Gtk.CssProvider()
-        css_provider.load_from_path('style.css')
-        Gtk.StyleContext.add_provider_for_display(
-            self.window.get_display(),
-            css_provider,
-            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-        )
+        css_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'style.css')
+        if os.path.exists(css_path):
+            css_provider.load_from_path(css_path)
+            Gtk.StyleContext.add_provider_for_display(
+                self.window.get_display(),
+                css_provider,
+                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            )
 
         self.stack = Gtk.Stack()
         self.window.set_child(self.stack)
@@ -137,15 +153,16 @@ class OpenFEIApp(Gtk.Application):
         self.config.save(cfg)
         self.show_login_screen()
 
-    def do_shutdown(self):
+    def on_shutdown(self, app):
         if self.session is not None:
             self.loop.call_soon_threadsafe(
                 lambda: asyncio.ensure_future(self.session_mgr.close(), loop=self.loop)
             )
         self.loop.call_soon_threadsafe(self.loop.stop)
-        Gtk.Application.do_shutdown(self)
 
 
 if __name__ == '__main__':
+    from gi.repository import GLib
+    GLib.set_prgname('com.marinov.openfei')
     app = OpenFEIApp()
     app.run(sys.argv)
