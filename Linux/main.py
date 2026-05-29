@@ -45,16 +45,11 @@ class OpenFEIApp(Gtk.Application):
 
     def _on_session_ready(self, result):
         if isinstance(result, Exception):
-            print(f"[ERRO] Falha ao criar sessão HTTP: {result}", flush=True)
             self.show_login_screen()
             return
 
-        print("[INFO] Sessão HTTP criada com sucesso.", flush=True)
-
-        # Tenta auto-login se houver credenciais salvas
         cfg = self.config.load()
         if cfg.get('auto_login') and cfg.get('user') and cfg.get('password'):
-            print("[INFO] Credenciais salvas encontradas, tentando auto-login...", flush=True)
             self.run_async(
                 self._try_auto_login(cfg['user'], cfg['password']),
                 self._on_auto_login_result
@@ -68,10 +63,8 @@ class OpenFEIApp(Gtk.Application):
 
     def _on_auto_login_result(self, result):
         if isinstance(result, Exception) or not result.success:
-            print("[INFO] Auto-login falhou, exibindo tela de login.", flush=True)
             self.show_login_screen()
         else:
-            print("[INFO] Auto-login bem-sucedido.", flush=True)
             self.show_home_screen()
 
     def do_activate(self):
@@ -93,43 +86,23 @@ class OpenFEIApp(Gtk.Application):
         self.run_async(self._init_session(), self._on_session_ready)
         self.window.present()
 
-    # ---- Navegação ----
-
     def show_login_screen(self):
-        self._replace_screen(
-            'login',
-            LoginWindow(self, self.run_async, self.on_login_success)
-        )
+        self._replace_screen('login', LoginWindow(self, self.run_async, self.on_login_success))
 
     def show_home_screen(self):
-        self._replace_screen(
-            'home',
-            HomeWindow(self, self.on_logout, self._nav_to)
-        )
+        self._replace_screen('home', HomeWindow(self, self.on_logout, self._nav_to))
 
     def show_calendario_screen(self):
-        self._replace_screen(
-            'calendario',
-            CalendarioWindow(self, self.session, self.run_async, self.show_home_screen)
-        )
+        self._replace_screen('calendario', CalendarioWindow(self, self.session, self.run_async, self.show_home_screen))
 
     def show_horario_screen(self):
-        self._replace_screen(
-            'horario',
-            HorarioWindow(self, self.session, self.run_async, self.show_home_screen)
-        )
+        self._replace_screen('horario', HorarioWindow(self, self.session, self.run_async, self.show_home_screen))
 
     def show_notas_screen(self):
-        self._replace_screen(
-            'notas',
-            NotasWindow(self, self.session, self.run_async, self.show_home_screen)
-        )
+        self._replace_screen('notas', NotasWindow(self, self.session, self.run_async, self.show_home_screen))
 
     def show_boletos_screen(self):
-        self._replace_screen(
-            'boletos',
-            BoletosWindow(self, self.session, self.run_async, self.show_home_screen)
-        )
+        self._replace_screen('boletos', BoletosWindow(self, self.session, self.run_async, self.show_home_screen))
 
     def _nav_to(self, destino: str):
         rotas = {
@@ -142,14 +115,11 @@ class OpenFEIApp(Gtk.Application):
             rotas[destino]()
 
     def _replace_screen(self, name: str, widget: Gtk.Widget):
-        """Remove a tela anterior de mesmo nome (se existir) e adiciona a nova."""
         existing = self.stack.get_child_by_name(name)
         if existing:
             self.stack.remove(existing)
         self.stack.add_named(widget, name)
         self.stack.set_visible_child_name(name)
-
-    # ---- Callbacks de autenticação ----
 
     def on_login_success(self, user, password, remember):
         cfg = {'auto_login': remember}
@@ -160,7 +130,6 @@ class OpenFEIApp(Gtk.Application):
         self.show_home_screen()
 
     def on_logout(self):
-        # Limpa credenciais salvas e volta para o login
         cfg = self.config.load()
         cfg['auto_login'] = False
         cfg.pop('user', None)
