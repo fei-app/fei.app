@@ -75,6 +75,14 @@ class LoginActivity : AppCompatActivity() {
         btnLogin.setOnClickListener {
             initiateLoginFlow()
         }
+
+        // --- AUTO LOGIN: se já existem credenciais salvas, executa o login automaticamente ---
+        val encryptedPrefs = getEncryptedPrefs(this)
+        val savedUser = encryptedPrefs.getString(KEY_USER, "") ?: ""
+        val savedPass = encryptedPrefs.getString(KEY_PASS, "") ?: ""
+        if (savedUser.isNotEmpty() && savedPass.isNotEmpty()) {
+            initiateLoginFlow()
+        }
     }
 
     private fun setupPasswordToggle() {
