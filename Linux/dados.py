@@ -379,7 +379,7 @@ class Dados:
         try:
             partes = vencimento.split('/')
             nome_arquivo = (
-                f"{partes[2]}_{partes[1]}.pdf" if len(partes) == 3 else f"{titulo_id}.pdf"
+                f"{partes[2]}-{partes[1]}.pdf" if len(partes) == 3 else f"{titulo_id}.pdf"
             )
 
             # 1. Buscar CSRF token na página de boletos
@@ -418,7 +418,7 @@ class Dados:
                 pdf_bytes = await resp.read()
 
             # 3. Salvar em ~/Downloads/BoletosFEI/
-            destino = Path.home() / 'Downloads' / 'BoletosFEI'
+            destino = Dados._get_xdg_download_dir() / 'BoletosFEI'
             destino.mkdir(parents=True, exist_ok=True)
             arquivo = destino / nome_arquivo
             arquivo.write_bytes(pdf_bytes)
@@ -429,6 +429,31 @@ class Dados:
             logger.exception("Erro ao baixar boleto %s", titulo_id)
             return None
 
+    @staticmethod
+    def _get_xdg_download_dir() -> Path:
+        """Retorna a pasta de Downloads configurada pelo usuário via XDG.
+        
+        Lê ~/.config/user-dirs.dirs (padrão KDE/GNOME/XFCE).
+        Faz fallback para ~/Downloads se o arquivo não existir ou não tiver
+        a entrada XDG_DOWNLOAD_DIR.
+        """
+        user_dirs_file = Path.home() / '.config' / 'user-dirs.dirs'
+        try:
+            if user_dirs_file.exists():
+                with user_dirs_file.open(encoding='utf-8') as f:
+                    for line in f:
+                        line = line.strip()
+                        # Ignora comentários e linhas vazias
+                        if not line or line.startswith('#'):
+                            continue
+                        if line.startswith('XDG_DOWNLOAD_DIR='):
+                            value = line.split('=', 1)[1].strip('"')
+                            # $HOME é a única variável usada nesse arquivo na prática
+                            value = value.replace('$HOME', str(Path.home()))
+                            return Path(value)
+        except OSError:
+            logger.warning("Não foi possível ler %s, usando ~/Downloads", user_dirs_file)
+        return Path.home() / 'Downloads'
     # ===================== ORDENAÇÃO DE NOTAS PARA HOME =====================
 
     @staticmethod
