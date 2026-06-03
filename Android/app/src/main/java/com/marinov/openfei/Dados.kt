@@ -29,13 +29,16 @@ object Dados {
     private const val KEY_PERFIL = "perfil_cache"
     private const val KEY_AULAS = "aulas_cache"
     private const val KEY_CALENDARIO_PROVAS = "calendario_provas_cache"
+    private const val KEY_BOLETOS = "boletos_cache"
+
     private const val KEY_LAST_UPDATE_DISCIPLINAS = "last_update_disciplinas"
     private const val KEY_LAST_UPDATE_NOTAS = "last_update_notas"
     private const val KEY_LAST_UPDATE_PERFIL = "last_update_perfil"
     private const val KEY_LAST_UPDATE_AULAS = "last_update_aulas"
     private const val KEY_LAST_UPDATE_CALENDARIO_PROVAS = "last_update_calendario_provas"
-    private const val KEY_BOLETOS = "boletos_cache"
     private const val KEY_LAST_UPDATE_BOLETOS = "last_update_boletos"
+    private const val KEY_LAST_UPDATE_MEDIAS = "last_update_medias"
+
     private const val URL_DISCIPLINAS = "https://interage.fei.org.br/secureserver/portal/graduacao/sala-dos-professores/consultas/tabela-de-aulas"
     private const val URL_NOTAS = "https://interage.fei.org.br/secureserver/portal/graduacao/secretaria/consultas/notas"
     private const val URL_PERFIL = "https://interage.fei.org.br/secureserver/portal/graduacao/secretaria/dados-pessoais"
@@ -44,6 +47,7 @@ object Dados {
     private const val URL_BOLETOS = "https://interage.fei.org.br/secureserver/portal/graduacao/tesouraria/consultas/boletos"
     private const val URL_GERAR_BOLETO = "https://interage.fei.org.br/secureserver/portal/graduacao/tesouraria/consultas/boletos/titulos/gerar"
     private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 16; sdk_gphone64_x86_64 Build/BE2A.250530.026.D1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/133.0.6943.137 Mobile Safari/537.36"
+
     private lateinit var appContext: Context
     private val gson = Gson()
     private val prefs: SharedPreferences by lazy { appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE) }
@@ -127,6 +131,23 @@ object Dados {
             }
         } else {
             getCachedNotas()
+        }
+    }
+
+    suspend fun obterMedias(online: Boolean): Map<String, String> {
+        return if (online) {
+            try {
+                val medias = fetchMediasFromServer()
+                saveMediasCache(medias)
+                medias
+            } catch (e: SessionExpiredException) {
+                throw e
+            } catch (e: Exception) {
+                if (e !is CancellationException) Log.e("Dados", "Erro ao buscar médias online", e)
+                getCachedMedias()
+            }
+        } else {
+            getCachedMedias()
         }
     }
 
@@ -451,7 +472,6 @@ object Dados {
             return "${tipoPeso(tp.tipo)}|$flag|$dataFormatada|$codigoNormalizado"
         }
 
-        // Disciplinas com tipo principal, ordenadas pela chave (decrescente)
         val disciplinasComCalendario = grupos.keys
             .filter { cod -> tipoPrincipalPorDisciplina.containsKey(cod) }
             .sortedByDescending { cod: String -> chaveOrdenacao(cod) ?: "" }
@@ -463,25 +483,21 @@ object Dados {
             val notasDaDisciplina = grupos[codigoNormalizado] ?: continue
             val tp = tipoPrincipalPorDisciplina[codigoNormalizado]!!
 
-            // 1. Nota do tipo principal (se lançada)
             notasDaDisciplina
                 .filter { it.tipoProva == tp.tipo && it.valor.isNotEmpty() }
                 .sortedBy { it.nomeDisciplina }
                 .let { resultado.addAll(it) }
 
-            // 2. Notas desconhecidas da disciplina
             notasDaDisciplina
                 .filter { it.tipoProva !in tiposConhecidos && it.valor.isNotEmpty() }
                 .sortedBy { it.nomeDisciplina }
                 .let { resultado.addAll(it) }
 
-            // 3. Outras conhecidas → avulsas
             val outrasConhecidas = notasDaDisciplina
                 .filter { it.tipoProva in tiposConhecidos && it.tipoProva != tp.tipo && it.valor.isNotEmpty() }
             avulsas.addAll(outrasConhecidas)
         }
 
-        // Disciplinas sem tipo principal → todas as notas viram avulsas
         val setComCalendario = disciplinasComCalendario.toSet()
         for ((codigoNormalizado, lista) in grupos) {
             if (codigoNormalizado !in setComCalendario) {
@@ -489,7 +505,6 @@ object Dados {
             }
         }
 
-        // Ordenação das avulsas: data, tipo, nome
         val ancoraPorDisciplina: Map<String, Int> = provasValidas
             .groupBy { normalizar(it.disciplina) }
             .mapValues { (_, lista) -> lista.maxOf { dataParaInt(it.dataProva) } }
@@ -512,6 +527,7 @@ object Dados {
         resultado.addAll(avulsas)
         return resultado
     }
+
     // ===================== FUNÇÕES PRIVADAS DE REDE =====================
     @Throws(IOException::class)
     private suspend fun fetchPage(url: String): Document = withContext(Dispatchers.IO) {
@@ -583,6 +599,37 @@ object Dados {
         }
         Log.d("Dados", "Notas carregadas: ${notas.size}")
         return notas
+    }
+
+    private suspend fun fetchMediasFromServer(): Map<String, String> {
+        val doc = fetchPage(URL_NOTAS)
+        val container = doc.selectFirst("body > div.container > div:nth-child(2) > div.col-md-9 > div:nth-child(5)")
+            ?: throw SessionExpiredException("Container das notas não encontrado")
+        val panels = container.select("div.panel.panel-default")
+        val medias = mutableMapOf<String, String>()
+
+        for (panel in panels) {
+            val tituloLink = panel.selectFirst(".panel-title a.tabela-notas") ?: continue
+            val textoCompleto = tituloLink.text().trim()
+            val partes = textoCompleto.split(" - ", limit = 2)
+            if (partes.size != 2) continue
+            val codigo = partes[0].trim()
+
+            val tabelaNotas = panel.selectFirst("table.table") ?: continue
+            val linhas = tabelaNotas.select("tbody > tr")
+
+            for (linha in linhas) {
+                val primeiraColuna = linha.selectFirst("td:first-child")?.text()?.trim() ?: ""
+                // Procura exatamente pela linha que tem "Média" na primeira coluna
+                if (primeiraColuna.equals("Média", ignoreCase = true)) {
+                    val valorMedia = linha.select("td").getOrNull(1)?.text()?.trim() ?: ""
+                    medias[codigo] = valorMedia
+                    break // Vai para o próximo cartão de notas
+                }
+            }
+        }
+        Log.d("Dados", "Médias carregadas: ${medias.size}")
+        return medias
     }
 
     private suspend fun fetchPerfilFromServer(): Perfil {
@@ -804,7 +851,8 @@ object Dados {
             "aulas_cache.json",
             "provas_cache.json",
             "boletos_cache.json",
-            "perfil_cache.json"
+            "perfil_cache.json",
+            "medias_cache.json"
         ).forEach { nome ->
             File(appContext.filesDir, nome).delete()
         }
@@ -815,6 +863,7 @@ object Dados {
             remove(KEY_LAST_UPDATE_CALENDARIO_PROVAS)
             remove(KEY_LAST_UPDATE_BOLETOS)
             remove(KEY_LAST_UPDATE_PERFIL)
+            remove(KEY_LAST_UPDATE_MEDIAS)
         }
     }
 
@@ -846,6 +895,21 @@ object Dados {
             val type = object : TypeToken<List<Nota>>() {}.type
             gson.fromJson(file.readText(), type) ?: emptyList()
         } catch (_: Exception) { emptyList() }
+    }
+
+    private fun saveMediasCache(medias: Map<String, String>) {
+        val file = File(appContext.filesDir, "medias_cache.json")
+        file.writeText(gson.toJson(medias))
+        prefs.edit { putLong(KEY_LAST_UPDATE_MEDIAS, System.currentTimeMillis()) }
+    }
+
+    private fun getCachedMedias(): Map<String, String> {
+        val file = File(appContext.filesDir, "medias_cache.json")
+        if (!file.exists()) return emptyMap()
+        return try {
+            val type = object : TypeToken<Map<String, String>>() {}.type
+            gson.fromJson(file.readText(), type) ?: emptyMap()
+        } catch (_: Exception) { emptyMap() }
     }
 
     private fun savePerfilCache(perfil: Perfil) {

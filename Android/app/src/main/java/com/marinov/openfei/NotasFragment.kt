@@ -1,25 +1,25 @@
 package com.marinov.openfei
 
-import android.graphics.Typeface
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.TableLayout
-import android.widget.TableRow
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColorInt
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
-import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -29,14 +29,19 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
 
     private lateinit var loadingContainer: FrameLayout
     private lateinit var contentContainer: LinearLayout
-    private lateinit var tableNotas: TableLayout
     private lateinit var barOffline: LinearLayout
-    private lateinit var legendCard: MaterialCardView
-    private lateinit var legendContainer: LinearLayout
-    private lateinit var legendTitle: TextView
+    private lateinit var rvNotas: RecyclerView
     private var adView: AdView? = null
     private var isRefreshing = false
     private var isFirstLoad = true
+
+    // Estrutura de dados que alimenta cada Cartão (Card)
+    data class SubjectData(
+        val codigo: String,
+        val nome: String,
+        val notas: List<Dados.Nota>,
+        val media: String
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,12 +56,17 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
 
         loadingContainer = view.findViewById(R.id.loadingContainer)
         contentContainer = view.findViewById(R.id.contentContainer)
-        tableNotas = view.findViewById(R.id.tableNotas)
         barOffline = view.findViewById(R.id.barOffline)
-        legendCard = view.findViewById(R.id.legendCard)
-        legendContainer = view.findViewById(R.id.legendContainer)
-        legendTitle = view.findViewById(R.id.legendTitle)
+        rvNotas = view.findViewById(R.id.rvNotas)
         val btnLogin: Button = view.findViewById(R.id.btnLogin)
+
+        // Configuração responsiva do LayoutManager: 2 colunas se for tablet (>= 600dp), 1 coluna se for celular
+        val isTablet = resources.configuration.smallestScreenWidthDp >= 600
+        rvNotas.layoutManager = if (isTablet) {
+            GridLayoutManager(requireContext(), 2)
+        } else {
+            LinearLayoutManager(requireContext())
+        }
 
         // Inicializa AdMob
         adView = view.findViewById(R.id.adView)
@@ -124,29 +134,25 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
 
     private suspend fun loadNotasData(online: Boolean) {
         try {
-            // Busca notas e disciplinas em paralelo
+            // Busca notas, médias e disciplinas em paralelo
             val notasDeferred = lifecycleScope.async(Dispatchers.IO) {
                 Dados.obterNotas(online = online)
             }
             val disciplinasDeferred = lifecycleScope.async(Dispatchers.IO) {
                 runCatching { Dados.obterDisciplinas(online = online) }.getOrElse { emptyList() }
             }
+            val mediasDeferred = lifecycleScope.async(Dispatchers.IO) {
+                runCatching { Dados.obterMedias(online = online) }.getOrElse { emptyMap() }
+            }
 
             val notas = notasDeferred.await()
             val disciplinas = disciplinasDeferred.await()
+            val medias = mediasDeferred.await()
 
-            // Só toca na UI depois que ambos os dados chegaram
+            // Atualiza a UI com os dados agregados
             withContext(Dispatchers.Main) {
                 if (notas.isNotEmpty()) {
-                    buildTable(notas)
-                } else {
-                    tableNotas.removeAllViews()
-                }
-
-                buildLegend(disciplinas)
-
-                // Revela o conteúdo de uma vez, sem piscar
-                if (notas.isNotEmpty()) {
+                    buildCards(notas, disciplinas, medias)
                     showContent()
                 } else {
                     showEmptyState()
@@ -156,97 +162,25 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
             Log.e("NotasFragment", "Erro ao obter notas", e)
             withContext(Dispatchers.Main) {
                 showEmptyState()
-                hideLegend()
             }
         }
     }
 
-    private fun buildTable(notas: List<Dados.Nota>) {
-        val context = context ?: return
-        tableNotas.removeAllViews()
+    private fun buildCards(notas: List<Dados.Nota>, disciplinas: List<Dados.Disciplina>, medias: Map<String, String>) {
+        val disciplinasMap = disciplinas.associateBy { it.codigo }
+        val notasAgrupadas = notas.groupBy { it.codigoDisciplina }
 
-        if (notas.isEmpty()) return
+        // Mapeia para os objetos de cartão organizados alfabeticamente
+        val cardsData = notasAgrupadas.map { (codigo, listaNotas) ->
+            SubjectData(
+                codigo = codigo,
+                nome = disciplinasMap[codigo]?.nome ?: codigo,
+                notas = listaNotas,
+                media = medias[codigo] ?: ""
+            )
+        }.sortedBy { it.nome }
 
-        val disciplinasMap = linkedMapOf<String, MutableMap<String, String>>()
-        val tiposProvaSet = mutableSetOf<String>()
-
-        for (nota in notas) {
-            val map = disciplinasMap.getOrPut(nota.codigoDisciplina) { mutableMapOf() }
-            map[nota.tipoProva] = nota.valor
-            tiposProvaSet.add(nota.tipoProva)
-        }
-
-        val tiposFixos = setOf("P1", "P2", "P3", "PJ")
-
-        // Monta as colunas: tipos fixos + tipos adicionais que tenham ao menos um valor válido
-        val tiposVisiveis = (
-                tiposFixos +
-                        tiposProvaSet.filter { tipo ->
-                            tipo !in tiposFixos &&
-                                    disciplinasMap.values.any { notasMap ->
-                                        notasMap[tipo]?.let {
-                                            it.isNotBlank() && it != "-" && it != "--"
-                                        } ?: false
-                                    }
-                        }
-                ).sorted()
-
-        // Linha de cabeçalho
-        val headerRow = TableRow(context).apply {
-            setBackgroundColor(ContextCompat.getColor(context, R.color.header_bg))
-        }
-        val disciplinaHeader = createCell("Código", isHeader = true)
-        disciplinaHeader.setTextColor(ContextCompat.getColor(context, R.color.colorOnSurface))
-        headerRow.addView(disciplinaHeader)
-
-        for (tipo in tiposVisiveis) {
-            val cell = createCell(tipo, isHeader = true)
-            cell.setTextColor(ContextCompat.getColor(context, R.color.colorOnSurface))
-            headerRow.addView(cell)
-        }
-        tableNotas.addView(headerRow)
-
-        val colorDefault = ContextCompat.getColor(context, R.color.colorOnSurface)
-
-        // Linhas de dados
-        for ((codigo, notasMap) in disciplinasMap) {
-            val row = TableRow(context)
-            row.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
-
-            val codigoCell = createCell(codigo, isHeader = false)
-            codigoCell.setTextColor(colorDefault)
-            row.addView(codigoCell)
-
-            for (tipo in tiposVisiveis) {
-                // 🔧 CORREÇÃO: qualquer valor nulo, vazio ou em branco vira "--"
-                val valor = notasMap[tipo]?.takeIf { it.isNotBlank() } ?: "--"
-                val cell = createCell(valor, isHeader = false)
-                cell.setTextColor(colorDefault)
-                row.addView(cell)
-            }
-            tableNotas.addView(row)
-        }
-    }
-
-    /** Monta a legenda na UI — deve ser chamado sempre na Main thread, antes de showContent(). */
-    private fun buildLegend(disciplinas: List<Dados.Disciplina>) {
-        legendContainer.removeAllViews()
-        if (disciplinas.isEmpty()) {
-            hideLegend()
-            return
-        }
-        val context = context ?: return
-        legendCard.visibility = View.VISIBLE
-        legendTitle.visibility = View.VISIBLE
-        for (d in disciplinas) {
-            val item = TextView(context).apply {
-                text = "${d.codigo} - ${d.nome}"
-                setTextColor(ContextCompat.getColor(context, R.color.colorOnSurface))
-                textSize = 14f
-                setPadding(0, 4, 0, 4)
-            }
-            legendContainer.addView(item)
-        }
+        rvNotas.adapter = NotasAdapter(cardsData)
     }
 
     private fun showContent() {
@@ -260,29 +194,7 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
         if (isAdded) {
             loadingContainer.visibility = View.GONE
             contentContainer.visibility = View.VISIBLE
-            tableNotas.removeAllViews()
-            hideLegend()
-        }
-    }
-
-    private fun hideLegend() {
-        if (isAdded) {
-            legendCard.visibility = View.GONE
-            legendTitle.visibility = View.GONE
-            legendContainer.removeAllViews()
-        }
-    }
-
-    private fun createCell(text: String, isHeader: Boolean): TextView {
-        val context = requireContext()
-        return TextView(context).apply {
-            this.text = text
-            setTypeface(null, if (isHeader) Typeface.BOLD else Typeface.NORMAL)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, if (isHeader) 13f else 12f)
-            val paddingH = (8 * resources.displayMetrics.density).toInt()
-            val paddingV = (6 * resources.displayMetrics.density).toInt()
-            setPadding(paddingH, paddingV, paddingH, paddingV)
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
+            rvNotas.adapter = null
         }
     }
 
@@ -292,5 +204,75 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
 
     private fun hideOfflineBar() {
         if (isAdded) barOffline.visibility = View.GONE
+    }
+
+    // ======================== ADAPTER DOS CARTÕES ========================
+    inner class NotasAdapter(private val items: List<SubjectData>) : RecyclerView.Adapter<NotasAdapter.ViewHolder>() {
+
+        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val tvDisciplinaTitle: TextView = view.findViewById(R.id.tvDisciplinaTitle)
+            val llNotasContainer: LinearLayout = view.findViewById(R.id.llNotasContainer)
+            val divider: View = view.findViewById(R.id.divider)
+            val tvMedia: TextView = view.findViewById(R.id.tvMedia)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_nota_card, parent, false)
+            return ViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val item = items[position]
+            val context = holder.itemView.context
+
+            // Título principal do Card
+            holder.tvDisciplinaTitle.text = "${item.codigo} - ${item.nome}"
+
+            // Popula dinamicamente a lista de provas (P1, P2, PJ...)
+            holder.llNotasContainer.removeAllViews()
+            for (nota in item.notas) {
+                val valorExibicao = nota.valor.takeIf { it.isNotBlank() } ?: "--"
+                val tvNota = TextView(context).apply {
+                    text = "${nota.tipoProva}: $valorExibicao"
+                    setTextColor(ContextCompat.getColor(context, R.color.colorOnSurface))
+                    textSize = 14f
+                    setPadding(0, 4, 0, 4)
+                }
+                holder.llNotasContainer.addView(tvNota)
+            }
+
+            // Lógica de exibição da Média (com validação de cor)
+            if (item.media.isNotBlank()) {
+                holder.tvMedia.visibility = View.VISIBLE
+                holder.divider.visibility = View.VISIBLE
+
+                // Adapta cores para Light / Dark mode com alto contraste
+                val isNightMode = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+                val colorAprovado = if (isNightMode) "#81C784".toColorInt() else "#2E7D32".toColorInt()
+                val colorReprovado = if (isNightMode) "#E57373".toColorInt() else "#C62828".toColorInt()
+                val colorDefault = ContextCompat.getColor(context, R.color.colorOnSurface)
+
+                val mediaValue = item.media.replace(",", ".").toFloatOrNull()
+
+                if (mediaValue != null) {
+                    if (mediaValue >= 5.0f) {
+                        holder.tvMedia.text = "Média: ${item.media} (APROVADO)"
+                        holder.tvMedia.setTextColor(colorAprovado)
+                    } else {
+                        holder.tvMedia.text = "Média: ${item.media} (REPROVADO)"
+                        holder.tvMedia.setTextColor(colorReprovado)
+                    }
+                } else {
+                    holder.tvMedia.text = "Média: ${item.media}"
+                    holder.tvMedia.setTextColor(colorDefault)
+                }
+            } else {
+                // Se a média não existe, apenas oculta
+                holder.tvMedia.visibility = View.GONE
+                holder.divider.visibility = View.GONE
+            }
+        }
+
+        override fun getItemCount(): Int = items.size
     }
 }

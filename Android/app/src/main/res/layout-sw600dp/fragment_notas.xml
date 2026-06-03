@@ -93,91 +93,21 @@
             android:paddingBottom="4dp">
 
             <com.google.android.gms.ads.AdView
-                xmlns:ads="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/adView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                ads:adSize="BANNER"
-                ads:adUnitId="ca-app-pub-8734981142486691/3960746138" />
+                app:adSize="BANNER"
+                app:adUnitId="ca-app-pub-8734981142486691/3960746138" />
         </LinearLayout>
 
-        <androidx.core.widget.NestedScrollView
+        <!-- Nova Lista de Notas (O GridLayoutManager tratará as duas colunas do Tablet pelo Kotlin) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvNotas"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp">
-
-                <HorizontalScrollView
-                    android:id="@+id/horizontalScrollView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintWidth_max="@dimen/max_table_width">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="4dp">
-
-                        <TableLayout
-                            android:id="@+id/tableNotas"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:shrinkColumns="*"
-                            android:stretchColumns="*"
-                            android:background="@color/fundocartao"/>
-                    </com.google.android.material.card.MaterialCardView>
-                </HorizontalScrollView>
-
-                <!-- Legenda das disciplinas (centralizada) -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/legendCard"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:visibility="gone"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/horizontalScrollView"
-                    app:layout_constraintWidth_max="600dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <TextView
-                            android:id="@+id/legendTitle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Disciplinas"
-                            android:textAppearance="?attr/textAppearanceSubtitle1"
-                            android:textColor="?attr/colorOnSurface"
-                            android:layout_marginBottom="8dp"
-                            android:visibility="gone"
-                            android:layout_gravity="center_horizontal"/>
-
-                        <LinearLayout
-                            android:id="@+id/legendContainer"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center_horizontal"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.core.widget.NestedScrollView>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:padding="8dp" />
 
     </LinearLayout>
 

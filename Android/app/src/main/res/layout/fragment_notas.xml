@@ -44,6 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone">
+
         <!-- Barra Offline -->
         <LinearLayout
             android:id="@+id/barOffline"
@@ -92,81 +93,21 @@
             android:paddingBottom="4dp">
 
             <com.google.android.gms.ads.AdView
-                xmlns:ads="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/adView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                ads:adSize="BANNER"
-                ads:adUnitId="ca-app-pub-8734981142486691/3960746138" />
+                app:adSize="BANNER"
+                app:adUnitId="ca-app-pub-8734981142486691/3960746138" />
         </LinearLayout>
 
-        <androidx.core.widget.NestedScrollView
+        <!-- Nova Lista de Notas (Substituiu a ScrollView e Tabela antigas) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvNotas"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="8dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="4dp">
-
-                        <TableLayout
-                            android:id="@+id/tableNotas"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:shrinkColumns="*"
-                            android:stretchColumns="*"
-                            android:background="@color/fundocartao"/>
-                    </com.google.android.material.card.MaterialCardView>
-                </HorizontalScrollView>
-
-                <!-- Legenda das disciplinas -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/legendCard"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:visibility="gone"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <TextView
-                            android:id="@+id/legendTitle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Disciplinas"
-                            android:textAppearance="?attr/textAppearanceSubtitle1"
-                            android:textColor="?attr/colorOnSurface"
-                            android:layout_marginBottom="8dp"
-                            android:visibility="gone"/>
-
-                        <LinearLayout
-                            android:id="@+id/legendContainer"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:padding="4dp" />
 
     </LinearLayout>
 
