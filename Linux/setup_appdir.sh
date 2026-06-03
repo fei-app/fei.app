@@ -87,3 +87,6 @@ EOF
 
 chmod +x "$APPDIR/AppRun"
 echo "=== AppDir estruturado com sucesso e protegido contra atualizações! ==="
+
+ARCH=x86_64 ./appimagetool --no-appstream AppDir OpenFEI-1.0.2-x86_64.AppImage
+echo "=== AppImage gerada! ==="
