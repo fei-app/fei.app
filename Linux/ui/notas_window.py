@@ -7,10 +7,6 @@ from dados import Dados, SessionExpiredException
 from models import Nota, Disciplina
 
 
-# Colunas fixas, sempre exibidas (mesma lógica do Android: tiposFixos)
-TIPOS_FIXOS = ['P1', 'P2', 'P3', 'PJ']
-
-
 class NotasWindow(Gtk.Box):
     def __init__(self, app, session, run_async_callback, on_back):
         super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=0)
@@ -67,30 +63,24 @@ class NotasWindow(Gtk.Box):
         self.scroll.set_visible(False)
         self.append(self.scroll)
 
-        # Container interno do scroll: tabela + legenda
+        # Container interno do scroll
         self.content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-        self.content_box.set_margin_start(8)
-        self.content_box.set_margin_end(8)
-        self.content_box.set_margin_top(4)
+        self.content_box.set_margin_start(12)
+        self.content_box.set_margin_end(12)
+        self.content_box.set_margin_top(8)
         self.content_box.set_margin_bottom(12)
         self.scroll.set_child(self.content_box)
 
-        # Placeholder da tabela (substituído ao renderizar)
-        self.table_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-        self.content_box.append(self.table_box)
-
-        # Separador entre tabela e legenda
-        self.sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
-        self.sep.add_css_class('notas-separator')
-        self.sep.set_visible(False)
-        self.content_box.append(self.sep)
-
-        # Legenda
-        self.legend_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
-        self.legend_box.set_margin_start(4)
-        self.legend_box.set_margin_top(4)
-        self.legend_box.set_visible(False)
-        self.content_box.append(self.legend_box)
+        # Gtk.FlowBox para organizar os cartões dinamicamente em 1 ou 2 colunas
+        self.flow_box = Gtk.FlowBox()
+        self.flow_box.set_valign(Gtk.Align.START)
+        self.flow_box.set_selection_mode(Gtk.SelectionMode.NONE)
+        self.flow_box.set_max_children_per_line(2)
+        self.flow_box.set_min_children_per_line(1)
+        self.flow_box.set_homogeneous(True)
+        self.flow_box.set_column_spacing(12)
+        self.flow_box.set_row_spacing(12)
+        self.content_box.append(self.flow_box)
 
         # ---- Estado vazio ----
         self.label_no_data = Gtk.Label(label="Nenhuma nota encontrada.")
@@ -130,30 +120,39 @@ class NotasWindow(Gtk.Box):
         GLib.idle_add(self.bar_offline.set_visible, False)
 
         try:
-            # Busca notas e disciplinas em paralelo (igual ao Android com async/await)
-            notas, disciplinas = await asyncio.gather(
+            # Busca notas, disciplinas e médias em paralelo
+            notas, disciplinas, medias = await asyncio.gather(
                 Dados.fetch_notas(self.session, self.cache),
                 self._fetch_disciplinas_safe(),
+                self._fetch_medias_safe()
             )
 
             # Persiste cache
             self.cache.save('notas', [n.__dict__ for n in notas])
             self.cache.save('disciplinas', [d.__dict__ for d in disciplinas])
+            try:
+                self.cache.save('medias', medias)
+            except Exception:
+                pass
 
-            GLib.idle_add(self._renderizar, notas, disciplinas, False)
+            GLib.idle_add(self._renderizar, notas, disciplinas, medias, False)
 
         except SessionExpiredException:
             notas = self.cache.load('notas', Nota) or []
             disciplinas = self.cache.load('disciplinas', Disciplina) or []
+            medias = self._load_medias_cache()
+            
             GLib.idle_add(self.bar_offline.set_visible, True)
-            GLib.idle_add(self._renderizar, notas, disciplinas, True)
+            GLib.idle_add(self._renderizar, notas, disciplinas, medias, True)
 
         except Exception as e:
             notas = self.cache.load('notas', Nota) or []
             disciplinas = self.cache.load('disciplinas', Disciplina) or []
+            medias = self._load_medias_cache()
+            
             if notas:
                 GLib.idle_add(self.bar_offline.set_visible, True)
-                GLib.idle_add(self._renderizar, notas, disciplinas, True)
+                GLib.idle_add(self._renderizar, notas, disciplinas, medias, True)
             else:
                 GLib.idle_add(self._show_error, f"Erro ao carregar notas: {e}")
 
@@ -166,134 +165,101 @@ class NotasWindow(Gtk.Box):
         except Exception:
             return self.cache.load('disciplinas', Disciplina) or []
 
+    async def _fetch_medias_safe(self) -> dict:
+        try:
+            return await Dados.fetch_medias(self.session)
+        except Exception:
+            return self._load_medias_cache()
+
+    def _load_medias_cache(self) -> dict:
+        try:
+            res = self.cache.load('medias', dict)
+            return res if res else {}
+        except Exception:
+            try:
+                res = self.cache.load('medias')
+                return res if isinstance(res, dict) else {}
+            except Exception:
+                return {}
+
     # ===================== RENDERIZAÇÃO =====================
 
-    def _renderizar(self, notas: list[Nota], disciplinas: list[Disciplina], offline: bool):
+    def _renderizar(self, notas: list[Nota], disciplinas: list[Disciplina], medias: dict, offline: bool):
         self._limpar_conteudo()
 
         if not notas:
             self._show_empty()
             return
 
-        tipos_visiveis = self._calcular_tipos_visiveis(notas)
-        disciplinas_map = self._agrupar_notas(notas)
+        disciplinas_map = {d.codigo: d.nome for d in disciplinas}
+        notas_por_disc = {}
+        
+        for n in notas:
+            notas_por_disc.setdefault(n.codigo_disciplina, []).append(n)
 
-        self._build_table(disciplinas_map, tipos_visiveis)
-        self._build_legend(disciplinas)
+        # Ordenar os cartões alfabeticamente pelo nome da disciplina
+        chaves_ordenadas = sorted(notas_por_disc.keys(), key=lambda cod: disciplinas_map.get(cod, cod))
+
+        for cod in chaves_ordenadas:
+            nome = disciplinas_map.get(cod, cod)
+            lista_notas = notas_por_disc[cod]
+            media_val = medias.get(cod, "")
+
+            card = self._criar_cartao(cod, nome, lista_notas, media_val)
+            self.flow_box.append(card)
 
         self.scroll.set_visible(True)
         self.label_no_data.set_visible(False)
 
-    @staticmethod
-    def _agrupar_notas(notas: list[Nota]) -> dict[str, dict[str, str]]:
-        """codigo_disciplina → {tipo_prova → valor}  (ordem de inserção preservada)."""
-        resultado: dict[str, dict[str, str]] = {}
-        for nota in notas:
-            resultado.setdefault(nota.codigo_disciplina, {})[nota.tipo_prova] = nota.valor
-        return resultado
+    def _criar_cartao(self, codigo: str, nome: str, notas: list[Nota], media: str) -> Gtk.Box:
+            # Cartão propriamente dito
+            card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+            card.add_css_class('nota-card')
 
-    @staticmethod
-    def _calcular_tipos_visiveis(notas: list[Nota]) -> list[str]:
-        """
-        Tipos fixos + extras que tenham ao menos um valor não-vazio,
-        ordenados alfabeticamente — igual ao Android.
-        """
-        todos_tipos = {n.tipo_prova for n in notas}
-        extras = [
-            t for t in todos_tipos
-            if t not in TIPOS_FIXOS and any(
-                n.tipo_prova == t and n.valor and n.valor not in ('-', '--')
-                for n in notas
-            )
-        ]
-        return sorted(set(TIPOS_FIXOS) | set(extras))
+            # Título
+            title = Gtk.Label(label=f"{codigo} - {nome}")
+            title.add_css_class('nota-card-title')
+            title.set_xalign(0)
+            title.set_wrap(True)
+            card.append(title)
 
-    # ---- Tabela ----
+            # Lista de provas (P1, P2, PJ...)
+            notas_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+            for nota in notas:
+                val = nota.valor if nota.valor.strip() else "--"
+                lbl = Gtk.Label(label=f"{nota.tipo_prova}: {val}")
+                lbl.add_css_class('nota-card-item')
+                lbl.set_xalign(0)
+                notas_box.append(lbl)
+            card.append(notas_box)
 
-    def _build_table(self, disciplinas_map: dict[str, dict[str, str]], tipos: list[str]):
-        # Limpa tabela anterior
-        while (c := self.table_box.get_first_child()):
-            self.table_box.remove(c)
+            # Lógica de exibição da Média (sem divisor, conforme solicitado)
+            if media.strip():
+                lbl_media = Gtk.Label()
+                lbl_media.set_xalign(0)
+                lbl_media.set_margin_top(4) # Um pequeno respiro visual
 
-        # Cabeçalho
-        header = self._criar_linha_header(['Código'] + tipos)
-        self.table_box.append(header)
+                try:
+                    val_float = float(media.replace(',', '.'))
+                    if val_float >= 5.0:
+                        lbl_media.set_text(f"Média: {media} (APROVADO)")
+                        lbl_media.add_css_class('nota-media-aprovado')
+                    else:
+                        lbl_media.set_text(f"Média: {media} (REPROVADO)")
+                        lbl_media.add_css_class('nota-media-reprovado')
+                except ValueError:
+                    lbl_media.set_text(f"Média: {media}")
+                    lbl_media.add_css_class('nota-card-item')
 
-        # Linhas de dados
-        for i, (codigo, notas_map) in enumerate(disciplinas_map.items()):
-            valores = [notas_map.get(t, '') or '--' for t in tipos]
-            row = self._criar_linha_dado(codigo, valores, alternada=(i % 2 == 1))
-            self.table_box.append(row)
+                card.append(lbl_media)
 
-    def _criar_linha_header(self, colunas: list[str]) -> Gtk.Box:
-        row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
-        row.add_css_class('notas-header')
-        for texto in colunas:
-            lbl = Gtk.Label(label=texto)
-            lbl.add_css_class('notas-cell-header')
-            lbl.set_hexpand(True)
-            lbl.set_xalign(0.5)
-            row.append(lbl)
-        return row
-
-    def _criar_linha_dado(self, codigo: str, valores: list[str], alternada: bool) -> Gtk.Box:
-        row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
-        if alternada:
-            row.add_css_class('notas-row-alt')
-
-        # Célula do código — alinhada à esquerda
-        cod_lbl = Gtk.Label(label=codigo)
-        cod_lbl.add_css_class('notas-cell')
-        cod_lbl.set_hexpand(True)
-        cod_lbl.set_xalign(0.0)
-        row.append(cod_lbl)
-
-        # Células de valor — centralizadas
-        for valor in valores:
-            val_lbl = Gtk.Label(label=valor)
-            val_lbl.add_css_class('notas-cell')
-            val_lbl.set_hexpand(True)
-            val_lbl.set_xalign(0.5)
-            row.append(val_lbl)
-
-        return row
-
-    # ---- Legenda ----
-
-    def _build_legend(self, disciplinas: list[Disciplina]):
-        # Limpa legenda anterior
-        while (c := self.legend_box.get_first_child()):
-            self.legend_box.remove(c)
-
-        if not disciplinas:
-            self.sep.set_visible(False)
-            self.legend_box.set_visible(False)
-            return
-
-        self.sep.set_visible(True)
-        self.legend_box.set_visible(True)
-
-        titulo = Gtk.Label(label="Legenda de Disciplinas")
-        titulo.add_css_class('legend-title')
-        titulo.set_xalign(0)
-        self.legend_box.append(titulo)
-
-        for d in disciplinas:
-            item = Gtk.Label(label=f"{d.codigo} — {d.nome}")
-            item.add_css_class('legend-item')
-            item.set_xalign(0)
-            item.set_wrap(True)
-            self.legend_box.append(item)
+            return card
 
     # ===================== HELPERS DE UI =====================
 
     def _limpar_conteudo(self):
-        while (c := self.table_box.get_first_child()):
-            self.table_box.remove(c)
-        while (c := self.legend_box.get_first_child()):
-            self.legend_box.remove(c)
-        self.sep.set_visible(False)
-        self.legend_box.set_visible(False)
+        while (c := self.flow_box.get_first_child()):
+            self.flow_box.remove(c)
 
     def _show_empty(self):
         self.scroll.set_visible(False)

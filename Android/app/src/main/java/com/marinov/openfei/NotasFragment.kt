@@ -212,7 +212,6 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val tvDisciplinaTitle: TextView = view.findViewById(R.id.tvDisciplinaTitle)
             val llNotasContainer: LinearLayout = view.findViewById(R.id.llNotasContainer)
-            val divider: View = view.findViewById(R.id.divider)
             val tvMedia: TextView = view.findViewById(R.id.tvMedia)
         }
 
@@ -244,7 +243,6 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
             // Lógica de exibição da Média (com validação de cor)
             if (item.media.isNotBlank()) {
                 holder.tvMedia.visibility = View.VISIBLE
-                holder.divider.visibility = View.VISIBLE
 
                 // Adapta cores para Light / Dark mode com alto contraste
                 val isNightMode = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
@@ -269,7 +267,6 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
             } else {
                 // Se a média não existe, apenas oculta
                 holder.tvMedia.visibility = View.GONE
-                holder.divider.visibility = View.GONE
             }
         }
 

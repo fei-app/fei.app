@@ -31,13 +31,6 @@
             android:orientation="vertical"
             android:layout_marginBottom="8dp"/>
 
-        <View
-            android:id="@+id/divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?attr/colorSurfaceVariant"
-            android:layout_marginBottom="8dp"/>
-
         <TextView
             android:id="@+id/tvMedia"
             android:layout_width="match_parent"

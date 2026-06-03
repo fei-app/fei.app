@@ -81,7 +81,7 @@ class Dados:
         logger.debug("Disciplinas carregadas: %d", len(disciplinas))
         return disciplinas
 
-    # ===================== NOTAS =====================
+    # ===================== NOTAS E MÉDIAS =====================
 
     @staticmethod
     async def fetch_notas(session: aiohttp.ClientSession, cache: CacheManager = None) -> list[Nota]:
@@ -121,6 +121,41 @@ class Dados:
 
         logger.debug("Notas carregadas: %d", len(notas))
         return notas
+
+    @staticmethod
+    async def fetch_medias(session: aiohttp.ClientSession, cache: CacheManager = None) -> dict[str, str]:
+        soup = await Dados._fetch_page(session, Dados.URL_NOTAS)
+        container = soup.select_one(
+            'body > div.container > div:nth-child(2) > div.col-md-9 > div:nth-child(5)'
+        )
+        if not container:
+            raise SessionExpiredException("Container das notas não encontrado")
+
+        medias = {}
+        for panel in container.select('div.panel.panel-default'):
+            titulo_link = panel.select_one('.panel-title a.tabela-notas')
+            if not titulo_link:
+                continue
+            partes = titulo_link.text.strip().split(' - ', 1)
+            if len(partes) != 2:
+                continue
+            codigo = partes[0].strip()
+
+            tabela = panel.select_one('table.table')
+            if not tabela:
+                continue
+
+            for row in tabela.select('tbody > tr'):
+                primeira_col = row.select_one('td:first-child')
+                if primeira_col and primeira_col.text.strip().lower() == 'média':
+                    cols = row.select('td')
+                    if len(cols) >= 2:
+                        valor = cols[1].text.strip()
+                        medias[codigo] = valor
+                    break
+
+        logger.debug("Médias carregadas: %d", len(medias))
+        return medias
 
     # ===================== PERFIL =====================
 
