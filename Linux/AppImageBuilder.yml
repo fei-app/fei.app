@@ -7,7 +7,7 @@ AppDir:
     id: com.marinov.openfei
     name: OpenFEI
     icon: openfei
-    version: 1.0.2
+    version: 1.0.3
     exec: usr/bin/python3
     exec_args: "$APPDIR/usr/share/openfei/main.py $@"
 
