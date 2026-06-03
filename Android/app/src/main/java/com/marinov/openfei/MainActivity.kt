@@ -1,7 +1,9 @@
 package com.marinov.openfei
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Rect
@@ -20,10 +22,12 @@ import android.webkit.CookieManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -35,7 +39,6 @@ import com.google.android.material.navigationrail.NavigationRailView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.core.view.isVisible
 
 class MainActivity : AppCompatActivity() {
 
@@ -46,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "MainActivity"
         private const val KEY_CURRENT_FRAGMENT_ID = "current_fragment_id"
+        private const val REQUEST_NOTIFICATION_PERMISSION = 101
 
         private val REFRESHABLE_FRAGMENTS = setOf(
             R.id.navigation_notas,
@@ -138,11 +142,37 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Chama o objeto Helper que criamos para gerenciar os agendamentos!
-        WorkerManagerHelper.iniciarWorkers(this)
+        // Inicia o serviço de segundo plano (substitui WorkerManagerHelper)
+        BackgroundService.start(this)
 
         if (savedInstanceState == null) {
             navigateToHome()
+        }
+    }
+
+    // ===================== PERMISSÃO DE NOTIFICAÇÃO =====================
+
+    /**
+     * Solicita POST_NOTIFICATIONS toda vez que o app fica visível.
+     * No Android < 13 é no-op. Se o usuário negou permanentemente,
+     * requestPermissions() retorna silenciosamente sem crash.
+     */
+    private fun requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this, Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                try {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        REQUEST_NOTIFICATION_PERMISSION
+                    )
+                } catch (e: Exception) {
+                    Log.w(TAG, "Erro ao solicitar permissão de notificação", e)
+                }
+            }
         }
     }
 
@@ -200,6 +230,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Solicita permissão de notificação toda vez que o app fica em primeiro plano
+        requestNotificationPermissionIfNeeded()
         if (isLayoutReady) {
             configureNavigationForDevice()
             invalidateOptionsMenu()
@@ -390,6 +422,8 @@ class MainActivity : AppCompatActivity() {
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // Resultado da permissão de notificação — nenhuma ação obrigatória,
+        // o serviço verifica a permissão antes de cada notify().
     }
 
     @SuppressLint("ObsoleteSdkInt")
