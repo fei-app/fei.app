@@ -2,23 +2,21 @@ package com.marinov.openfei
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.webkit.CookieManager
 import android.util.Log
+import android.webkit.CookieManager
+import androidx.core.content.FileProvider
+import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jsoup.Connection
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
-import java.net.URLEncoder
-import java.util.Calendar
-import androidx.core.content.edit
-import androidx.core.content.FileProvider
 import java.io.File
+import java.io.IOException
+import java.util.Calendar
 
 class SessionExpiredException(message: String) : Exception(message)
 
@@ -320,7 +318,20 @@ object Dados {
                 "$tituloId.pdf"
             }
 
-            val pageDoc = fetchPage(URL_BOLETOS)
+            // 1. GET da página de boletos via Jsoup.execute() para capturar cookies da resposta
+            val webViewCookies = CookieManager.getInstance().getCookie(URL_BOLETOS) ?: ""
+
+            val getResponse = Jsoup.connect(URL_BOLETOS)
+                .userAgent(USER_AGENT)
+                .header("Cookie", webViewCookies)
+                .timeout(20_000)
+                .ignoreContentType(true)
+                .ignoreHttpErrors(true)
+                .method(Connection.Method.GET)
+                .execute()
+
+            // 2. Extrair CSRF token do HTML
+            val pageDoc = getResponse.parse()
             val csrfToken = pageDoc
                 .selectFirst("#form-gerar-boletos input[name=__RequestVerificationToken]")
                 ?.`val`()
@@ -328,60 +339,61 @@ object Dados {
                     Log.e("Dados", "CSRF token não encontrado na página de boletos")
                     return@withContext null
                 }
-            val cookieStr = CookieManager.getInstance().getCookie(URL_BOLETOS) ?: ""
-            val postData = buildString {
-                append("__RequestVerificationToken=")
-                append(URLEncoder.encode(csrfToken, "UTF-8"))
-                append("&respFinanceiro=0")
-                append("&titulos=")
-                append(URLEncoder.encode(tituloId, "UTF-8"))
-            }.toByteArray(Charsets.UTF_8)
 
-            var conn = URL(URL_GERAR_BOLETO).openConnection() as HttpURLConnection
-            conn.instanceFollowRedirects = false
-            conn.requestMethod = "POST"
-            conn.doOutput = true
-            conn.doInput = true
-            conn.connectTimeout = 30_000
-            conn.readTimeout = 30_000
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
-            conn.setRequestProperty("Content-Length", postData.size.toString())
-            conn.setRequestProperty("Cookie", cookieStr)
-            conn.setRequestProperty("User-Agent", USER_AGENT)
-            conn.setRequestProperty("Referer", URL_BOLETOS)
-            conn.setRequestProperty("Accept", "application/pdf,text/html,*/*")
-            conn.outputStream.use { it.write(postData) }
-            var responseCode = conn.responseCode
-            var redirectCount = 0
-            while (responseCode in 301..302 && redirectCount < 5) {
-                val location = conn.getHeaderField("Location") ?: break
-                conn.disconnect()
-                val nextUrl = if (location.startsWith("http")) location
-                else "https://interage.fei.org.br$location"
-                val redirectConn = URL(nextUrl).openConnection() as HttpURLConnection
-                redirectConn.instanceFollowRedirects = false
-                redirectConn.requestMethod = "GET"
-                redirectConn.connectTimeout = 30_000
-                redirectConn.readTimeout = 30_000
-                redirectConn.setRequestProperty("Cookie", cookieStr)
-                redirectConn.setRequestProperty("User-Agent", USER_AGENT)
-                responseCode = redirectConn.responseCode
-                conn = redirectConn
-                redirectCount++
+            Log.d("Dados", "CSRF token obtido: ${csrfToken.take(20)}…")
+
+            // 3. Mesclar cookies da WebView + cookies novos da resposta do GET
+            //    (inclui o __RequestVerificationToken_<hash> que o servidor setou)
+            val responseCookies = getResponse.cookies() // Map<String, String>
+            val cookiesMerged = buildString {
+                append(webViewCookies)
+                for ((name, value) in responseCookies) {
+                    if (isNotEmpty()) append("; ")
+                    append("$name=$value")
+                }
             }
 
-            Log.d("Dados", "BaixaBoleto: HTTP $responseCode, Content-Type=${conn.contentType}")
+            Log.d("Dados", "Cookies para POST: ${cookiesMerged.take(120)}…")
 
+            // 4. POST com todos os cookies (WebView + resposta do GET)
+            val postResponse = Jsoup.connect(URL_GERAR_BOLETO)
+                .userAgent(USER_AGENT)
+                .header("Cookie", cookiesMerged)
+                .header("Referer", URL_BOLETOS)
+                .header("Accept", "application/pdf,text/html,*/*")
+                .data("__RequestVerificationToken", csrfToken)
+                .data("respFinanceiro", "0")
+                .data("titulos", tituloId)
+                .method(Connection.Method.POST)
+                .ignoreContentType(true)
+                .ignoreHttpErrors(true)
+                .timeout(30_000)
+                .maxBodySize(10485760)
+                .execute()
+
+            val httpStatus = postResponse.statusCode()
+            val contentType = postResponse.contentType() ?: ""
+            Log.d("Dados", "BaixaBoleto: HTTP $httpStatus, Content-Type=$contentType")
+
+            // 5. Verificar se é PDF, facilita debug futuro
+            if (!contentType.contains("pdf", ignoreCase = true)) {
+                Log.e("Dados", "Resposta não é PDF (Content-Type=$contentType). HTML recebido:\n${postResponse.body().take(500)}")
+                return@withContext null
+            }
+
+            val pdfBytes = postResponse.bodyAsBytes()
+            if (pdfBytes.size < 1000) {
+                Log.e("Dados", "PDF suspeito: apenas ${pdfBytes.size} bytes")
+                return@withContext null
+            }
+
+            // 6. Salvar em Downloads/BoletosFEI/
             val downloadsDir = android.os.Environment.getExternalStoragePublicDirectory(
                 android.os.Environment.DIRECTORY_DOWNLOADS
             )
             val boletoDir = File(downloadsDir, "BoletosFEI").also { it.mkdirs() }
             val outputFile = File(boletoDir, nomeArquivo)
-
-            conn.inputStream.use { input ->
-                outputFile.outputStream().use { output -> input.copyTo(output) }
-            }
-            conn.disconnect()
+            outputFile.writeBytes(pdfBytes)
 
             Log.d("Dados", "Boleto salvo: ${outputFile.absolutePath} (${outputFile.length()} bytes)")
 
