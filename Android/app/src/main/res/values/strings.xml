@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OpenFEI</string>
+
+    <!-- ==================== GERAL ==================== -->
+    <string name="ok">OK</string>
+    <string name="erro">Erro</string>
+    <string name="sim">Sim</string>
+    <string name="nao">Não</string>
+    <string name="instalar">Instalar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="baixando_arquivo">Baixando arquivo…</string>
+    <string name="download_iniciado">Download iniciado</string>
+    <string name="erro_ao_iniciar_download">Erro ao iniciar download</string>
+    <string name="nenhum_navegador_encontrado">Nenhum navegador encontrado.</string>
+    <string name="nenhum_app_para_arquivos">Nenhum aplicativo para selecionar arquivos encontrado.</string>
+    <string name="sem_conexao_internet">Sem conexão com a internet</string>
+    <string name="compartilhar_via">Compartilhar via</string>
+    <string name="sem_dados">Sem dados.</string>
+    <string name="sem_valor">--</string>
+    <string name="loading">Carregando…</string>
+
+    <!-- ==================== LOGIN ==================== -->
+    <string name="login_entrar">Entrar</string>
+    <string name="login_preencha_usuario">Preencha o usuário</string>
+    <string name="login_preencha_senha">Preencha a senha</string>
+    <string name="login_token_erro">Não foi possível obter o token de segurança.</string>
+    <string name="login_credenciais_invalidas">Usuário ou senha incorretos.</string>
+    <string name="login_erro_conexao">Erro de conexão: %1$s</string>
+    <string name="login_biometria_titulo">Verificar identidade</string>
+    <string name="login_biometria_subtitulo">Autentique-se para visualizar a senha</string>
+    <string name="login_biometria_indisponivel">Configure um bloqueio de tela para visualizar a senha</string>
+    <string name="login_biometria_erro">Erro de autenticação: %1$s</string>
+
+    <!-- ==================== NOTAS ==================== -->
+    <string name="notas_vazio">Não há notas disponíveis</string>
+    <string name="notas_media_aprovado">Média: %1$s (APROVADO)</string>
+    <string name="notas_media_reprovado">Média: %1$s (REPROVADO)</string>
+    <string name="notas_media">Média: %1$s</string>
+
+    <!-- ==================== HOME ==================== -->
+    <string name="home_coluna_disciplina">Disciplina</string>
+    <string name="home_coluna_prova">Prova</string>
+    <string name="home_coluna_nota">Nota</string>
+    <string name="grades_home">Notas</string>
+    <string name="ads_home">Anúncio</string>
+    <string name="today_class_home">Aulas do dia</string>
+    <string name="no_class_today">Nenhuma aula hoje</string>
+
+    <!-- ==================== HORÁRIOS ==================== -->
+    <string name="horarios_nenhuma_aula">Nenhuma aula encontrada</string>
+    <string name="horarios_erro_carregar">Erro ao carregar horários</string>
+    <string name="horarios_nenhuma_aula_dia">Nenhuma aula em %1$s</string>
+    <string name="horarios_sala_nao_informada">Sala não informada</string>
+    <string name="horarios_segunda">Segunda</string>
+    <string name="horarios_terca">Terça</string>
+    <string name="horarios_quarta">Quarta</string>
+    <string name="horarios_quinta">Quinta</string>
+    <string name="horarios_sexta">Sexta</string>
+    <string name="horarios_sabado">Sábado</string>
+
+    <!-- ==================== BOLETOS ==================== -->
+    <string name="boletos_sem_id">Boleto sem ID disponível.</string>
+    <string name="boletos_gerando">Gerando boleto, aguarde…</string>
+    <string name="boletos_erro_gerar">Erro ao gerar boleto. Tente novamente.</string>
+    <string name="boletos_salvo_em">Salvo em Downloads/BoletosFEI/</string>
+    <string name="boletos_nenhum_app_pdf">Nenhum aplicativo para abrir PDF encontrado.</string>
+    <string name="baixando_atualizacao">Baixando atualização…</string>
+    <string name="nenhum_boleto_disponivel">Nenhum boleto disponível.</string>
+    <string name="vencimento">VENCIMENTO</string>
+    <string name="status">STATUS</string>
+    <string name="pago_em">Pago em</string>
+    <string name="gerar_e_baixar_boleto">Gerar e Baixar Boleto</string>
+    <string name="data_generica">--/--/----</string>
+
+    <!-- ==================== PERFIL ==================== -->
+    <string name="perfil_nome">Nome</string>
+    <string name="perfil_matricula">Matrícula</string>
+    <string name="perfil_curso">Curso</string>
+    <string name="perfil_email">Email</string>
+    <string name="perfil_sem_dados">Faça login para exibir os dados</string>
+    <string name="perfil_traco">--</string>
+    <string name="perfil_matricula_formato">Matrícula: %1$s</string>
+    <string name="foto_de_perfil">Foto de perfil</string>
+    <string name="faca_login_para_continuar">Faça login para continuar</string>
+    <string name="usuario">Usuário</string>
+    <string name="senha">Senha</string>
+
+    <!-- ==================== PROVAS / MATÉRIA ==================== -->
+    <string name="materia_descricao_breve">Em breve será possível ver uma breve descrição da prova/tarefa.</string>
+    <string name="materia_resumo_prompt">Faça um resumo para minha prova: %1$s\n%2$s</string>
+    <string name="materia_erro_compartilhar">Erro: %1$s</string>
+    <string name="filtrar_provas">Filtrar provas</string>
+    <string name="sem_provas_esse_mes">Nenhuma prova/tarefa a ser mostrada nesse mês.</string>
+    <string name="selecione_uma_prova">Selecione uma prova/tarefa.</string>
+
+    <!-- ==================== CONFIGURAÇÕES ==================== -->
+    <string name="settings_base_apagada">Base de dados apagada com sucesso!</string>
+    <string name="settings_autofill_apagado">Dados de preenchimento automático apagados com sucesso!</string>
+    <string name="settings_update_titulo">Atualização Disponível (%1$s)</string>
+    <string name="settings_update_mensagem">O que há de novo:\n%1$s\nDeseja baixar e instalar agora?</string>
+    <string name="settings_update_erro_download">Falha ao baixar o arquivo. Tente usar um VPN ou proxy ou baixar a atualização manualmente.</string>
+    <string name="settings_update_erro_download_msg">Falha no download: %1$s. Tente usar um VPN ou proxy ou baixar a atualização manualmente</string>
+    <string name="settings_download_concluido">Download concluído</string>
+    <string name="settings_instalar_msg">Deseja instalar a atualização agora?</string>
+    <string name="settings_nenhum_app_instalar">Nenhum aplicativo encontrado para instalar o APK</string>
+    <string name="settings_erro_instalacao">Erro na instalação</string>
+    <string name="settings_erro_instalacao_msg">Erro ao iniciar a instalação: %1$s.</string>
+    <string name="settings_versao_atualizada">Você já está na versão mais recente</string>
+    <string name="settings_apk_nao_encontrado">Arquivo APK não encontrado</string>
+    <string name="settings_erro_download_log">Erro no download</string>
+    <string name="gitlab_profile">fei.app</string>
+    <string name="gitlab_session">GitLab</string>
+    <string name="clear_password">Limpar senhas e credenciais salvas</string>
+    <string name="security_session">Segurança</string>
+    <string name="clear_data">Limpar dados</string>
+    <string name="data_session">Dados</string>
+    <string name="update_session">Atualizações</string>
+    <string name="verify_update">Verificar atualizações do app</string>
+
+    <!-- ==================== UPDATE CHECKER ==================== -->
+    <string name="update_nenhuma_release">Nenhuma release encontrada no repositório.</string>
+    <string name="update_sem_notas">Sem notas de lançamento.</string>
+    <string name="update_apk_nao_encontrado">Arquivo APK não foi encontrado nos assets da release da versão %1$s.</string>
+    <string name="update_erro_http">HTTP error: %1$s</string>
+    <string name="update_erro_desconhecido">Erro desconhecido</string>
+
+    <!-- ==================== ATUALIZAÇÃO AUTOMÁTICA ==================== -->
+    <string name="update_available_title">Atualização disponível</string>
+    <string name="update_available_message">Deseja atualizar agora?</string>
+
+    <!-- ==================== NOTIFICAÇÕES ==================== -->
+    <string name="notif_canal_servico">Serviço em segundo plano</string>
+    <string name="notif_canal_sync">Atualizações em segundo plano</string>
+    <string name="notif_canal_notas">Atualizações de Notas</string>
+    <string name="notif_canal_boletos">Atualizações de Boletos</string>
+    <string name="notif_canal_horario">Atualizações do horário de aula</string>
+    <string name="notif_canal_update">Atualizações do software</string>
+    <string name="notif_servico_titulo">Serviço em segundo plano</string>
+    <string name="notif_servico_texto">O serviço necessário para atualizações em segundo plano está ativo</string>
+    <string name="notif_sync_titulo">Sincronizando dados</string>
+    <string name="notif_sync_texto">Baixando dados…</string>
+    <string name="notif_notas_titulo">Novas notas disponíveis!</string>
+    <string name="notif_notas_texto">Clique para ver detalhes</string>
+    <string name="notif_boletos_titulo">Boleto atualizado!</string>
+    <string name="notif_boletos_texto">Houve alteração nos seus boletos. Toque para ver.</string>
+    <string name="notif_boletos_big_text">Há novidades nos seus boletos da FEI. Confira se há algum boleto em aberto ou recém-pago.</string>
+    <string name="notif_horario_titulo">Novo horário de aula disponível!</string>
+    <string name="notif_horario_texto">Clique para ver detalhes</string>
+    <string name="notif_horario_big_text">O horário de aulas foi atualizado. Confira as mudanças.</string>
+    <string name="notif_update_titulo">Atualização Disponível (v%1$s)</string>
+    <string name="notif_update_texto">Clique aqui para baixar a nova versão do aplicativo.</string>
+
+    <!-- Mensagem de Offline / Sem Internet -->
+    <string name="try_again">TENTAR NOVAMENTE</string>
+
+    <!-- Atalhos do Aplicativo (App Shortcuts) -->
+    <string name="shortcut_notas_short">Notas</string>
+    <string name="shortcut_notas_long">Ver Notas</string>
+    <string name="shortcut_horarios_short">Horários</string>
+    <string name="shortcut_horarios_long">Horários de aula</string>
+
+    <!-- MoreFragment -->
+    <string name="shortcut_provas_short">Provas</string>
+    <string name="shortcut_provas_long">Calendário de Provas</string>
+    <string name="recarregar_perfil">Recarregar perfil</string>
+    <string name="faltas">Faltas</string>
+    <string name="mudan_a_de_hor_rio">Mudança de Horário</string>
+    <string name="escolha_de_rea_e_nfase">Escolha de Área e Ênfase</string>
+    <string name="dados_pessoais">Dados Pessoais</string>
+    <string name="atualiza_o_de_senha">Atualização de Senha</string>
+    <string name="boletos">Boletos</string>
+    <string name="presen_a">Presença</string>
+    <string name="solicita_o_de_documentos">Solicitação de Documentos</string>
+    <string name="atividades_complementares">Atividades Complementares</string>
+    <string name="cursos_de_f_rias">Cursos de Férias</string>
+    <string name="site_completo">Site completo</string>
+
+    <string name="outros_session">Outros</string>
+    <string name="modo_responsavel_financeiro">Modo responsável financeiro</string>
+    <string name="modo_resp_titulo">Modo responsável financeiro</string>
+    <string name="modo_resp_ativar_msg">Deseja ativar?</string>
+    <string name="modo_resp_desativar_msg">Deseja voltar ao modo normal?</string>
+    <string name="menu_inicio">Início</string>
+    <string name="menu_moodle">Moodle</string>
+    <string name="menu_calendario">Calendário</string>
+    <string name="menu_notas">Notas</string>
+    <string name="menu_aulas">Aulas</string>
+    <string name="menu_filtro_calendario_todos">Todos</string>
+    <string name="menu_filtro_calendario_p1">P1</string>
+    <string name="menu_filtro_calendario_p2">P2</string>
+    <string name="menu_filtro_calendario_p3">P3</string>
+    <string name="menu_filtro_calendario_moodle">Moodle</string>
+    <string name="top_bar_perfil">Perfil</string>
+    <string name="top_bar_configuracoes">Configurações</string>
+    <string name="menu_mais">Mais</string>
+</resources>

@@ -1,0 +1,32 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_inicio"
+        android:title="@string/menu_inicio" />
+    <item
+        android:id="@+id/navigation_moodle"
+        android:icon="@drawable/moodle_icon"
+        android:title="@string/menu_moodle"
+        android:checkable="true" />
+    <item
+        android:id="@+id/option_calendario_provas"
+        android:icon="@drawable/ic_calendario"
+        android:title="@string/menu_calendario" />
+    <item
+        android:id="@+id/navigation_notas"
+        android:icon="@drawable/ic_notas"
+        android:title="@string/menu_notas" />
+    <item
+        android:id="@+id/option_horarios_aula"
+        android:icon="@drawable/ic_horarios"
+        android:title="@string/menu_aulas" />
+
+    <!--
+    Temporariamente desativado
+    <item
+        android:id="@+id/navigation_more"
+        android:icon="@drawable/ic_menu"
+        android:title="@string/menu_mais"
+        android:checkable="true" />
+    -->
+</menu>

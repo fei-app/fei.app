@@ -1,0 +1,87 @@
+.title-1 { font-size: 24px; font-weight: bold; }
+.title-2 { font-size: 18px; font-weight: bold; margin: 12px; }
+.error { color: red; }
+
+.offline-bar {
+    background-color: #856404;
+    color: #fff3cd;
+    padding: 4px 12px;
+}
+
+.badge {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    color: white;
+    background-color: gray;
+}
+.badge-primary  { background-color: #007bff; }
+.badge-warning  { background-color: #ffc107; color: black; }
+.badge-pago     { background-color: #198754; }
+.badge-aberto   { background-color: #dc3545; }
+
+.boleto-venc    { font-size: 15px; font-weight: bold; }
+.boleto-datapag { font-size: 12px; color: #6c757d; }
+
+/* ---- Cartões de Notas (Substituiu a Tabela Antiga) ---- */
+.nota-card {
+    background-color: @theme_bg_color;
+    border: 1px solid alpha(@theme_fg_color, 0.15);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 4px alpha(black, 0.1);
+}
+.nota-card-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: @theme_fg_color;
+    margin-bottom: 12px;
+}
+.nota-card-item {
+    font-size: 14px;
+    color: @theme_fg_color;
+    margin-bottom: 4px;
+}
+.nota-divider {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+/* Cores nativas do GTK que mudam inteligentemente de acordo com Light/Dark Mode */
+.nota-media-aprovado {
+    font-size: 15px;
+    font-weight: bold;
+    color: @success_color; 
+}
+.nota-media-reprovado {
+    font-size: 15px;
+    font-weight: bold;
+    color: @error_color; 
+}
+
+/* ---- Seletor de dias (chips) ---- */
+.day-chip {
+    border-radius: 16px;
+    padding: 2px 4px;
+    min-width: 70px;
+}
+.day-chip:checked {
+    background-color: @theme_selected_bg_color;
+    color: @theme_selected_fg_color;
+    font-weight: bold;
+}
+
+/* ---- Cards de aula ---- */
+.aula-card {
+    border-radius: 8px;
+    border: 1px solid alpha(@theme_fg_color, 0.12);
+    padding: 10px 14px;
+    margin: 4px 8px;
+}
+.aula-codigo  { font-size: 13px; font-weight: bold; }
+.aula-nome    { font-size: 14px; }
+.aula-detalhe { font-size: 12px; color: alpha(@theme_fg_color, 0.65); }
+.aula-empty {
+    font-size: 14px;
+    color: alpha(@theme_fg_color, 0.5);
+    margin: 32px;
+}
