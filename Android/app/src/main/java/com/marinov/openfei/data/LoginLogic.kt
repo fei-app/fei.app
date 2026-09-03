@@ -30,7 +30,6 @@ object LoginLogic {
 
     private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 16; sdk_gphone64_x86_64 Build/BE2A.250530.026.D1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/133.0.6943.137 Mobile Safari/537.36"
 
-    // Domínios que devem ter seus cookies injetados no WebView
     private val ALLOWED_DOMAINS = listOf(
         "interage.fei.org.br",
         "fei.org.br",
@@ -44,8 +43,10 @@ object LoginLogic {
                 val cookieManager = CookieManager.getInstance()
                 cookieManager.setAcceptCookie(true)
 
-                // Rastreia cookies por URL de origem
-                val cookiesByOrigin = mutableMapOf<String, MutableMap<String, String>>()
+                // ★ LIMPEZA: Remove cookies antigos para evitar acúmulo ★
+                cookieManager.removeAllCookies(null)
+                cookieManager.flush()
+                Log.d(TAG, "Cookies antigos removidos")
 
                 val resGet = Jsoup.connect(LOGIN_URL)
                     .userAgent(USER_AGENT)
@@ -58,15 +59,19 @@ object LoginLogic {
                     return@withContext LoginResult(false, context.getString(R.string.login_token_erro))
                 }
 
-                // Armazena cookies iniciais com sua URL de origem
-                cookiesByOrigin[LOGIN_URL] = resGet.cookies().toMutableMap()
+                // Rastreia cookies por URL de origem com headers completos
+                val cookiesByOrigin = mutableMapOf<String, List<String>>()
+                val initialCookieHeaders = resGet.headers("Set-Cookie")
+                if (initialCookieHeaders.isNotEmpty()) {
+                    cookiesByOrigin[LOGIN_URL] = initialCookieHeaders
+                }
 
                 var resPost = Jsoup.connect("$LOGIN_URL/")
                     .userAgent(USER_AGENT)
                     .data("__RequestVerificationToken", token)
                     .data("Usuario", user)
                     .data("Senha", pass)
-                    .cookies(getAllCookies(cookiesByOrigin))
+                    .cookies(parseCookiesFromHeaders(initialCookieHeaders))
                     .method(Connection.Method.POST)
                     .followRedirects(false)
                     .execute()
@@ -79,10 +84,11 @@ object LoginLogic {
                     resPost.statusCode() in 300..399 &&
                     redirectCount < MAX_REDIRECTS
                 ) {
-                    // Armazena cookies desta resposta com sua URL de origem
-                    if (resPost.cookies().isNotEmpty()) {
-                        cookiesByOrigin.getOrPut(currentUrl) { mutableMapOf() }
-                            .putAll(resPost.cookies())
+                    // Captura headers Set-Cookie desta resposta
+                    val setCookieHeaders = resPost.headers("Set-Cookie")
+                    if (setCookieHeaders.isNotEmpty()) {
+                        cookiesByOrigin.getOrPut(currentUrl) { mutableListOf() }
+                            .let { (it as MutableList).addAll(setCookieHeaders) }
                     }
 
                     val location = resPost.header("Location")
@@ -95,7 +101,7 @@ object LoginLogic {
 
                     resPost = Jsoup.connect(nextUrl)
                         .userAgent(USER_AGENT)
-                        .cookies(getAllCookies(cookiesByOrigin))
+                        .cookies(parseCookiesFromHeaders(cookiesByOrigin.values.flatten()))
                         .method(Connection.Method.GET)
                         .followRedirects(false)
                         .execute()
@@ -107,10 +113,11 @@ object LoginLogic {
                     }
                 }
 
-                // Armazena cookies finais
-                if (resPost.cookies().isNotEmpty()) {
-                    cookiesByOrigin.getOrPut(currentUrl) { mutableMapOf() }
-                        .putAll(resPost.cookies())
+                // Captura cookies finais
+                val finalCookieHeaders = resPost.headers("Set-Cookie")
+                if (finalCookieHeaders.isNotEmpty()) {
+                    cookiesByOrigin.getOrPut(currentUrl) { mutableListOf() }
+                        .let { (it as MutableList).addAll(finalCookieHeaders) }
                 }
 
                 val docPost = resPost.parse()
@@ -118,15 +125,21 @@ object LoginLogic {
                 val prefs = LoginActivity.getEncryptedPrefs(context)
 
                 if (isSuccess) {
-                    // ★ CORREÇÃO: Só injeta no CookieManager os cookies de domínios permitidos ★
-                    cookiesByOrigin.forEach { (originUrl, cookies) ->
+                    // ★ INJEÇÃO SELETIVA: Só injeta cookies de domínios permitidos ★
+                    var injectedCount = 0
+                    cookiesByOrigin.forEach { (originUrl, cookieHeaders) ->
                         if (isAllowedDomain(originUrl)) {
-                            cookies.forEach { (key, value) ->
-                                cookieManager.setCookie(originUrl, "$key=$value")
+                            cookieHeaders.forEach { cookieHeader ->
+                                cookieManager.setCookie(originUrl, cookieHeader)
+                                injectedCount++
+                                Log.d(TAG, "Cookie injetado de $originUrl: ${cookieHeader.take(80)}...")
                             }
+                        } else {
+                            Log.d(TAG, "Cookie ignorado (domínio não permitido) de $originUrl")
                         }
                     }
                     cookieManager.flush()
+                    Log.d(TAG, "Total de cookies injetados: $injectedCount")
 
                     prefs.edit {
                         putBoolean(LoginActivity.KEY_IS_LOGGED_IN, true)
@@ -163,17 +176,29 @@ object LoginLogic {
             }
         }
 
-    private fun getAllCookies(cookiesByOrigin: Map<String, Map<String, String>>): Map<String, String> {
-        val allCookies = mutableMapOf<String, String>()
-        cookiesByOrigin.values.forEach { allCookies.putAll(it) }
-        return allCookies
+    /**
+     * Parseia headers Set-Cookie para extrair cookies no formato chave=valor
+     * Preserva todos os atributos originais ao usar os headers completos
+     */
+    private fun parseCookiesFromHeaders(setCookieHeaders: List<String>): Map<String, String> {
+        val cookies = mutableMapOf<String, String>()
+        setCookieHeaders.forEach { header ->
+            val parts = header.split(";").first().trim()
+            val equalsIndex = parts.indexOf("=")
+            if (equalsIndex > 0) {
+                val name = parts.substring(0, equalsIndex)
+                val value = parts.substring(equalsIndex + 1)
+                cookies[name] = value
+            }
+        }
+        return cookies
     }
 
     private fun isAllowedDomain(url: String): Boolean {
         return try {
             val host = URI(url).host ?: return false
             ALLOWED_DOMAINS.any { host.endsWith(it) }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }
@@ -190,14 +215,16 @@ object LoginLogic {
                     .execute()
                 val docGet = resGet.parse()
                 val logintoken = docGet.select("input[name=logintoken]").`val`()
-                val cookiesGet = resGet.cookies()
+                val cookieHeaders = resGet.headers("Set-Cookie")
+
                 if (logintoken.isEmpty()) {
                     Log.w(TAG, "Moodle: logintoken não encontrado — login no Moodle abortado")
                     return@withContext false
                 }
 
-                cookiesGet.forEach { (key, value) ->
-                    cookieManager.setCookie(MOODLE_LOGIN_URL, "$key=$value")
+                // Injeta cookies do Moodle preservando atributos originais
+                cookieHeaders.forEach { cookieHeader ->
+                    cookieManager.setCookie(MOODLE_LOGIN_URL, cookieHeader)
                 }
                 cookieManager.flush()
 
@@ -223,7 +250,7 @@ object LoginLogic {
                 if (webViewCookiesMap.isNotEmpty()) {
                     reqPost.cookies(webViewCookiesMap)
                 } else {
-                    reqPost.cookies(cookiesGet)
+                    reqPost.cookies(parseCookiesFromHeaders(cookieHeaders))
                 }
 
                 val resPost = reqPost.execute()
@@ -237,8 +264,9 @@ object LoginLogic {
                 }
 
                 if (isSuccess) {
-                    resPost.cookies().forEach { (key, value) ->
-                        cookieManager.setCookie(MOODLE_LOGIN_URL, "$key=$value")
+                    val finalCookieHeaders = resPost.headers("Set-Cookie")
+                    finalCookieHeaders.forEach { cookieHeader ->
+                        cookieManager.setCookie(MOODLE_LOGIN_URL, cookieHeader)
                     }
                     cookieManager.flush()
                     Log.d(TAG, "Login no Moodle realizado com sucesso")
