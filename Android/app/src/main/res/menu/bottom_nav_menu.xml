@@ -20,13 +20,9 @@
         android:id="@+id/option_horarios_aula"
         android:icon="@drawable/ic_horarios"
         android:title="@string/menu_aulas" />
-
-    <!--
-    Temporariamente desativado
     <item
         android:id="@+id/navigation_more"
         android:icon="@drawable/ic_menu"
         android:title="@string/menu_mais"
         android:checkable="true" />
-    -->
 </menu>

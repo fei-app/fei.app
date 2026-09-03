@@ -15,6 +15,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -186,7 +187,6 @@ class WebViewFragment : Fragment() {
                 layoutSemInternet.visibility = View.GONE
                 showBottomNav() // ★ NOVO: garante a barra visível ao final do carregamento ★
             }
-
             override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
                 if (!isOnline()) showNoInternetUI()
             }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Connection
 import org.jsoup.Jsoup
+import java.net.URI
 
 data class LoginResult(
     val success: Boolean,
@@ -21,6 +22,10 @@ data class LoginResult(
 object LoginLogic {
     private const val TAG = "LoginLogic"
     const val LOGIN_URL = "https://interage.fei.org.br/secureserver/portal"
+
+    // URL de destino que confirma o login concluído no portal da FEI
+    private const val HOME_URL = "https://interage.fei.org.br/secureserver/portal/graduacao/home"
+    private const val MAX_REDIRECTS = 10
 
     // Configurações do Moodle
     private const val MOODLE_LOGIN_URL = "https://moodle.fei.edu.br/login/index.php"
@@ -43,22 +48,67 @@ object LoginLogic {
                 if (token.isEmpty()) {
                     return@withContext LoginResult(false, context.getString(R.string.login_token_erro))
                 }
-                val resPost = Jsoup.connect("$LOGIN_URL/")
+
+                var resPost = Jsoup.connect("$LOGIN_URL/")
                     .userAgent(USER_AGENT)
                     .data("__RequestVerificationToken", token)
                     .data("Usuario", user)
                     .data("Senha", pass)
                     .cookies(cookies)
                     .method(Connection.Method.POST)
-                    .followRedirects(true)
+                    .followRedirects(false) // Não seguimos automaticamente: queremos controlar cada hop
                     .execute()
+
+                // Acumula os cookies a cada resposta da cadeia de redirecionamento
+                val accumulatedCookies = cookies.toMutableMap()
+                accumulatedCookies.putAll(resPost.cookies())
+
+                var currentUrl = resPost.url().toString()
+                var reachedHome = currentUrl.startsWith(HOME_URL)
+                var redirectCount = 0
+
+                // Segue manualmente os redirecionamentos (Location) até chegar na home da graduação,
+                // até esgotar a cadeia de redirects, ou até atingir o limite de segurança
+                while (!reachedHome &&
+                    resPost.statusCode() in 300..399 &&
+                    redirectCount < MAX_REDIRECTS
+                ) {
+                    val location = resPost.header("Location")
+                    if (location.isNullOrEmpty()) break
+
+                    val nextUrl = if (location.startsWith("http", ignoreCase = true)) {
+                        location
+                    } else {
+                        URI(currentUrl).resolve(location).toString()
+                    }
+
+                    resPost = Jsoup.connect(nextUrl)
+                        .userAgent(USER_AGENT)
+                        .cookies(accumulatedCookies)
+                        .method(Connection.Method.GET)
+                        .followRedirects(false)
+                        .execute()
+
+                    accumulatedCookies.putAll(resPost.cookies())
+                    currentUrl = resPost.url().toString()
+                    redirectCount++
+
+                    if (currentUrl.startsWith(HOME_URL)) {
+                        reachedHome = true
+                    }
+                }
+
                 val docPost = resPost.parse()
-                val isSuccess = docPost.select("#btn-login").isEmpty()
+                // Só consideramos sucesso se de fato chegamos na home da graduação
+                // e a tela não contém mais o formulário de login
+                val isSuccess = reachedHome && docPost.select("#btn-login").isEmpty()
                 val prefs = LoginActivity.getEncryptedPrefs(context)
+
                 if (isSuccess) {
                     val cookieManager = CookieManager.getInstance()
                     cookieManager.setAcceptCookie(true)
-                    resPost.cookies().forEach { (key, value) ->
+                    // Os cookies só são gravados aqui, depois de confirmado que chegamos na home
+                    accumulatedCookies.forEach { (key, value) ->
                         cookieManager.setCookie(
                             "https://interage.fei.org.br",
                             "$key=$value; Domain=interage.fei.org.br; Path=/; Max-Age=900"
@@ -70,7 +120,7 @@ object LoginLogic {
                         putString(LoginActivity.KEY_USER, user)
                         putString(LoginActivity.KEY_PASS, pass)
                     }
-                    Log.d(TAG, "Login realizado com sucesso")
+                    Log.d(TAG, "Login realizado com sucesso (chegou em $HOME_URL)")
                     // Dispara o login no Moodle
                     val moodleOk = performMoodleLogin(user, pass)
                     if (!moodleOk) {
@@ -80,7 +130,7 @@ object LoginLogic {
                 } else {
                     prefs.edit { putBoolean(LoginActivity.KEY_IS_LOGGED_IN, false) }
                     val errorMsg = docPost.select(".field-validation-error").text()
-                    Log.w(TAG, "Login falhou: $errorMsg")
+                    Log.w(TAG, "Login falhou (url final: $currentUrl): $errorMsg")
                     return@withContext LoginResult(
                         false,
                         errorMsg.ifEmpty { context.getString(R.string.login_credenciais_invalidas) }

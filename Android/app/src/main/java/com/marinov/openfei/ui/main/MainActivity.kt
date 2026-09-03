@@ -352,7 +352,7 @@ class MainActivity : AppCompatActivity() {
             com.marinov.openfei.R.id.navigation_notas -> NotasFragment()
             com.marinov.openfei.R.id.option_horarios_aula -> HorariosAula()
             com.marinov.openfei.R.id.action_profile -> ProfileFragment()
-            // temporariamente desativado com.marinov.openfei.R.id.navigation_more -> MoreFragment()
+            com.marinov.openfei.R.id.navigation_more -> MoreFragment()
             com.marinov.openfei.R.id.option_boletos -> BoletosFragment()
             else -> return
         }
