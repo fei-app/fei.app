@@ -22,31 +22,35 @@ data class LoginResult(
 object LoginLogic {
     private const val TAG = "LoginLogic"
     const val LOGIN_URL = "https://interage.fei.org.br/secureserver/portal"
-
-    // URL de destino que confirma o login concluído no portal da FEI
     private const val HOME_URL = "https://interage.fei.org.br/secureserver/portal/graduacao/home"
     private const val MAX_REDIRECTS = 10
 
-    // Configurações do Moodle
     private const val MOODLE_LOGIN_URL = "https://moodle.fei.edu.br/login/index.php"
     private const val MOODLE_DOMAIN = "moodle.fei.edu.br"
 
-    // User Agent padronizado (mesmo do WebView) para não ser bloqueado por firewalls
     private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 16; sdk_gphone64_x86_64 Build/BE2A.250530.026.D1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/133.0.6943.137 Mobile Safari/537.36"
 
     suspend fun performLogin(user: String, pass: String, context: Context): LoginResult =
         withContext(Dispatchers.IO) {
             try {
                 WebViewHelper.ensureWebView(context)
+                val cookieManager = CookieManager.getInstance()
+                cookieManager.setAcceptCookie(true)
+
                 val resGet = Jsoup.connect(LOGIN_URL)
                     .userAgent(USER_AGENT)
                     .method(Connection.Method.GET)
                     .execute()
                 val docGet = resGet.parse()
                 val token = docGet.select("input[name=__RequestVerificationToken]").`val`()
-                val cookies = resGet.cookies()
+
                 if (token.isEmpty()) {
                     return@withContext LoginResult(false, context.getString(R.string.login_token_erro))
+                }
+
+                // Injeta os cookies iniciais no domínio correto
+                resGet.cookies().forEach { (key, value) ->
+                    cookieManager.setCookie(LOGIN_URL, "$key=$value")
                 }
 
                 var resPost = Jsoup.connect("$LOGIN_URL/")
@@ -54,74 +58,75 @@ object LoginLogic {
                     .data("__RequestVerificationToken", token)
                     .data("Usuario", user)
                     .data("Senha", pass)
-                    .cookies(cookies)
+                    .cookies(resGet.cookies())
                     .method(Connection.Method.POST)
-                    .followRedirects(false) // Não seguimos automaticamente: queremos controlar cada hop
+                    .followRedirects(false)
                     .execute()
-
-                // Acumula os cookies a cada resposta da cadeia de redirecionamento
-                val accumulatedCookies = cookies.toMutableMap()
-                accumulatedCookies.putAll(resPost.cookies())
 
                 var currentUrl = resPost.url().toString()
                 var reachedHome = currentUrl.startsWith(HOME_URL)
                 var redirectCount = 0
 
-                // Segue manualmente os redirecionamentos (Location) até chegar na home da graduação,
-                // até esgotar a cadeia de redirects, ou até atingir o limite de segurança
                 while (!reachedHome &&
                     resPost.statusCode() in 300..399 &&
                     redirectCount < MAX_REDIRECTS
                 ) {
+                    // Injeta os cookies da resposta atual no domínio da URL atual
+                    resPost.cookies().forEach { (key, value) ->
+                        cookieManager.setCookie(currentUrl, "$key=$value")
+                    }
+
                     val location = resPost.header("Location")
                     if (location.isNullOrEmpty()) break
-
                     val nextUrl = if (location.startsWith("http", ignoreCase = true)) {
                         location
                     } else {
                         URI(currentUrl).resolve(location).toString()
                     }
 
+                    // Busca os cookies do CookieManager específicos para a próxima URL
+                    val nextCookiesStr = cookieManager.getCookie(nextUrl) ?: ""
+                    val nextCookiesMap = nextCookiesStr.split(";")
+                        .map { it.trim() }
+                        .filter { it.isNotEmpty() }
+                        .associate {
+                            val idx = it.indexOf("=")
+                            if (idx > 0) it.substring(0, idx) to it.substring(idx + 1)
+                            else it to ""
+                        }
+
                     resPost = Jsoup.connect(nextUrl)
                         .userAgent(USER_AGENT)
-                        .cookies(accumulatedCookies)
+                        .cookies(nextCookiesMap)
                         .method(Connection.Method.GET)
                         .followRedirects(false)
                         .execute()
 
-                    accumulatedCookies.putAll(resPost.cookies())
                     currentUrl = resPost.url().toString()
                     redirectCount++
-
                     if (currentUrl.startsWith(HOME_URL)) {
                         reachedHome = true
                     }
                 }
 
+                // Injeta os cookies finais
+                resPost.cookies().forEach { (key, value) ->
+                    cookieManager.setCookie(currentUrl, "$key=$value")
+                }
+                cookieManager.flush()
+
                 val docPost = resPost.parse()
-                // Só consideramos sucesso se de fato chegamos na home da graduação
-                // e a tela não contém mais o formulário de login
                 val isSuccess = reachedHome && docPost.select("#btn-login").isEmpty()
                 val prefs = LoginActivity.getEncryptedPrefs(context)
 
                 if (isSuccess) {
-                    val cookieManager = CookieManager.getInstance()
-                    cookieManager.setAcceptCookie(true)
-                    // Os cookies só são gravados aqui, depois de confirmado que chegamos na home
-                    accumulatedCookies.forEach { (key, value) ->
-                        cookieManager.setCookie(
-                            "https://interage.fei.org.br",
-                            "$key=$value; Domain=interage.fei.org.br; Path=/; Max-Age=900"
-                        )
-                    }
-                    cookieManager.flush()
                     prefs.edit {
                         putBoolean(LoginActivity.KEY_IS_LOGGED_IN, true)
                         putString(LoginActivity.KEY_USER, user)
                         putString(LoginActivity.KEY_PASS, pass)
                     }
                     Log.d(TAG, "Login realizado com sucesso (chegou em $HOME_URL)")
-                    // Dispara o login no Moodle
+
                     val moodleOk = performMoodleLogin(user, pass)
                     if (!moodleOk) {
                         Log.w(TAG, "Login no Moodle não pôde ser concluído — pode pedir login manual ao abrir")
@@ -155,7 +160,7 @@ object LoginLogic {
             try {
                 val cookieManager = CookieManager.getInstance()
                 cookieManager.setAcceptCookie(true)
-                // 1. GET para pegar logintoken e MoodleSession não-autenticado
+
                 val resGet = Jsoup.connect(MOODLE_LOGIN_URL)
                     .userAgent(USER_AGENT)
                     .method(Connection.Method.GET)
@@ -167,14 +172,22 @@ object LoginLogic {
                     Log.w(TAG, "Moodle: logintoken não encontrado — login no Moodle abortado")
                     return@withContext false
                 }
-                // Sincroniza os cookies iniciais com o CookieManager (essencial para que o JS saiba depois)
+
                 cookiesGet.forEach { (key, value) ->
-                    cookieManager.setCookie("https://$MOODLE_DOMAIN", "$key=$value; Path=/")
+                    cookieManager.setCookie(MOODLE_LOGIN_URL, "$key=$value")
                 }
                 cookieManager.flush()
-                // Resgata a string de cookies exata que o WebView estaria utilizando
-                val webViewCookies = WebViewHelper.getCookiesSafely(MOODLE_LOGIN_URL)
-                // 2. POST para efetuar o login
+
+                val webViewCookiesStr = WebViewHelper.getCookiesSafely(MOODLE_LOGIN_URL)
+                val webViewCookiesMap = webViewCookiesStr.split(";")
+                    .map { it.trim() }
+                    .filter { it.isNotEmpty() }
+                    .associate {
+                        val idx = it.indexOf("=")
+                        if (idx > 0) it.substring(0, idx) to it.substring(idx + 1)
+                        else it to ""
+                    }
+
                 val reqPost = Jsoup.connect(MOODLE_LOGIN_URL)
                     .userAgent(USER_AGENT)
                     .data("anchor", "")
@@ -182,27 +195,27 @@ object LoginLogic {
                     .data("username", user)
                     .data("password", pass)
                     .method(Connection.Method.POST)
-                    .followRedirects(false) // CRUCIAL: 'false' para capturarmos os cookies atualizados do redirecionamento 303!
-                if (webViewCookies.isNotEmpty()) {
-                    reqPost.header("Cookie", webViewCookies)
+                    .followRedirects(false)
+
+                if (webViewCookiesMap.isNotEmpty()) {
+                    reqPost.cookies(webViewCookiesMap)
                 } else {
                     reqPost.cookies(cookiesGet)
                 }
+
                 val resPost = reqPost.execute()
                 val statusCode = resPost.statusCode()
-                // Após autenticar, o Moodle dispara um 303 (See Other) para /my/
+
                 val isSuccess = if (statusCode in 300..399) {
                     true
                 } else {
-                    // Se não for redirect, valida se o form de login sumiu
                     val docPost = resPost.parse()
                     docPost.select("form#login").isEmpty()
                 }
+
                 if (isSuccess) {
-                    // 3. Salvar os cookies finais validados e gravar no CookieManager para o WebView usar
-                    val cookiesFinais = resPost.cookies()
-                    cookiesFinais.forEach { (key, value) ->
-                        cookieManager.setCookie("https://$MOODLE_DOMAIN", "$key=$value; Path=/")
+                    resPost.cookies().forEach { (key, value) ->
+                        cookieManager.setCookie(MOODLE_LOGIN_URL, "$key=$value")
                     }
                     cookieManager.flush()
                     Log.d(TAG, "Login no Moodle realizado com sucesso")
@@ -255,7 +268,6 @@ object LoginLogic {
             Log.d(TAG, "Sem credenciais salvas — impossível obter token do Moodle")
             return@withContext null
         }
-
         try {
             val url = "https://$MOODLE_DOMAIN/login/token.php?username=$user&password=$pass&service=moodle_mobile_app"
             val response = Jsoup.connect(url)
@@ -263,7 +275,6 @@ object LoginLogic {
                 .ignoreContentType(true)
                 .method(Connection.Method.GET)
                 .execute()
-
             val json = response.body()
             val jsonObject = JsonParser.parseString(json).asJsonObject
             if (jsonObject.has("token")) {
