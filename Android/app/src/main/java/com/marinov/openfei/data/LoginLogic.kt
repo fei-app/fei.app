@@ -30,12 +30,22 @@ object LoginLogic {
 
     private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 16; sdk_gphone64_x86_64 Build/BE2A.250530.026.D1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/133.0.6943.137 Mobile Safari/537.36"
 
+    // Domínios que devem ter seus cookies injetados no WebView
+    private val ALLOWED_DOMAINS = listOf(
+        "interage.fei.org.br",
+        "fei.org.br",
+        "fei.edu.br"
+    )
+
     suspend fun performLogin(user: String, pass: String, context: Context): LoginResult =
         withContext(Dispatchers.IO) {
             try {
                 WebViewHelper.ensureWebView(context)
                 val cookieManager = CookieManager.getInstance()
                 cookieManager.setAcceptCookie(true)
+
+                // Rastreia cookies por URL de origem
+                val cookiesByOrigin = mutableMapOf<String, MutableMap<String, String>>()
 
                 val resGet = Jsoup.connect(LOGIN_URL)
                     .userAgent(USER_AGENT)
@@ -48,17 +58,15 @@ object LoginLogic {
                     return@withContext LoginResult(false, context.getString(R.string.login_token_erro))
                 }
 
-                // Injeta os cookies iniciais no domínio correto
-                resGet.cookies().forEach { (key, value) ->
-                    cookieManager.setCookie(LOGIN_URL, "$key=$value")
-                }
+                // Armazena cookies iniciais com sua URL de origem
+                cookiesByOrigin[LOGIN_URL] = resGet.cookies().toMutableMap()
 
                 var resPost = Jsoup.connect("$LOGIN_URL/")
                     .userAgent(USER_AGENT)
                     .data("__RequestVerificationToken", token)
                     .data("Usuario", user)
                     .data("Senha", pass)
-                    .cookies(resGet.cookies())
+                    .cookies(getAllCookies(cookiesByOrigin))
                     .method(Connection.Method.POST)
                     .followRedirects(false)
                     .execute()
@@ -71,9 +79,10 @@ object LoginLogic {
                     resPost.statusCode() in 300..399 &&
                     redirectCount < MAX_REDIRECTS
                 ) {
-                    // Injeta os cookies da resposta atual no domínio da URL atual
-                    resPost.cookies().forEach { (key, value) ->
-                        cookieManager.setCookie(currentUrl, "$key=$value")
+                    // Armazena cookies desta resposta com sua URL de origem
+                    if (resPost.cookies().isNotEmpty()) {
+                        cookiesByOrigin.getOrPut(currentUrl) { mutableMapOf() }
+                            .putAll(resPost.cookies())
                     }
 
                     val location = resPost.header("Location")
@@ -84,20 +93,9 @@ object LoginLogic {
                         URI(currentUrl).resolve(location).toString()
                     }
 
-                    // Busca os cookies do CookieManager específicos para a próxima URL
-                    val nextCookiesStr = cookieManager.getCookie(nextUrl) ?: ""
-                    val nextCookiesMap = nextCookiesStr.split(";")
-                        .map { it.trim() }
-                        .filter { it.isNotEmpty() }
-                        .associate {
-                            val idx = it.indexOf("=")
-                            if (idx > 0) it.substring(0, idx) to it.substring(idx + 1)
-                            else it to ""
-                        }
-
                     resPost = Jsoup.connect(nextUrl)
                         .userAgent(USER_AGENT)
-                        .cookies(nextCookiesMap)
+                        .cookies(getAllCookies(cookiesByOrigin))
                         .method(Connection.Method.GET)
                         .followRedirects(false)
                         .execute()
@@ -109,17 +107,27 @@ object LoginLogic {
                     }
                 }
 
-                // Injeta os cookies finais
-                resPost.cookies().forEach { (key, value) ->
-                    cookieManager.setCookie(currentUrl, "$key=$value")
+                // Armazena cookies finais
+                if (resPost.cookies().isNotEmpty()) {
+                    cookiesByOrigin.getOrPut(currentUrl) { mutableMapOf() }
+                        .putAll(resPost.cookies())
                 }
-                cookieManager.flush()
 
                 val docPost = resPost.parse()
                 val isSuccess = reachedHome && docPost.select("#btn-login").isEmpty()
                 val prefs = LoginActivity.getEncryptedPrefs(context)
 
                 if (isSuccess) {
+                    // ★ CORREÇÃO: Só injeta no CookieManager os cookies de domínios permitidos ★
+                    cookiesByOrigin.forEach { (originUrl, cookies) ->
+                        if (isAllowedDomain(originUrl)) {
+                            cookies.forEach { (key, value) ->
+                                cookieManager.setCookie(originUrl, "$key=$value")
+                            }
+                        }
+                    }
+                    cookieManager.flush()
+
                     prefs.edit {
                         putBoolean(LoginActivity.KEY_IS_LOGGED_IN, true)
                         putString(LoginActivity.KEY_USER, user)
@@ -154,6 +162,21 @@ object LoginLogic {
                 )
             }
         }
+
+    private fun getAllCookies(cookiesByOrigin: Map<String, Map<String, String>>): Map<String, String> {
+        val allCookies = mutableMapOf<String, String>()
+        cookiesByOrigin.values.forEach { allCookies.putAll(it) }
+        return allCookies
+    }
+
+    private fun isAllowedDomain(url: String): Boolean {
+        return try {
+            val host = URI(url).host ?: return false
+            ALLOWED_DOMAINS.any { host.endsWith(it) }
+        } catch (e: Exception) {
+            false
+        }
+    }
 
     private suspend fun performMoodleLogin(user: String, pass: String): Boolean =
         withContext(Dispatchers.IO) {
@@ -251,10 +274,6 @@ object LoginLogic {
         }
     }
 
-    /**
-     * ★ NOVO: Obtém o token de Web Service do Moodle usando as credenciais salvas.
-     * Usado para acessar a API oficial do Moodle (calendário, cursos, etc).
-     */
     suspend fun getMoodleToken(context: Context): String? = withContext(Dispatchers.IO) {
         val prefs = try {
             LoginActivity.getEncryptedPrefs(context)
