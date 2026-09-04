@@ -79,17 +79,31 @@
                     android:textColor="?attr/colorOnSurfaceVariant" />
             </LinearLayout>
 
-            <!-- Botão de Info -->
-            <ImageView
-                android:id="@+id/btn_reload_profile"
+            <!-- Botão de Info + Loading -->
+            <FrameLayout
                 android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_info"
-                android:contentDescription="@string/recarregar_perfil"
-                android:padding="4dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:tint="?attr/colorOnSurface" />
+                android:layout_height="32dp">
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/profile_progress"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    app:indicatorSize="24dp"
+                    app:trackThickness="2dp" />
+
+                <ImageView
+                    android:id="@+id/btn_reload_profile"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_info"
+                    android:contentDescription="@string/recarregar_perfil"
+                    android:padding="4dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:tint="?attr/colorOnSurface" />
+            </FrameLayout>
         </LinearLayout>
 
         <!-- Divisor -->
@@ -98,7 +112,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="?android:attr/listDivider"
-            android:layout_marginHorizontal="16dp"/>
+            android:layout_marginHorizontal="16dp" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -329,6 +343,7 @@
                         android:text="@string/solicita_o_de_documentos"
                         android:textAppearance="?android:attr/textAppearanceListItem" />
                 </LinearLayout>
+
                 <!-- Atividades Complementares -->
                 <LinearLayout
                     android:id="@+id/option_atividades_complementares"
@@ -355,6 +370,7 @@
                         android:text="@string/atividades_complementares"
                         android:textAppearance="?android:attr/textAppearanceListItem" />
                 </LinearLayout>
+
                 <!-- Cursos de Férias -->
                 <LinearLayout
                     android:id="@+id/option_curso_de_ferias"
@@ -381,6 +397,7 @@
                         android:text="@string/cursos_de_f_rias"
                         android:textAppearance="?android:attr/textAppearanceListItem" />
                 </LinearLayout>
+
                 <!-- Site completo -->
                 <LinearLayout
                     android:id="@+id/option_site_completo"
@@ -407,10 +424,7 @@
                         android:text="@string/site_completo"
                         android:textAppearance="?android:attr/textAppearanceListItem" />
                 </LinearLayout>
-
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
-
     </LinearLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

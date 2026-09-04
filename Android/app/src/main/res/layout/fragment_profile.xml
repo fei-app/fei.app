@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:text="@string/sem_conexao_internet"
             android:layout_marginTop="16dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_tentar_novamente"
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="@string/try_again"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -65,7 +65,7 @@
                 android:orientation="vertical"
                 android:padding="24dp">
 
-                <!-- Foto de Perfil (imagem estática) -->
+                <!-- Foto de Perfil -->
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/iv_profile_photo"
                     android:layout_width="128dp"
@@ -86,8 +86,18 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:divider="@drawable/divider_horizontal"
-                    android:showDividers="middle"/>
+                    android:showDividers="middle" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_circular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        app:indicatorSize="48dp"
+        app:trackThickness="4dp" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
