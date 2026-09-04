@@ -159,10 +159,10 @@
     <string name="shortcut_notas_long">Ver Notas</string>
     <string name="shortcut_horarios_short">Horários</string>
     <string name="shortcut_horarios_long">Horários de aula</string>
+    <string name="shortcut_provas_short">Calendário</string>
+    <string name="shortcut_provas_long">Calendário de Provas</string>
 
     <!-- MoreFragment -->
-    <string name="shortcut_provas_short">Provas</string>
-    <string name="shortcut_provas_long">Calendário de Provas</string>
     <string name="recarregar_perfil">Recarregar perfil</string>
     <string name="faltas">Faltas</string>
     <string name="mudan_a_de_hor_rio">Mudança de Horário</string>

@@ -32,7 +32,7 @@
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
 
-    <!-- Atalho para Calendário de Provas -->
+    <!-- Atalho para Calendário -->
     <shortcut
         android:shortcutId="provas"
         android:enabled="true"

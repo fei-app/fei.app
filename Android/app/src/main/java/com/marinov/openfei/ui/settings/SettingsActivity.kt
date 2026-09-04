@@ -302,16 +302,26 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun setupExibirEventosNaAgenda() {
         switchExibirAgenda = findViewById(R.id.switch_exibir_agenda)
+        val cardExibirAgenda = findViewById<View>(R.id.card_exibir_agenda)
 
-        val enabledInPrefs = CalendarSyncManager.isEnabled(this)
-        val hasPermission = CalendarSyncManager.hasCalendarPermission(this)
+        if (AppMode.isResponsavelFinanceiro) {
+            switchExibirAgenda.isEnabled = false
+            switchExibirAgenda.isChecked = false
+            cardExibirAgenda.alpha = 0.5f
+        } else {
+            switchExibirAgenda.isEnabled = true
+            cardExibirAgenda.alpha = 1.0f
 
-        if (enabledInPrefs && !hasPermission) {
-            CalendarSyncManager.setEnabled(this, false)
+            val enabledInPrefs = CalendarSyncManager.isEnabled(this)
+            val hasPermission = CalendarSyncManager.hasCalendarPermission(this)
+
+            if (enabledInPrefs && !hasPermission) {
+                CalendarSyncManager.setEnabled(this, false)
+            }
+
+            switchExibirAgenda.isChecked = enabledInPrefs && hasPermission
+            switchExibirAgenda.setOnCheckedChangeListener(exibirAgendaListener)
         }
-
-        switchExibirAgenda.isChecked = enabledInPrefs && hasPermission
-        switchExibirAgenda.setOnCheckedChangeListener(exibirAgendaListener)
     }
 
     private fun confirmarMudancaModoResponsavel(ativar: Boolean) {
