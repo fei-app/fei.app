@@ -131,18 +131,42 @@
                     android:orientation="vertical"
                     android:layout_marginTop="16dp"
                     android:padding="8dp"
-                    android:visibility="gone"
-                    tools:visibility="visible">
+                    android:visibility="visible">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/grades_home"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="20sp"
-                        android:layout_marginBottom="12dp"/>
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/grades_home"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="20sp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnVerMaisNotas"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ver_mais"
+                            app:icon="@drawable/ic_view_more"
+                            app:iconGravity="end"
+                            app:iconPadding="4dp"
+                            app:iconSize="16dp"
+                            android:minHeight="0dp"
+                            android:minWidth="0dp"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:textSize="14sp" />
+                    </LinearLayout>
 
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardRecentGrades"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -159,29 +183,16 @@
 
                     </com.google.android.material.card.MaterialCardView>
 
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/adSection"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="16dp"
-                    android:padding="8dp"
-                    android:visibility="gone">
-
                     <TextView
+                        android:id="@+id/txtSemNotas"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/ads_home"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="20sp"
-                        android:layout_marginBottom="12dp"/>
-
-                    <FrameLayout
-                        android:id="@+id/adContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:text="@string/no_grades_home"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="14sp"
+                        android:gravity="center"
+                        android:padding="16dp"
+                        android:visibility="gone" />
 
                 </LinearLayout>
 
@@ -193,16 +204,39 @@
                     android:orientation="vertical"
                     android:layout_marginTop="16dp"
                     android:padding="8dp"
-                    android:visibility="gone"
-                    tools:visibility="visible">
+                    android:visibility="visible">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/today_class_home"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="20sp"
-                        android:layout_marginBottom="12dp"/>
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/today_class_home"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="20sp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnVerMaisAulas"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ver_mais"
+                            app:icon="@drawable/ic_view_more"
+                            app:iconGravity="end"
+                            app:iconPadding="4dp"
+                            app:iconSize="16dp"
+                            android:minHeight="0dp"
+                            android:minWidth="0dp"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:textSize="14sp" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/aulasContainer"

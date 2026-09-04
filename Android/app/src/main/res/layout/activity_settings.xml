@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/update_session"
                 android:paddingVertical="4dp"
-                android:textColor="?attr/colorOnSurfaceVariant"/>
+                android:textColor="?attr/colorOnSurfaceVariant" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -67,7 +67,7 @@
                         app:icon="@drawable/ic_update"
                         app:iconTint="?attr/colorOnSurfaceVariant"
                         app:iconGravity="start"
-                        app:iconPadding="8dp"/>
+                        app:iconPadding="8dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -79,7 +79,7 @@
                 android:text="@string/data_session"
                 android:paddingVertical="4dp"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -108,7 +108,7 @@
                         app:icon="@drawable/ic_delete_sweep"
                         app:iconTint="?attr/colorOnSurfaceVariant"
                         app:iconGravity="start"
-                        app:iconPadding="8dp"/>
+                        app:iconPadding="8dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -120,7 +120,7 @@
                 android:text="@string/security_session"
                 android:paddingVertical="4dp"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -150,7 +150,7 @@
                         app:icon="@drawable/ic_security"
                         app:iconTint="?attr/colorOnSurfaceVariant"
                         app:iconGravity="start"
-                        app:iconPadding="8dp"/>
+                        app:iconPadding="8dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -162,7 +162,7 @@
                 android:text="@string/gitlab_session"
                 android:paddingVertical="4dp"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -192,7 +192,7 @@
                         app:icon="@drawable/ic_gitlab"
                         app:iconTint="?attr/colorOnSurfaceVariant"
                         app:iconGravity="start"
-                        app:iconPadding="8dp"/>
+                        app:iconPadding="8dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -204,7 +204,7 @@
                 android:text="@string/outros_session"
                 android:paddingVertical="4dp"
                 android:textColor="?attr/colorOnSurfaceVariant"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -218,39 +218,77 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:minHeight="48dp"
-                    android:padding="8dp"
-                    android:paddingHorizontal="16dp">
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="16dp"
-                        android:src="@drawable/ic_boleto"
-                        app:tint="?attr/colorOnSurfaceVariant"
-                        android:contentDescription="@string/modo_responsavel_financeiro"/>
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="0dp"
+                    <!-- Modo responsável financeiro -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/modo_responsavel_financeiro"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"/>
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:paddingHorizontal="16dp">
 
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/switch_modo_responsavel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="16dp"
+                            android:src="@drawable/ic_boleto"
+                            app:tint="?attr/colorOnSurfaceVariant"
+                            android:contentDescription="@string/modo_responsavel_financeiro" />
 
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/modo_responsavel_financeiro"
+                            android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/switch_modo_responsavel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <!-- Exibir tarefas e provas na agenda do sistema -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:minHeight="48dp"
+                        android:padding="8dp"
+                        android:paddingHorizontal="16dp"
+                        android:layout_marginTop="4dp">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="16dp"
+                            android:src="@drawable/ic_notification"
+                            app:tint="?attr/colorOnSurfaceVariant"
+                            android:contentDescription="@string/exibir_tarefas_e_provas_na_agenda_do_sistema" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/exibir_tarefas_e_provas_na_agenda_do_sistema"
+                            android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/switch_exibir_agenda"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="24dp" />
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -14,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.CookieManager
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TableLayout
@@ -77,8 +76,13 @@ class HomeFragment : Fragment() {
     private var aulasSectionContainer: View? = null
     private var aulasContainer: LinearLayout? = null
     private var txtSemAulas: TextView? = null
-    private var adSection: LinearLayout? = null
-    private var adContainer: FrameLayout? = null
+
+    // Novas views para estado vazio e botões "Ver mais"
+    private var txtSemNotas: TextView? = null
+    private var cardRecentGrades: MaterialCardView? = null
+    private var btnVerMaisNotas: MaterialButton? = null
+    private var btnVerMaisAulas: MaterialButton? = null
+
     private lateinit var carouselAdapter: CarouselAdapter
     private var isFragmentDestroyed = false
     private val carouselItems: MutableList<CarouselItem> = mutableListOf()
@@ -132,8 +136,12 @@ class HomeFragment : Fragment() {
         aulasSectionContainer = view.findViewById(R.id.aulasSectionContainer)
         aulasContainer = view.findViewById(R.id.aulasContainer)
         txtSemAulas = view.findViewById(R.id.txtSemAulas)
-        adSection = view.findViewById(R.id.adSection)
-        adContainer = view.findViewById(R.id.adContainer)
+
+        // Inicializando novas views
+        txtSemNotas = view.findViewById(R.id.txtSemNotas)
+        cardRecentGrades = view.findViewById(R.id.cardRecentGrades)
+        btnVerMaisNotas = view.findViewById(R.id.btnVerMaisNotas)
+        btnVerMaisAulas = view.findViewById(R.id.btnVerMaisAulas)
     }
 
     private fun setupAdapters() {
@@ -143,6 +151,15 @@ class HomeFragment : Fragment() {
 
     private fun setupListeners() {
         btnTentarNovamente?.setOnClickListener { loadInitialData() }
+
+        btnVerMaisNotas?.setOnClickListener {
+            (activity as? MainActivity)?.openFragment(R.id.navigation_notas)
+        }
+
+        btnVerMaisAulas?.setOnClickListener {
+            (activity as? MainActivity)?.openFragment(R.id.option_horarios_aula)
+        }
+
         swipeRefreshLayout?.setOnRefreshListener {
             if (isAdded && !isFragmentDestroyed && contentContainer?.visibility == View.VISIBLE &&
                 layoutSemInternet?.visibility != View.VISIBLE
@@ -301,14 +318,22 @@ class HomeFragment : Fragment() {
 
         tableRecentGrades?.removeAllViews()
 
+        // A seção agora é sempre visível
+        recentGradesSectionContainer?.visibility = View.VISIBLE
+
         val notasPreenchidas = notas.filter { it.valor.isNotEmpty() }
         if (notasPreenchidas.isEmpty()) {
-            recentGradesSectionContainer?.visibility = View.GONE
+            // Se não há notas, oculta o card/tabela e mostra o texto de estado vazio
+            cardRecentGrades?.visibility = View.GONE
+            txtSemNotas?.visibility = View.VISIBLE
             return
         }
 
+        // Se há notas, mostra o card/tabela e oculta o texto de estado vazio
+        cardRecentGrades?.visibility = View.VISIBLE
+        txtSemNotas?.visibility = View.GONE
+
         val sortedNotas = NotasRepository.ordenarNotasParaHome(notasPreenchidas, provas)
-        recentGradesSectionContainer?.visibility = View.VISIBLE
 
         val headerRow = TableRow(context).apply {
             setBackgroundColor(ContextCompat.getColor(context, R.color.header_bg))
@@ -334,12 +359,18 @@ class HomeFragment : Fragment() {
 
         aulasContainer?.removeAllViews()
 
+        // A seção agora é sempre visível
+        aulasSectionContainer?.visibility = View.VISIBLE
+
         if (aulas.isEmpty()) {
-            aulasSectionContainer?.visibility = View.GONE
+            // Se não há aulas, oculta o container dos cards e mostra o texto de estado vazio
+            aulasContainer?.visibility = View.GONE
+            txtSemAulas?.visibility = View.VISIBLE
             return
         }
 
-        aulasSectionContainer?.visibility = View.VISIBLE
+        // Se há aulas, mostra o container e oculta o texto de estado vazio
+        aulasContainer?.visibility = View.VISIBLE
         txtSemAulas?.visibility = View.GONE
 
         for (aula in aulas) {

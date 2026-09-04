@@ -14,7 +14,7 @@
     <string name="erro_ao_iniciar_download">Erro ao iniciar download</string>
     <string name="nenhum_navegador_encontrado">Nenhum navegador encontrado.</string>
     <string name="nenhum_app_para_arquivos">Nenhum aplicativo para selecionar arquivos encontrado.</string>
-    <string name="sem_conexao_internet">Sem conexão com a internet</string>
+    <string name="sem_conexao_internet">Sem internet</string>
     <string name="compartilhar_via">Compartilhar via</string>
     <string name="sem_dados">Sem dados.</string>
     <string name="sem_valor">--</string>
@@ -45,7 +45,7 @@
     <string name="grades_home">Notas</string>
     <string name="ads_home">Anúncio</string>
     <string name="today_class_home">Aulas do dia</string>
-    <string name="no_class_today">Nenhuma aula hoje</string>
+    <string name="no_class_today">Nenhuma aula hoje!</string>
 
     <!-- ==================== HORÁRIOS ==================== -->
     <string name="horarios_nenhuma_aula">Nenhuma aula encontrada</string>
@@ -152,7 +152,7 @@
     <string name="notif_update_texto">Clique aqui para baixar a nova versão do aplicativo.</string>
 
     <!-- Mensagem de Offline / Sem Internet -->
-    <string name="try_again">TENTAR NOVAMENTE</string>
+    <string name="try_again">Recarregar</string>
 
     <!-- Atalhos do Aplicativo (App Shortcuts) -->
     <string name="shortcut_notas_short">Notas</string>
@@ -194,4 +194,8 @@
     <string name="top_bar_perfil">Perfil</string>
     <string name="top_bar_configuracoes">Configurações</string>
     <string name="menu_mais">Mais</string>
+
+    <string name="ver_mais">Ver mais</string>
+    <string name="no_grades_home">Ainda não há notas para serem exibidas!</string>
+    <string name="exibir_tarefas_e_provas_na_agenda_do_sistema">Exibir tarefas e provas na agenda do sistema</string>
 </resources>

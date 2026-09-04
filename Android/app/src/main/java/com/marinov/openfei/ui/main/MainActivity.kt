@@ -340,7 +340,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun openFragment(fragmentId: Int) {
+    fun openFragment(fragmentId: Int) {
         if (isFinishing || isDestroyed) return
 
         swipeRefreshLayout.isRefreshing = false
