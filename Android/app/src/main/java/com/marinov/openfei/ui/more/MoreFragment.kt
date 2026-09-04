@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.marinov.openfei.R
 import com.marinov.openfei.data.Perfil
 import com.marinov.openfei.data.PerfilRepository
+import com.marinov.openfei.data.SessionManager
 import com.marinov.openfei.ui.boletos.BoletosFragment
 import com.marinov.openfei.ui.main.MainActivity
 import com.marinov.openfei.ui.profile.ProfileFragment
@@ -112,13 +113,29 @@ class MoreFragment : Fragment(), MainActivity.RefreshableFragment {
     }
 
     private fun openLink(url: String) {
-        if (url == "https://interage.fei.org.br/secureserver/portal/graduacao/home"){
-            WebViewActivity.start(requireContext(), url)
-        } else {
-            val webViewFragment = WebViewFragment().apply {
-                arguments = WebViewFragment.createArgs(url)
+        lifecycleScope.launch {
+            try {
+                // 1. Exibe o loading na tela
+                (activity as? MainActivity)?.setRefreshing(true)
+
+                // 2. Garante que os cookies de sessão estão renovados
+                SessionManager.garantirSessaoValida()
+
+                // 3. Abre a página após a garantia de renovação da sessão
+                if (url == "https://interage.fei.org.br/secureserver/portal/graduacao/home") {
+                    WebViewActivity.start(requireContext(), url)
+                } else {
+                    val webViewFragment = WebViewFragment().apply {
+                        arguments = WebViewFragment.createArgs(url)
+                    }
+                    (activity as? MainActivity)?.openCustomFragment(webViewFragment)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                // 4. Remove o loading independente do sucesso ou erro
+                (activity as? MainActivity)?.setRefreshing(false)
             }
-            (activity as? MainActivity)?.openCustomFragment(webViewFragment)
         }
     }
 
