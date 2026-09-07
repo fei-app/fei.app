@@ -14,17 +14,13 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 object CalendarioRepository {
-
     private const val TAG = "CalendarioRepository"
-
     private const val URL_CALENDARIO_PROVAS =
         "https://interage.fei.org.br/secureserver/portal/graduacao/sala-dos-professores/informacoes-academicas/provas"
-
     private const val USER_AGENT =
         "Mozilla/5.0 (Linux; Android 16; sdk_gphone64_x86_64 Build/BE2A.250530.026.D1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/133.0.6943.137 Mobile Safari/537.36"
 
     private val gson = Gson()
-
     private lateinit var appContext: Context
 
     fun init(context: Context) {
@@ -32,15 +28,12 @@ object CalendarioRepository {
     }
 
     // ===================== PROVAS FEI =====================
-
     suspend fun obterProvasFEI(online: Boolean): List<ProvaCalendario> {
         Log.d(TAG, "obterProvasFEI | online=$online")
-
         return if (online) {
             try {
                 val provas = fetchCalendarioProvasFromPortal()
                 Log.d(TAG, "obterProvasFEI online sucesso | size=${provas.size}")
-
                 CacheHelper.saveProvasFEICache(provas)
                 provas
             } catch (e: SessionExpiredException) {
@@ -50,7 +43,6 @@ object CalendarioRepository {
                 if (e !is CancellationException) {
                     Log.e(TAG, "Erro ao buscar provas FEI online", e)
                 }
-
                 val cache = CacheHelper.getCachedProvasFEI()
                 Log.d(TAG, "obterProvasFEI fallback cache | size=${cache.size}")
                 cache
@@ -62,15 +54,10 @@ object CalendarioRepository {
         }
     }
 
-    /**
-     * Busca online de forma explícita e retorna null se falhar.
-     * Isso permite que o caller saiba se a sincronização foi realmente online.
-     */
     suspend fun obterProvasFEIOnlineOrNull(): List<ProvaCalendario>? {
         return try {
             val provas = fetchCalendarioProvasFromPortal()
             Log.d(TAG, "obterProvasFEIOnlineOrNull sucesso | size=${provas.size}")
-
             CacheHelper.saveProvasFEICache(provas)
             provas
         } catch (e: SessionExpiredException) {
@@ -84,7 +71,6 @@ object CalendarioRepository {
         }
     }
 
-    // Mantida para compatibilidade (usada pela Home)
     suspend fun obterCalendarioProvas(online: Boolean): List<ProvaCalendario> {
         return obterProvasFEI(online)
     }
@@ -96,15 +82,12 @@ object CalendarioRepository {
         CacheHelper.getCachedProvasFEI()
 
     // ===================== EVENTOS MOODLE =====================
-
     suspend fun obterEventosMoodle(online: Boolean): List<ProvaCalendario> {
         Log.d(TAG, "obterEventosMoodle | online=$online")
-
         return if (online) {
             try {
                 val eventos = fetchMoodleCalendarEvents()
                 Log.d(TAG, "obterEventosMoodle online sucesso | size=${eventos.size}")
-
                 CacheHelper.saveEventosMoodleCache(eventos)
                 eventos
             } catch (e: SessionExpiredException) {
@@ -114,7 +97,6 @@ object CalendarioRepository {
                 if (e !is CancellationException) {
                     Log.e(TAG, "Erro ao buscar eventos Moodle online", e)
                 }
-
                 val cache = CacheHelper.getCachedEventosMoodle()
                 Log.d(TAG, "obterEventosMoodle fallback cache | size=${cache.size}")
                 cache
@@ -126,15 +108,10 @@ object CalendarioRepository {
         }
     }
 
-    /**
-     * Busca online de forma explícita e retorna null se falhar.
-     * Isso permite que o caller saiba se a sincronização foi realmente online.
-     */
     suspend fun obterEventosMoodleOnlineOrNull(): List<ProvaCalendario>? {
         return try {
             val eventos = fetchMoodleCalendarEvents()
             Log.d(TAG, "obterEventosMoodleOnlineOrNull sucesso | size=${eventos.size}")
-
             CacheHelper.saveEventosMoodleCache(eventos)
             eventos
         } catch (e: SessionExpiredException) {
@@ -152,17 +129,14 @@ object CalendarioRepository {
         CacheHelper.getCachedEventosMoodle()
 
     // ===================== FETCH PROVAS FEI =====================
-
     private suspend fun fetchCalendarioProvasFromPortal(): List<ProvaCalendario> {
         Log.d(TAG, "fetchCalendarioProvasFromPortal iniciado")
 
         val disciplinas = DisciplinasRepository.obterDisciplinas(online = true)
         val mapaNomes = disciplinas.associate { it.codigo to it.nome }
-
         Log.d(TAG, "fetchCalendarioProvasFromPortal disciplinas size=${disciplinas.size}")
 
         val doc = SessionManager.fetchPage(URL_CALENDARIO_PROVAS)
-
         val accordion = doc.selectFirst("#accordion-provas")
             ?: throw SessionExpiredException("Accordion de provas não encontrado")
 
@@ -226,9 +200,16 @@ object CalendarioRepository {
     }
 
     // ===================== FETCH MOODLE =====================
-
     private suspend fun fetchMoodleCalendarEvents(): List<ProvaCalendario> {
         Log.d(TAG, "fetchMoodleCalendarEvents iniciado")
+
+        // IMPORTANTE: Garantir sessão do Moodle antes de buscar eventos
+        try {
+            SessionManager.garantirSessaoMoodleValida()
+        } catch (e: SessionExpiredException) {
+            Log.w(TAG, "Sessão do Moodle expirada ao tentar garantir sessão válida", e)
+            throw e
+        }
 
         val token = LoginLogic.getMoodleToken(appContext)
         if (token == null) {
@@ -237,7 +218,6 @@ object CalendarioRepository {
         }
 
         val siteInfoJson = fetchMoodleApi(token, "core_webservice_get_site_info")
-
         val userId = try {
             val element = JsonParser.parseString(siteInfoJson)
             if (element.isJsonObject) element.asJsonObject.get("userid")?.asInt else null
@@ -280,7 +260,6 @@ object CalendarioRepository {
         courseIds.forEachIndexed { index, id ->
             eventsParams["events[courseids][$index]"] = id.toString()
         }
-
         eventsParams["options[userevents]"] = "1"
         eventsParams["options[siteevents]"] = "1"
         eventsParams["options[timestart]"] = "0"
@@ -289,11 +268,9 @@ object CalendarioRepository {
 
         val events: List<MoodleEvent> = try {
             val element = JsonParser.parseString(eventsJson)
-
             if (element.isJsonObject) {
                 val arr = element.asJsonObject.getAsJsonArray("events")
                     ?: throw SessionExpiredException("Array de eventos Moodle ausente")
-
                 val type = object : TypeToken<List<MoodleEvent>>() {}.type
                 gson.fromJson<List<MoodleEvent>>(arr, type) ?: emptyList()
             } else {
@@ -310,7 +287,6 @@ object CalendarioRepository {
 
         val mapped = mapMoodleEventsToProvas(events, courses)
         Log.d(TAG, "fetchMoodleCalendarEvents mapped size=${mapped.size}")
-
         return mapped
     }
 
@@ -319,9 +295,7 @@ object CalendarioRepository {
         function: String,
         extraParams: Map<String, String> = emptyMap()
     ): String = withContext(Dispatchers.IO) {
-
         val url = "https://moodle.fei.edu.br/webservice/rest/server.php"
-
         Log.d(TAG, "fetchMoodleApi function=$function")
 
         val conn = Jsoup.connect(url)
@@ -335,7 +309,6 @@ object CalendarioRepository {
 
         val response = conn.execute()
         val body = response.body()
-
         Log.d(
             TAG,
             "fetchMoodleApi function=$function | status=${response.statusCode()} | bodyLength=${body.length}"
@@ -343,19 +316,15 @@ object CalendarioRepository {
 
         try {
             val jsonElement = JsonParser.parseString(body)
-
             if (jsonElement.isJsonObject) {
                 val jsonObj = jsonElement.asJsonObject
-
                 if (jsonObj.has("error") && !jsonObj.get("error").isJsonNull) {
                     val errorCode = try {
                         jsonObj.get("errorcode")?.asString ?: ""
                     } catch (_: Exception) {
                         ""
                     }
-
                     val errorMsg = jsonObj.get("error")?.asString ?: "erro desconhecido"
-
                     Log.e(TAG, "Erro na API do Moodle ($function): [$errorCode] $errorMsg")
 
                     if (errorCode == "invalidtoken" || errorCode == "accessexception") {
@@ -374,7 +343,6 @@ object CalendarioRepository {
     private fun formatMoodleTimestamp(timestamp: Long): Pair<String, String> {
         val instant = Instant.ofEpochSecond(timestamp)
         val zoneId = ZoneId.of("America/Sao_Paulo")
-
         var zonedDateTime = instant.atZone(zoneId)
 
         if (zonedDateTime.hour == 0 && zonedDateTime.minute == 0 && zonedDateTime.second == 0) {
@@ -392,10 +360,8 @@ object CalendarioRepository {
         courses: List<MoodleCourse>
     ): List<ProvaCalendario> {
         val mapa = courses.associateBy { it.id }
-
         return events.mapNotNull { event ->
             val course = event.courseid?.let { mapa[it] }
-
             val codigo = course?.shortname ?: "Moodle"
             val sala = course?.fullname
             val nomeEvento = event.name
