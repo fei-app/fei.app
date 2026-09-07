@@ -33,21 +33,27 @@ object SessionManager {
     const val STATUS_ONLINE_OK = "1"
     const val STATUS_LOGIN_NEEDED = "A"
 
+    // Proteção de cookies do Moodle durante uso ativo do WebView
+    @Volatile
+    private var moodleCookiesProtected = false
+
     fun init(context: Context) {
         appContext = context.applicationContext
         WebViewHelper.ensureWebView(appContext)
     }
 
-    /**
-     * Verifica conexão e sessão FEI de forma centralizada.
-     * NÃO verifica Moodle - isso é feito separadamente.
-     * Fluxo:
-     * 1. Verifica NCSI para saber se há internet real
-     * 2. Se offline → retorna STATUS_OFFLINE
-     * 3. Se online → tenta renovar sessão FEI
-     * 4. Se sessão falhar e está online → STATUS_LOGIN_NEEDED
-     * 5. Se sessão OK → STATUS_ONLINE_OK
-     */
+    fun protegerCookiesMoodle() {
+        moodleCookiesProtected = true
+        Log.d(TAG, "Cookies do Moodle protegidos (WebView em uso)")
+    }
+
+    fun desprotegerCookiesMoodle() {
+        moodleCookiesProtected = false
+        Log.d(TAG, "Cookies do Moodle desprotegidos")
+    }
+
+    fun isMoodleCookiesProtected(): Boolean = moodleCookiesProtected
+
     suspend fun checkConnectionAndSession(): String = withContext(Dispatchers.IO) {
         val isOnline = NetworkChecker.isOnline()
         if (!isOnline) {
@@ -55,13 +61,11 @@ object SessionManager {
             return@withContext STATUS_OFFLINE
         }
 
-        // Está online, tenta renovar sessão FEI
         try {
             renewSession()
             Log.d(TAG, "checkConnectionAndSession → sessão FEI renovada com sucesso")
             STATUS_ONLINE_OK
         } catch (e: SessionExpiredException) {
-            // Sessão falhou, mas está online → precisa de login
             Log.w(TAG, "checkConnectionAndSession → sessão FEI expirada mas está online → precisa login")
             STATUS_LOGIN_NEEDED
         } catch (e: Exception) {
@@ -70,9 +74,6 @@ object SessionManager {
         }
     }
 
-    /**
-     * Renova a sessão FEI (interage.fei.edu.br)
-     */
     suspend fun renewSession() {
         val now = System.currentTimeMillis()
         if (now - lastRenewalTime < RENEWAL_INTERVAL_MS) {
@@ -102,9 +103,15 @@ object SessionManager {
     }
 
     /**
-     * Renova a sessão Moodle (moodle.fei.edu.br)
+     * Renova a sessão Moodle (checagem leve — reaproveita token existente
+     * se ainda for válido). Respeita a proteção de cookies.
      */
     suspend fun renewMoodleSession() {
+        if (moodleCookiesProtected) {
+            Log.d(TAG, "Renovação da sessão Moodle pulada — cookies protegidos (WebView em uso)")
+            return
+        }
+
         val now = System.currentTimeMillis()
         if (now - lastMoodleRenewalTime < RENEWAL_INTERVAL_MS_MOODLE) {
             Log.d(TAG, "Sessão Moodle já renovada recentemente, pulando login completo.")
@@ -112,12 +119,16 @@ object SessionManager {
         }
 
         moodleSessionMutex.withLock {
+            if (moodleCookiesProtected) {
+                Log.d(TAG, "Renovação da sessão Moodle pulada dentro do lock — cookies protegidos")
+                return@withLock
+            }
+
             val nowInside = System.currentTimeMillis()
             if (nowInside - lastMoodleRenewalTime < RENEWAL_INTERVAL_MS_MOODLE) {
                 return@withLock
             }
 
-            // Tenta garantir o token do Moodle (isso faz login se necessário)
             val token = LoginLogic.garantirMoodleToken(appContext)
 
             if (token == null) {
@@ -129,23 +140,14 @@ object SessionManager {
         }
     }
 
-    /**
-     * Garante que a sessão FEI está válida
-     */
     suspend fun garantirSessaoValida() = withContext(Dispatchers.IO) {
         renewSession()
     }
 
-    /**
-     * Garante que a sessão Moodle está válida
-     */
     suspend fun garantirSessaoMoodleValida() = withContext(Dispatchers.IO) {
         renewMoodleSession()
     }
 
-    /**
-     * Executa um bloco com sessão FEI garantida
-     */
     suspend fun <T> withSecureSession(block: suspend () -> T): T {
         return sessionMutex.withLock {
             val now = System.currentTimeMillis()
@@ -166,13 +168,10 @@ object SessionManager {
         }
     }
 
-    /**
-     * Executa um bloco com sessão Moodle garantida
-     */
     suspend fun <T> withSecureMoodleSession(block: suspend () -> T): T {
         return moodleSessionMutex.withLock {
             val now = System.currentTimeMillis()
-            if (now - lastMoodleRenewalTime >= RENEWAL_INTERVAL_MS_MOODLE) {
+            if (!moodleCookiesProtected && now - lastMoodleRenewalTime >= RENEWAL_INTERVAL_MS_MOODLE) {
                 val token = LoginLogic.garantirMoodleToken(appContext)
 
                 if (token == null) {
@@ -206,26 +205,44 @@ object SessionManager {
     }
 
     /**
-     * Força renovação da sessão Moodle (ignora intervalo)
-     * Usado quando o WebView detecta acesso a /login/
+     * Força renovação "leve" da sessão Moodle (ignora intervalo, mas ainda
+     * reaproveita o token da API se este continuar válido). Mantido para
+     * compatibilidade com outros pontos do app.
      */
     suspend fun forcarRenovacaoMoodle() = withContext(Dispatchers.IO) {
-        Log.d(TAG, "Forçando renovação da sessão Moodle")
+        Log.d(TAG, "Forçando renovação (leve) da sessão Moodle")
         lastMoodleRenewalTime = 0L
         renewMoodleSession()
     }
 
     /**
-     * Verifica se a sessão Moodle está dentro do intervalo válido
+     * ★ NOVO: força a renovação REAL dos cookies do Moodle, refazendo o
+     * login por formulário (username/senha) independentemente do token da
+     * API já ser válido ou não. Necessário porque o token da API e o
+     * cookie de sessão do navegador (usado pelo WebView) são coisas
+     * independentes — o token pode continuar válido mesmo com o cookie
+     * de sessão do navegador expirado. Ignora a flag de proteção
+     * propositalmente (o chamador deve desproteger antes de chamar isto).
      */
+    suspend fun forcarRenovacaoCookiesMoodle(): Boolean = withContext(Dispatchers.IO) {
+        moodleSessionMutex.withLock {
+            Log.d(TAG, "Forçando renovação REAL dos cookies do Moodle (login completo via formulário)")
+            val result = LoginLogic.forcarLoginCookiesMoodle(appContext)
+            if (result.success) {
+                lastMoodleRenewalTime = System.currentTimeMillis()
+                Log.d(TAG, "Cookies do Moodle renovados com sucesso via login completo")
+            } else {
+                Log.w(TAG, "Falha ao renovar cookies do Moodle via login completo: ${result.errorMessage}")
+            }
+            result.success
+        }
+    }
+
     fun isMoodleSessionValid(): Boolean {
         val now = System.currentTimeMillis()
         return (now - lastMoodleRenewalTime) < RENEWAL_INTERVAL_MS_MOODLE
     }
 
-    /**
-     * Atualiza o timestamp de renovação do Moodle (usado após login manual no WebView)
-     */
     fun atualizarTimestampMoodle() {
         lastMoodleRenewalTime = System.currentTimeMillis()
         Log.d(TAG, "Timestamp Moodle atualizado manualmente")

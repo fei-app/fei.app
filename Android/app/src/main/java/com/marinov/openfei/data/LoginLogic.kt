@@ -391,4 +391,23 @@ object LoginLogic {
             false
         }
     }
+
+    suspend fun forcarLoginCookiesMoodle(context: Context): MoodleLoginResult {
+        val prefs = try {
+            LoginActivity.getEncryptedPrefs(context)
+        } catch (e: Exception) {
+            Log.e(TAG, "Erro ao acessar credenciais salvas", e)
+            return MoodleLoginResult(false, "Erro ao acessar credenciais", isNetworkError = false)
+        }
+
+        val user = prefs.getString(LoginActivity.KEY_USER, "") ?: ""
+        val pass = prefs.getString(LoginActivity.KEY_PASS, "") ?: ""
+
+        if (user.isEmpty() || pass.isEmpty()) {
+            Log.d(TAG, "Sem credenciais salvas — impossível forçar login de cookies do Moodle")
+            return MoodleLoginResult(false, "Sem credenciais salvas", isNetworkError = false)
+        }
+
+        return performMoodleLoginSeparate(user, pass)
+    }
 }

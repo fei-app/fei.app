@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,7 +52,13 @@ class WebViewFragment : Fragment() {
     private lateinit var loadingContainer: FrameLayout
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
 
-    // ★ NOVO: controle de auto-hide da barra de navegação inferior ao scrollar o WebView ★
+    // ★ NOVO: controla se este WebView está protegendo os cookies do Moodle ★
+    private var isMoodleProtectionOwner = false
+
+    // ★ NOVO: evita reentrância no fluxo de redirecionamento de /login/ do Moodle ★
+    private var handlingMoodleLoginRedirect = false
+
+    // ★ controle de auto-hide da barra de navegação inferior ao scrollar o WebView ★
     private var bottomNavContainer: View? = null
     private var bottomNavBehavior: HideBottomViewOnScrollBehavior<View>? = null
 
@@ -74,9 +81,19 @@ class WebViewFragment : Fragment() {
     }
 
     companion object {
+        private const val TAG = "WebViewFragment"
         private const val ARG_URL = "url"
         private const val ARG_EXIT_TO_HOME = "exit_to_home"
+        // ★ NOVO: contador de tentativas consecutivas de renovação do Moodle ★
+        private var moodleLoginRetryCount = 0
         private const val HOME_URL_IDENTIFIER = "https://interage.fei.org.br/secureserver/portal/graduacao/home"
+
+        private const val MOODLE_HOST = "moodle.fei.edu.br"
+        private const val MOODLE_LOGIN_PATH_PREFIX = "/login/"
+        private const val MOODLE_HOME_URL = "https://moodle.fei.edu.br/my/"
+
+        // ★ NOVO: limite de tentativas para não travar em loop infinito ★
+        private const val MAX_MOODLE_LOGIN_RETRIES = 2
 
         @JvmStatic
         fun createArgs(url: String, exitToHome: Boolean = false): Bundle = Bundle().apply {
@@ -217,6 +234,12 @@ class WebViewFragment : Fragment() {
         setupWebViewSecurity()
         setupBottomNavAutoHide()
 
+        // ★ NOVO: se a URL inicial já é do Moodle, protege os cookies desde já ★
+        val initialUrl = arguments?.getString(ARG_URL)
+        if (initialUrl != null && isMoodleUrl(initialUrl)) {
+            protegerCookiesMoodleSeNecessario()
+        }
+
         webView.webViewClient = @SuppressLint("MissingOnRenderProcessGone")
         object : WebViewClient() {
             override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
@@ -238,12 +261,25 @@ class WebViewFragment : Fragment() {
             override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 showBottomNav()
+
+                if (url != null) {
+                    if (isMoodleUrl(url)) {
+                        protegerCookiesMoodleSeNecessario()
+                        if (!isMoodleLoginUrl(url)) {
+                            // Chegou numa página válida do Moodle → reseta o contador de retries
+                            moodleLoginRetryCount = 0
+                        }
+                    } else {
+                        desprotegerCookiesMoodleSeNecessario()
+                    }
+                }
             }
 
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
                 showWebViewWithAnimation(view)
                 layoutSemInternet.visibility = View.GONE
+                hideLoadingUI()
                 showBottomNav()
             }
 
@@ -325,6 +361,13 @@ class WebViewFragment : Fragment() {
 
     private fun handleUrlOverride(url: String?): Boolean {
         if (url == null) return false
+
+        // ★ NOVO: interceptação de qualquer link de /login/ do Moodle ★
+        if (isMoodleLoginUrl(url)) {
+            handleMoodleLoginRedirect()
+            return true
+        }
+
         if (isHomeUrl(url)) {
             Handler(Looper.getMainLooper()).post {
                 (activity as? MainActivity)?.navigateToHome()
@@ -345,8 +388,88 @@ class WebViewFragment : Fragment() {
         return true
     }
 
+    /**
+     * ★ NOVO: trata o acesso a qualquer link de "https://moodle.fei.edu.br/login/".
+     * Mostra a tela de loading, desprotege os cookies, força a renovação real
+     * da sessão do Moodle, reprotege os cookies e redireciona para /my/.
+     */
+    private fun handleMoodleLoginRedirect() {
+        if (handlingMoodleLoginRedirect) return
+
+        moodleLoginRetryCount++
+        if (moodleLoginRetryCount > MAX_MOODLE_LOGIN_RETRIES) {
+            Log.w(TAG, "Loop de login do Moodle detectado (${moodleLoginRetryCount} tentativas) — abortando renovação automática")
+            moodleLoginRetryCount = 0
+            if (isAdded) {
+                hideLoadingUI()
+                Toast.makeText(
+                    requireContext(),
+                    "Não foi possível renovar a sessão do Moodle. Tente novamente mais tarde.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            return
+        }
+
+        handlingMoodleLoginRedirect = true
+        showLoadingUI()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                SessionManager.desprotegerCookiesMoodle()
+                isMoodleProtectionOwner = false
+                // ★ Usa a renovação REAL (login por formulário), não a checagem de token ★
+                val sucesso = SessionManager.forcarRenovacaoCookiesMoodle()
+                if (!sucesso) {
+                    Log.w(TAG, "Renovação real dos cookies do Moodle falhou")
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Falha ao renovar sessão do Moodle após redirecionamento de /login/", e)
+            } finally {
+                if (isAdded) {
+                    protegerCookiesMoodleSeNecessario()
+                    webView.loadUrl(MOODLE_HOME_URL)
+                }
+                handlingMoodleLoginRedirect = false
+            }
+        }
+    }
+
     private fun isHomeUrl(url: String?): Boolean {
         return url?.contains(HOME_URL_IDENTIFIER) == true
+    }
+
+    /** ★ NOVO: verifica se a URL pertence ao domínio do Moodle ★ */
+    private fun isMoodleUrl(url: String): Boolean {
+        return try {
+            url.toUri().host == MOODLE_HOST
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    /** ★ NOVO: verifica se a URL é uma página de login do Moodle ★ */
+    private fun isMoodleLoginUrl(url: String): Boolean {
+        return try {
+            val uri = url.toUri()
+            uri.host == MOODLE_HOST && (uri.path?.startsWith(MOODLE_LOGIN_PATH_PREFIX) == true)
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun protegerCookiesMoodleSeNecessario() {
+        if (!isMoodleProtectionOwner) {
+            SessionManager.protegerCookiesMoodle()
+            isMoodleProtectionOwner = true
+        }
+    }
+
+    private fun desprotegerCookiesMoodleSeNecessario() {
+        if (isMoodleProtectionOwner) {
+            SessionManager.desprotegerCookiesMoodle()
+            isMoodleProtectionOwner = false
+        }
     }
 
     private fun setupWebViewSecurity() {
@@ -381,6 +504,8 @@ class WebViewFragment : Fragment() {
 
     override fun onDestroyView() {
         showBottomNav()
+        // ★ NOVO: garante que a proteção de cookies não fique "presa" ao sair do WebView ★
+        desprotegerCookiesMoodleSeNecessario()
         if (::webView.isInitialized) webView.destroy()
         super.onDestroyView()
     }
