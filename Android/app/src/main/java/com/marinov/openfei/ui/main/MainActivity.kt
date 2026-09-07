@@ -218,7 +218,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     suspend fun checkConnectionAndSession(): String {
-        return SessionManager.checkConnectionAndSession()
+        val status = SessionManager.checkConnectionAndSession()
+
+        if (status == STATUS_LOGIN_NEEDED) {
+            withContext(Dispatchers.Main) {
+                launchLogin()
+            }
+        }
+
+        return status
     }
 
     private fun launchLogin() {
