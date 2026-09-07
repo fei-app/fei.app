@@ -18,10 +18,6 @@ object Dados {
         CalendarioRepository.init(context)
         BoletosRepository.init(context)
     }
-
-    // ===================== SESSÃO =====================
-    suspend fun garantirSessaoValida() = SessionManager.garantirSessaoValida()
-
     suspend fun atualizarNotas(online: Boolean) = NotasRepository.atualizarNotas(online)
 
     // ===================== AULAS =====================
