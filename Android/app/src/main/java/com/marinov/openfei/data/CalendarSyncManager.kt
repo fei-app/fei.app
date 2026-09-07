@@ -17,6 +17,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.TimeZone
 import java.util.UUID
+import androidx.core.content.edit
 
 @SuppressLint("MissingPermission")
 object CalendarSyncManager {
@@ -33,7 +34,7 @@ object CalendarSyncManager {
 
     private const val EVENT_URI_PREFIX = "openfei://event/"
 
-    private val CALENDAR_COLOR = 0xFF3F51B5.toInt()
+    private const val CALENDAR_COLOR = 0xFF3F51B5.toInt()
 
     // 6 horas antes, 1 dia antes, 2 dias antes, 3 dias antes
     private val REMINDER_MINUTES = listOf(360, 1440, 2880, 4320)
@@ -72,9 +73,9 @@ object CalendarSyncManager {
     fun setEnabled(context: Context, enabled: Boolean) {
         context
             .getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .edit()
-            .putBoolean(KEY_ENABLED, enabled)
-            .apply()
+            .edit {
+                putBoolean(KEY_ENABLED, enabled)
+            }
 
         Log.d(TAG, "Recurso de agenda do sistema enabled=$enabled")
     }
@@ -526,7 +527,7 @@ object CalendarSyncManager {
             } else {
                 start.plusHours(1)
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             start.plusHours(1)
         }
     }
