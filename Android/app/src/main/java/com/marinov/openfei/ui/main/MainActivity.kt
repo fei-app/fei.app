@@ -7,8 +7,6 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Rect
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -44,7 +42,8 @@ import com.google.android.material.navigationrail.NavigationRailView
 import com.marinov.openfei.BuildConfig
 import com.marinov.openfei.app.AppMode
 import com.marinov.openfei.data.Dados
-import com.marinov.openfei.data.LoginLogic
+import com.marinov.openfei.data.NetworkChecker
+import com.marinov.openfei.data.SessionManager
 import com.marinov.openfei.data.UpdateChecker
 import com.marinov.openfei.service.BackgroundService
 import com.marinov.openfei.ui.boletos.BoletosFragment
@@ -71,7 +70,6 @@ import java.net.URL
 
 @Suppress("ANNOTATIONS_ON_BLOCK_LEVEL_EXPRESSION_ON_THE_SAME_LINE")
 class MainActivity : AppCompatActivity() {
-
     interface RefreshableFragment {
         fun onRefresh()
     }
@@ -80,19 +78,15 @@ class MainActivity : AppCompatActivity() {
         private const val TAG = "MainActivity"
         private const val KEY_CURRENT_FRAGMENT_ID = "current_fragment_id"
         private const val REQUEST_NOTIFICATION_PERMISSION = 101
-
         private const val UPDATE_PROMPT_PREFS = "update_prompt_prefs"
         private const val KEY_UPDATE_SKIP_COUNT = "update_skip_count"
         private const val KEY_LAST_SKIPPED_VERSION = "last_skipped_version"
         private const val MAX_UPDATE_SKIPS = 3
-
         private val REFRESHABLE_FRAGMENTS = setOf(
             com.marinov.openfei.R.id.navigation_notas,
             com.marinov.openfei.R.id.action_profile,
-            // temporariamente desativado com.marinov.openfei.R.id.navigation_more,
             com.marinov.openfei.R.id.option_boletos
         )
-
         const val STATUS_OFFLINE = "0"
         const val STATUS_ONLINE_OK = "1"
         const val STATUS_LOGIN_NEEDED = "A"
@@ -103,12 +97,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomNavContainer: View
     private lateinit var navRail: NavigationRailView
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-
     private var isLayoutReady = false
     private var currentFragmentId = View.NO_ID
     private var isUpdatingSelection = false
     private var isKeypadListenerAdded = false
-
     private val updateScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var updateProgressBar: ProgressBar? = null
     private var isDownloadingUpdate = false
@@ -119,22 +111,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         if (!isUserLoggedIn()) {
             launchLogin()
             return
         }
-
         Dados.init(applicationContext)
         WebViewHelper.ensureWebView(applicationContext)
         configureSystemBarsForLegacyDevices()
-
         MaterialColors.getColor(
             this,
             com.google.android.material.R.attr.colorPrimaryContainer,
             Color.BLACK
         )
-
         setContentView(com.marinov.openfei.R.layout.activity_main)
 
         if (savedInstanceState != null) {
@@ -157,7 +145,6 @@ class MainActivity : AppCompatActivity() {
 
         val toolbar: MaterialToolbar = findViewById(com.marinov.openfei.R.id.topAppBar)
         setSupportActionBar(toolbar)
-
         ViewCompat.setOnApplyWindowInsetsListener(toolbar) { v, insets ->
             val statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
             v.setPadding(v.paddingLeft, statusBarHeight, v.paddingRight, v.paddingBottom)
@@ -182,10 +169,8 @@ class MainActivity : AppCompatActivity() {
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 if (isLayoutReady) return
-
                 rootView.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 isLayoutReady = true
-
                 configureNavigationForDevice()
                 handleIntent(intent)
             }
@@ -228,33 +213,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun isOnline(): Boolean {
-        val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = cm.activeNetwork ?: return false
-        val caps = cm.getNetworkCapabilities(network) ?: return false
-        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    suspend fun isOnline(): Boolean {
+        return NetworkChecker.isOnline()
     }
 
     suspend fun checkConnectionAndSession(): String {
-        if (!isOnline()) return STATUS_OFFLINE
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val loggedIn = LoginLogic.performLoginSilent(applicationContext)
-                if (loggedIn) {
-                    Log.d(TAG, "checkConnectionAndSession → sessão renovada com sucesso")
-                    STATUS_ONLINE_OK
-                } else {
-                    Log.w(TAG, "checkConnectionAndSession → login falhou → LoginActivity")
-                    withContext(Dispatchers.Main) { launchLogin() }
-                    STATUS_LOGIN_NEEDED
-                }
-            } catch (e: Exception) {
-                Log.w(TAG, "checkConnectionAndSession → erro: ${e.message} → LoginActivity")
-                withContext(Dispatchers.Main) { launchLogin() }
-                STATUS_LOGIN_NEEDED
-            }
-        }
+        return SessionManager.checkConnectionAndSession()
     }
 
     private fun launchLogin() {
@@ -264,7 +228,6 @@ class MainActivity : AppCompatActivity() {
             }
         } catch (_: Exception) {
         }
-
         startActivity(
             Intent(this, LoginActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -276,12 +239,10 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         requestNotificationPermissionIfNeeded()
-
         if (isLayoutReady) {
             configureNavigationForDevice()
             invalidateOptionsMenu()
         }
-
         lifecycleScope.launch { checkConnectionAndSession() }
     }
 
@@ -309,7 +270,6 @@ class MainActivity : AppCompatActivity() {
     fun showBottomNavigation() {
         if (::bottomNavContainer.isInitialized && bottomNavContainer.isVisible) {
             val layoutParams = bottomNavContainer.layoutParams as? CoordinatorLayout.LayoutParams
-
             @Suppress("UNCHECKED_CAST")
             val behavior = layoutParams?.behavior as? HideBottomViewOnScrollBehavior<View>
             behavior?.slideUp(bottomNavContainer)
@@ -329,9 +289,7 @@ class MainActivity : AppCompatActivity() {
             if (!hasRestoredFragment) navigateToHome()
             return
         }
-
         if (isModoResponsavel && destination != "boletos") return
-
         when (destination) {
             "notas" -> openFragment(com.marinov.openfei.R.id.navigation_notas)
             "horarios" -> openFragment(com.marinov.openfei.R.id.option_horarios_aula)
@@ -342,9 +300,7 @@ class MainActivity : AppCompatActivity() {
 
     fun openFragment(fragmentId: Int) {
         if (isFinishing || isDestroyed) return
-
         swipeRefreshLayout.isRefreshing = false
-
         val fragment = when (fragmentId) {
             com.marinov.openfei.R.id.navigation_home -> HomeFragment()
             com.marinov.openfei.R.id.navigation_moodle -> MoodleFragment()
@@ -357,21 +313,15 @@ class MainActivity : AppCompatActivity() {
             else -> return
         }
 
-        // ★ CORREÇÃO DO LOOP: Limpa o backstack de forma síncrona.
-        // Isso remove o WebViewFragment da pilha. O MoodleFragment é momentaneamente
-        // restaurado, mas a flag 'hasLaunchedWebView' impede que ele reabra o WebView.
-        // Em seguida, o MoodleFragment é substituído pelo fragmento de destino.
         if (supportFragmentManager.backStackEntryCount > 0) {
             supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         }
 
         currentFragment = fragment
         currentFragmentId = fragmentId
-
         supportFragmentManager.beginTransaction()
             .replace(com.marinov.openfei.R.id.nav_host_fragment, fragment)
             .commit()
-
         updateMenuSelection(fragmentId)
         updateRefreshLayoutState()
         showBottomNavigation()
@@ -380,9 +330,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateMenuSelection(fragmentId: Int) {
         if (isUpdatingSelection) return
         if (isModoResponsavel) return
-
         isUpdatingSelection = true
-
         runOnUiThread {
             try {
                 if (resources.getBoolean(com.marinov.openfei.R.bool.isTablet)) {
@@ -403,13 +351,10 @@ class MainActivity : AppCompatActivity() {
             bottomNavContainer.visibility = View.GONE
             return
         }
-
         val isTablet = resources.getBoolean(com.marinov.openfei.R.bool.isTablet)
-
         if (isTablet) {
             bottomNavContainer.visibility = View.GONE
             navRail.visibility = View.VISIBLE
-
             navRail.setOnItemSelectedListener { item ->
                 if (!isUpdatingSelection) openFragment(item.itemId)
                 true
@@ -417,25 +362,20 @@ class MainActivity : AppCompatActivity() {
         } else {
             navRail.visibility = View.GONE
             bottomNavContainer.visibility = View.VISIBLE
-
             bottomNav.setOnItemSelectedListener { item ->
                 if (!isUpdatingSelection) openFragment(item.itemId)
                 true
             }
-
             if (!isKeypadListenerAdded) {
                 val rootView: View = findViewById(com.marinov.openfei.R.id.main)
-
                 rootView.viewTreeObserver.addOnGlobalLayoutListener {
                     val r = Rect()
                     rootView.getWindowVisibleDisplayFrame(r)
                     val screenHeight = rootView.rootView.height
                     val keypadHeight = screenHeight - r.bottom
-
                     bottomNavContainer.visibility =
                         if (keypadHeight > screenHeight * 0.15) View.GONE else View.VISIBLE
                 }
-
                 isKeypadListenerAdded = true
             }
         }
@@ -445,13 +385,11 @@ class MainActivity : AppCompatActivity() {
         swipeRefreshLayout.isRefreshing = false
         currentFragment = fragment
         currentFragmentId = View.NO_ID
-
         supportFragmentManager.beginTransaction()
             .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
             .replace(com.marinov.openfei.R.id.nav_host_fragment, fragment)
             .addToBackStack(null)
             .commit()
-
         updateMenuSelection(View.NO_ID)
         updateRefreshLayoutState()
         showBottomNavigation()
@@ -468,12 +406,10 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, SettingsActivity::class.java))
                 true
             }
-
             com.marinov.openfei.R.id.action_profile -> {
                 openFragment(com.marinov.openfei.R.id.action_profile)
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -488,40 +424,40 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkForUpdateOnOpen() {
         if (hasCheckedUpdateOnOpen || isFinishing || isDestroyed) return
-
         hasCheckedUpdateOnOpen = true
 
-        if (!isOnline()) return
+        lifecycleScope.launch {
+            // Verifica se está online antes de checar atualizações
+            if (!isOnline()) return@launch
 
-        UpdateChecker.checkForUpdate(
-            this,
-            true,
-            object : UpdateChecker.UpdateListener {
-                override fun onUpdateAvailable(
-                    url: String,
-                    version: String,
-                    releaseNotes: String
-                ) {
-                    runOnUiThread {
-                        if (!isFinishing && !isDestroyed) {
-                            showUpdatePrePrompt(url, version, releaseNotes)
+            UpdateChecker.checkForUpdate(
+                this@MainActivity,
+                true,
+                object : UpdateChecker.UpdateListener {
+                    override fun onUpdateAvailable(
+                        url: String,
+                        version: String,
+                        releaseNotes: String
+                    ) {
+                        runOnUiThread {
+                            if (!isFinishing && !isDestroyed) {
+                                showUpdatePrePrompt(url, version, releaseNotes)
+                            }
                         }
                     }
-                }
-
-                override fun onUpToDate() {
-                    runOnUiThread {
-                        if (!isFinishing && !isDestroyed) {
-                            resetUpdateSkipCount()
+                    override fun onUpToDate() {
+                        runOnUiThread {
+                            if (!isFinishing && !isDestroyed) {
+                                resetUpdateSkipCount()
+                            }
                         }
                     }
+                    override fun onError(message: String) {
+                        Log.w(TAG, "UpdateChecker onError: $message")
+                    }
                 }
-
-                override fun onError(message: String) {
-                    Log.w(TAG, "UpdateChecker onError: $message")
-                }
-            }
-        )
+            )
+        }
     }
 
     private fun showUpdatePrePrompt(
@@ -530,18 +466,15 @@ class MainActivity : AppCompatActivity() {
         releaseNotes: String
     ) {
         if (isFinishing || isDestroyed) return
-
         val skipCount = getUpdateSkipCount(version)
         val forced = skipCount >= MAX_UPDATE_SKIPS
-
         val builder = MaterialAlertDialogBuilder(this)
-            .setTitle(getString(com.marinov.openfei.R.string.update_available_title))
+        builder.setTitle(getString(com.marinov.openfei.R.string.update_available_title))
             .setMessage(getString(com.marinov.openfei.R.string.update_available_message))
             .setCancelable(false)
             .setPositiveButton(getString(com.marinov.openfei.R.string.sim)) { _, _ ->
                 showUpdateReleasePrompt(apkUrl, version, releaseNotes, forced)
             }
-
         if (forced) {
             builder.setNegativeButton(getString(com.marinov.openfei.R.string.nao), null)
         } else {
@@ -549,10 +482,8 @@ class MainActivity : AppCompatActivity() {
                 registerUpdateSkip(version)
             }
         }
-
         val dialog = builder.create()
         dialog.setCanceledOnTouchOutside(false)
-
         dialog.setOnShowListener {
             if (forced) {
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
@@ -562,7 +493,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
         dialog.show()
     }
 
@@ -573,9 +503,8 @@ class MainActivity : AppCompatActivity() {
         forced: Boolean
     ) {
         if (isFinishing || isDestroyed) return
-
         val builder = MaterialAlertDialogBuilder(this)
-            .setTitle(getString(com.marinov.openfei.R.string.settings_update_titulo, version))
+        builder.setTitle(getString(com.marinov.openfei.R.string.settings_update_titulo, version))
             .setMessage(
                 getString(
                     com.marinov.openfei.R.string.settings_update_mensagem,
@@ -587,10 +516,8 @@ class MainActivity : AppCompatActivity() {
                 startManualDownload(apkUrl, forced)
             }
             .setNegativeButton(getString(com.marinov.openfei.R.string.nao), null)
-
         val dialog = builder.create()
         dialog.setCanceledOnTouchOutside(false)
-
         dialog.setOnShowListener {
             if (forced) {
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
@@ -600,7 +527,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
         dialog.show()
     }
 
@@ -608,20 +534,16 @@ class MainActivity : AppCompatActivity() {
         val prefs = getSharedPreferences(UPDATE_PROMPT_PREFS, MODE_PRIVATE)
         val skippedVersion = prefs.getString(KEY_LAST_SKIPPED_VERSION, "")
         val currentVersion = BuildConfig.VERSION_NAME
-
         if (skippedVersion.isNullOrEmpty()) return 0
         if (skippedVersion != latestVersion) return 0
         if (UpdateChecker.isVersionGreater(currentVersion, skippedVersion)) return 0
-
         return prefs.getInt(KEY_UPDATE_SKIP_COUNT, 0)
     }
 
     private fun registerUpdateSkip(version: String) {
         val prefs = getSharedPreferences(UPDATE_PROMPT_PREFS, MODE_PRIVATE)
         val currentCount = getUpdateSkipCount(version)
-
         if (currentCount >= MAX_UPDATE_SKIPS) return
-
         prefs.edit {
             putInt(KEY_UPDATE_SKIP_COUNT, currentCount + 1)
             putString(KEY_LAST_SKIPPED_VERSION, version)
@@ -637,20 +559,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun startManualDownload(apkUrl: String, forced: Boolean) {
         if (isDownloadingUpdate || isFinishing || isDestroyed) return
-
         isDownloadingUpdate = true
         val progressDialog = createProgressDialog().apply { show() }
-
         updateScope.launch {
             try {
                 val apkFile = withContext(Dispatchers.IO) { downloadApk(apkUrl) }
-
                 if (!isFinishing && !isDestroyed) {
                     progressDialog.dismiss()
                 }
-
                 isDownloadingUpdate = false
-
                 if (apkFile != null) {
                     showInstallDialog(apkFile, forced)
                 } else {
@@ -664,10 +581,8 @@ class MainActivity : AppCompatActivity() {
                 if (!isFinishing && !isDestroyed) {
                     progressDialog.dismiss()
                 }
-
                 isDownloadingUpdate = false
                 Log.e(TAG, getString(com.marinov.openfei.R.string.settings_erro_download_log), e)
-
                 showErrorUpdateDialog(
                     getString(
                         com.marinov.openfei.R.string.settings_update_erro_download_msg,
@@ -684,9 +599,7 @@ class MainActivity : AppCompatActivity() {
             com.marinov.openfei.R.layout.dialog_download_progress,
             null
         )
-
         updateProgressBar = view.findViewById(com.marinov.openfei.R.id.progress_bar)
-
         return MaterialAlertDialogBuilder(this)
             .setView(view)
             .setCancelable(false)
@@ -699,26 +612,21 @@ class MainActivity : AppCompatActivity() {
             connection.connectTimeout = 15000
             connection.readTimeout = 15000
             connection.connect()
-
             val downloadsDir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
             val outputDir = File(downloadsDir, "Update").apply {
                 if (exists()) deleteRecursively()
                 mkdirs()
             }
-
             val outputFile = File(outputDir, "app_release.apk")
-
             connection.inputStream.use { input ->
                 FileOutputStream(outputFile).use { output ->
                     val buffer = ByteArray(4096)
                     var bytesRead: Int
                     var total: Long = 0
                     val fileLength = connection.contentLength.toLong()
-
                     while (input.read(buffer).also { bytesRead = it } != -1) {
                         output.write(buffer, 0, bytesRead)
                         total += bytesRead
-
                         if (fileLength > 0) {
                             val progress = (total * 100 / fileLength).toInt()
                             withContext(Dispatchers.Main) {
@@ -728,7 +636,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-
             outputFile
         } catch (e: Exception) {
             Log.e(TAG, "Erro no download.", e)
@@ -738,7 +645,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun showInstallDialog(apkFile: File, forced: Boolean) {
         if (isFinishing || isDestroyed) return
-
         try {
             if (!apkFile.exists()) {
                 showErrorUpdateDialog(
@@ -746,22 +652,19 @@ class MainActivity : AppCompatActivity() {
                 )
                 return
             }
-
             val apkUri = FileProvider.getUriForFile(
                 this@MainActivity,
                 "${BuildConfig.APPLICATION_ID}.fileprovider",
                 apkFile
             )
-
             val installIntent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(apkUri, "application/vnd.android.package-archive")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
-
             if (installIntent.resolveActivity(packageManager) != null) {
                 val builder = MaterialAlertDialogBuilder(this@MainActivity)
-                    .setTitle(getString(com.marinov.openfei.R.string.settings_download_concluido))
+                builder.setTitle(getString(com.marinov.openfei.R.string.settings_download_concluido))
                     .setMessage(getString(com.marinov.openfei.R.string.settings_instalar_msg))
                     .setCancelable(false)
                     .setPositiveButton(getString(com.marinov.openfei.R.string.instalar)) { _, _ ->
@@ -773,7 +676,6 @@ class MainActivity : AppCompatActivity() {
                                 getString(com.marinov.openfei.R.string.settings_erro_instalacao),
                                 e
                             )
-
                             showErrorUpdateDialog(
                                 getString(
                                     com.marinov.openfei.R.string.settings_erro_instalacao_msg,
@@ -783,10 +685,8 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     .setNegativeButton(getString(com.marinov.openfei.R.string.cancelar), null)
-
                 val dialog = builder.create()
                 dialog.setCanceledOnTouchOutside(false)
-
                 dialog.setOnShowListener {
                     if (forced) {
                         dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
@@ -796,7 +696,6 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-
                 dialog.show()
             } else {
                 showErrorUpdateDialog(
@@ -805,7 +704,6 @@ class MainActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             Log.e(TAG, getString(com.marinov.openfei.R.string.settings_erro_instalacao), e)
-
             showErrorUpdateDialog(
                 getString(
                     com.marinov.openfei.R.string.settings_erro_instalacao_msg,
@@ -817,7 +715,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun showErrorUpdateDialog(message: String) {
         if (isFinishing || isDestroyed) return
-
         MaterialAlertDialogBuilder(this)
             .setTitle(getString(com.marinov.openfei.R.string.erro))
             .setMessage(message)

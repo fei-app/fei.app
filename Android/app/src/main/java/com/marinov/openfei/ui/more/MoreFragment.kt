@@ -13,7 +13,6 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.marinov.openfei.R
 import com.marinov.openfei.data.Perfil
 import com.marinov.openfei.data.PerfilRepository
-import com.marinov.openfei.data.SessionManager
 import com.marinov.openfei.ui.boletos.BoletosFragment
 import com.marinov.openfei.ui.main.MainActivity
 import com.marinov.openfei.ui.profile.ProfileFragment
@@ -141,9 +140,6 @@ class MoreFragment : Fragment(), MainActivity.RefreshableFragment {
         lifecycleScope.launch {
             try {
                 (activity as? MainActivity)?.setRefreshing(true)
-
-                SessionManager.garantirSessaoValida()
-
                 if (url == "https://interage.fei.org.br/secureserver/portal/graduacao/home") {
                     WebViewActivity.start(requireContext(), url)
                 } else {

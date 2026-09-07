@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.marinov.openfei.R
+import com.marinov.openfei.app.AppMode
 import com.marinov.openfei.data.Boleto
 import com.marinov.openfei.data.BoletosRepository
 import com.marinov.openfei.ui.main.MainActivity
@@ -26,7 +27,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
-
     private lateinit var recyclerBoletos: RecyclerView
     private lateinit var progressCircular: CircularProgressIndicator
     private lateinit var barOffline: LinearLayout
@@ -41,7 +41,6 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         recyclerBoletos = view.findViewById(R.id.recyclerBoletos)
         progressCircular = view.findViewById(R.id.progress_circular)
         barOffline = view.findViewById(R.id.barOffline)
@@ -50,14 +49,19 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
 
         recyclerBoletos.layoutManager = LinearLayoutManager(requireContext())
         recyclerBoletos.adapter = adapter
-
         btnTentar.setOnClickListener { loadBoletos() }
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    (activity as? MainActivity)?.navigateToHome()
+                    if (AppMode.isResponsavelFinanceiro) {
+                        // No modo responsável financeiro, o BoletosFragment é a tela principal.
+                        // Voltar deve fechar o aplicativo completamente.
+                        requireActivity().finishAffinity()
+                    } else {
+                        (activity as? MainActivity)?.navigateToHome()
+                    }
                 }
             }
         )
@@ -74,9 +78,9 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
         lifecycleScope.launch {
             val mainActivity = activity as? MainActivity ?: return@launch
             showLoading()
-
             val status = mainActivity.checkConnectionAndSession()
             val online = status == MainActivity.STATUS_ONLINE_OK
+
             if (online) hideOfflineBar() else showOfflineBar()
 
             val boletos = withContext(Dispatchers.IO) {
@@ -111,21 +115,16 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
             Toast.makeText(requireContext(), getString(R.string.boletos_sem_id), Toast.LENGTH_SHORT).show()
             return
         }
-
         lifecycleScope.launch {
             Toast.makeText(requireContext(), getString(R.string.boletos_gerando), Toast.LENGTH_SHORT).show()
-
             val uri = withContext(Dispatchers.IO) {
                 runCatching { BoletosRepository.baixaBoleto(boleto.tituloId, boleto.vencimento) }.getOrNull()
             }
-
             if (uri == null) {
                 Toast.makeText(requireContext(), getString(R.string.boletos_erro_gerar), Toast.LENGTH_LONG).show()
                 return@launch
             }
-
             Toast.makeText(requireContext(), getString(R.string.boletos_salvo_em), Toast.LENGTH_SHORT).show()
-
             try {
                 val intent = Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(uri, "application/pdf")
@@ -203,7 +202,6 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
 
             fun bind(boleto: Boleto) {
                 tvVencimento.text = boleto.vencimento
-
                 val isPago = boleto.status.equals("PAGO", ignoreCase = true)
                 chipStatus.text = boleto.status
 

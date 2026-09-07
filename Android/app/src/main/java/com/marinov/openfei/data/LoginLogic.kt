@@ -16,7 +16,8 @@ import java.net.URI
 
 data class LoginResult(
     val success: Boolean,
-    val errorMessage: String = ""
+    val errorMessage: String = "",
+    val isNetworkError: Boolean = false // ★ NOVO: Indica se o erro foi de rede/IO ★
 )
 
 object LoginLogic {
@@ -24,12 +25,9 @@ object LoginLogic {
     const val LOGIN_URL = "https://interage.fei.org.br/secureserver/portal"
     private const val HOME_URL = "https://interage.fei.org.br/secureserver/portal/graduacao/home"
     private const val MAX_REDIRECTS = 10
-
     private const val MOODLE_LOGIN_URL = "https://moodle.fei.edu.br/login/index.php"
     private const val MOODLE_DOMAIN = "moodle.fei.edu.br"
-
     private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 16; sdk_gphone64_x86_64 Build/BE2A.250530.026.D1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/133.0.6943.137 Mobile Safari/537.36"
-
     private val ALLOWED_DOMAINS = listOf(
         "interage.fei.org.br",
         "fei.org.br",
@@ -43,7 +41,6 @@ object LoginLogic {
                 val cookieManager = CookieManager.getInstance()
                 cookieManager.setAcceptCookie(true)
 
-                // ★ LIMPEZA: Remove cookies antigos para evitar acúmulo ★
                 cookieManager.removeAllCookies(null)
                 cookieManager.flush()
                 Log.d(TAG, "Cookies antigos removidos")
@@ -54,12 +51,11 @@ object LoginLogic {
                     .execute()
                 val docGet = resGet.parse()
                 val token = docGet.select("input[name=__RequestVerificationToken]").`val`()
-
                 if (token.isEmpty()) {
-                    return@withContext LoginResult(false, context.getString(R.string.login_token_erro))
+                    // Se não achou o token, pode ser mudança no site ou erro de rede. Tratamos como rede para não deslogar.
+                    return@withContext LoginResult(false, context.getString(R.string.login_token_erro), isNetworkError = true)
                 }
 
-                // Rastreia cookies por URL de origem com headers completos
                 val cookiesByOrigin = mutableMapOf<String, List<String>>()
                 val initialCookieHeaders = resGet.headers("Set-Cookie")
                 if (initialCookieHeaders.isNotEmpty()) {
@@ -84,7 +80,6 @@ object LoginLogic {
                     resPost.statusCode() in 300..399 &&
                     redirectCount < MAX_REDIRECTS
                 ) {
-                    // Captura headers Set-Cookie desta resposta
                     val setCookieHeaders = resPost.headers("Set-Cookie")
                     if (setCookieHeaders.isNotEmpty()) {
                         cookiesByOrigin.getOrPut(currentUrl) { mutableListOf() }
@@ -93,6 +88,7 @@ object LoginLogic {
 
                     val location = resPost.header("Location")
                     if (location.isNullOrEmpty()) break
+
                     val nextUrl = if (location.startsWith("http", ignoreCase = true)) {
                         location
                     } else {
@@ -108,12 +104,12 @@ object LoginLogic {
 
                     currentUrl = resPost.url().toString()
                     redirectCount++
+
                     if (currentUrl.startsWith(HOME_URL)) {
                         reachedHome = true
                     }
                 }
 
-                // Captura cookies finais
                 val finalCookieHeaders = resPost.headers("Set-Cookie")
                 if (finalCookieHeaders.isNotEmpty()) {
                     cookiesByOrigin.getOrPut(currentUrl) { mutableListOf() }
@@ -125,7 +121,6 @@ object LoginLogic {
                 val prefs = LoginActivity.getEncryptedPrefs(context)
 
                 if (isSuccess) {
-                    // ★ INJEÇÃO SELETIVA: Só injeta cookies de domínios permitidos ★
                     var injectedCount = 0
                     cookiesByOrigin.forEach { (originUrl, cookieHeaders) ->
                         if (isAllowedDomain(originUrl)) {
@@ -154,32 +149,27 @@ object LoginLogic {
                     }
                     return@withContext LoginResult(true)
                 } else {
+                    // ★ Credenciais inválidas: desloga o usuário e avisa que NÃO é erro de rede ★
                     prefs.edit { putBoolean(LoginActivity.KEY_IS_LOGGED_IN, false) }
                     val errorMsg = docPost.select(".field-validation-error").text()
                     Log.w(TAG, "Login falhou (url final: $currentUrl): $errorMsg")
                     return@withContext LoginResult(
-                        false,
-                        errorMsg.ifEmpty { context.getString(R.string.login_credenciais_invalidas) }
+                        success = false,
+                        errorMessage = errorMsg.ifEmpty { context.getString(R.string.login_credenciais_invalidas) },
+                        isNetworkError = false // <--- FALHA DE CREDENCIAL
                     )
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Erro no login", e)
-                try {
-                    LoginActivity.getEncryptedPrefs(context).edit {
-                        putBoolean(LoginActivity.KEY_IS_LOGGED_IN, false)
-                    }
-                } catch (_: Exception) {}
+                // ★ CORREÇÃO CRÍTICA: NÃO apagar o estado de login em caso de erro de rede.
                 return@withContext LoginResult(
-                    false,
-                    context.getString(R.string.login_erro_conexao, e.message ?: "")
+                    success = false,
+                    errorMessage = context.getString(R.string.login_erro_conexao, e.message ?: ""),
+                    isNetworkError = true // <--- FALHA DE REDE/IO
                 )
             }
         }
 
-    /**
-     * Parseia headers Set-Cookie para extrair cookies no formato chave=valor
-     * Preserva todos os atributos originais ao usar os headers completos
-     */
     private fun parseCookiesFromHeaders(setCookieHeaders: List<String>): Map<String, String> {
         val cookies = mutableMapOf<String, String>()
         setCookieHeaders.forEach { header ->
@@ -222,7 +212,6 @@ object LoginLogic {
                     return@withContext false
                 }
 
-                // Injeta cookies do Moodle preservando atributos originais
                 cookieHeaders.forEach { cookieHeader ->
                     cookieManager.setCookie(MOODLE_LOGIN_URL, cookieHeader)
                 }
@@ -255,7 +244,6 @@ object LoginLogic {
 
                 val resPost = reqPost.execute()
                 val statusCode = resPost.statusCode()
-
                 val isSuccess = if (statusCode in 300..399) {
                     true
                 } else {
@@ -280,25 +268,24 @@ object LoginLogic {
             }
         }
 
-    suspend fun performLoginSilent(context: Context): Boolean {
+    suspend fun performLoginSilent(context: Context): LoginResult {
         val prefs = try {
             LoginActivity.getEncryptedPrefs(context)
         } catch (e: Exception) {
             Log.e(TAG, "Erro ao acessar credenciais salvas", e)
-            return false
+            return LoginResult(false, "Erro ao acessar credenciais", isNetworkError = false)
         }
         val user = prefs.getString(LoginActivity.KEY_USER, "") ?: ""
         val pass = prefs.getString(LoginActivity.KEY_PASS, "") ?: ""
         if (user.isEmpty() || pass.isEmpty()) {
             Log.d(TAG, "Sem credenciais salvas — login silencioso impossível")
-            return false
+            return LoginResult(false, "Sem credenciais salvas", isNetworkError = false)
         }
         return try {
-            val result = performLogin(user, pass, context)
-            result.success
+            performLogin(user, pass, context)
         } catch (e: Exception) {
-            Log.e(TAG, "Login silencioso falhou", e)
-            false
+            Log.e(TAG, "Login silencioso falhou com exceção", e)
+            LoginResult(false, context.getString(R.string.login_erro_conexao, e.message ?: ""), isNetworkError = true)
         }
     }
 

@@ -8,14 +8,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,22 +26,29 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.button.MaterialButton
 import androidx.core.net.toUri
 import com.marinov.openfei.R
+import com.marinov.openfei.data.NetworkChecker
+import com.marinov.openfei.data.SessionManager
+import com.marinov.openfei.ui.login.LoginActivity
 import com.marinov.openfei.ui.main.MainActivity
+import kotlinx.coroutines.launch
 
 class WebViewFragment : Fragment() {
     private lateinit var webView: WebView
     private lateinit var layoutSemInternet: LinearLayout
     private lateinit var btnTentarNovamente: MaterialButton
+    private lateinit var loadingContainer: FrameLayout
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
 
     // ★ NOVO: controle de auto-hide da barra de navegação inferior ao scrollar o WebView ★
@@ -97,8 +101,7 @@ class WebViewFragment : Fragment() {
         webView = view.findViewById(R.id.webview)
         layoutSemInternet = view.findViewById(R.id.layout_sem_internet)
         btnTentarNovamente = view.findViewById(R.id.btn_tentar_novamente)
-
-        if (!isOnline()) showNoInternetUI() else initializeWebView()
+        loadingContainer = view.findViewById(R.id.loading_container)
 
         return view
     }
@@ -109,7 +112,7 @@ class WebViewFragment : Fragment() {
 
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (webView.canGoBack()) {
+                if (::webView.isInitialized && webView.canGoBack()) {
                     webView.goBack()
                 } else {
                     if (exitToHome) {
@@ -121,10 +124,67 @@ class WebViewFragment : Fragment() {
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
+        // Inicia a verificação de conexão e sessão
+        checkConnectionAndLoad()
+    }
+
+    private fun checkConnectionAndLoad() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            // 1. Verifica primeiramente com o NCSI se tem internet
+            val isOnline = NetworkChecker.isOnline()
+            if (!isAdded) return@launch
+
+            if (!isOnline) {
+                showNoInternetUI()
+                return@launch
+            }
+
+            // 2. Se tiver online, mostra loading e verifica a sessão
+            showLoadingUI()
+            val status = SessionManager.checkConnectionAndSession()
+            if (!isAdded) return@launch
+
+            when (status) {
+                SessionManager.STATUS_ONLINE_OK -> {
+                    // 3. Sessão OK, entra no WebView
+                    hideLoadingUI()
+                    initializeWebView()
+                }
+                SessionManager.STATUS_LOGIN_NEEDED -> {
+                    // 4. Sessão falhou e está online -> chama a LoginActivity
+                    hideLoadingUI()
+                    Toast.makeText(requireContext(), "Sessão expirada. Faça login novamente.", Toast.LENGTH_LONG).show()
+                    val intent = Intent(requireContext(), LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    requireActivity().finish()
+                }
+                SessionManager.STATUS_OFFLINE -> {
+                    // Falha de rede durante o login (mesmo o NCSI tendo dito que estava online)
+                    hideLoadingUI()
+                    showNoInternetUI()
+                }
+            }
+        }
+    }
+
+    private fun showLoadingUI() {
+        if (!isAdded) return
+        webView.visibility = View.GONE
+        layoutSemInternet.visibility = View.GONE
+        loadingContainer.visibility = View.VISIBLE
+    }
+
+    private fun hideLoadingUI() {
+        if (!isAdded) return
+        loadingContainer.visibility = View.GONE
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initializeWebView() {
+        if (!isAdded) return
+
         CookieManager.getInstance().apply {
             setAcceptCookie(true)
             setAcceptThirdPartyCookies(webView, true)
@@ -155,7 +215,7 @@ class WebViewFragment : Fragment() {
         }
 
         setupWebViewSecurity()
-        setupBottomNavAutoHide() // ★ NOVO ★
+        setupBottomNavAutoHide()
 
         webView.webViewClient = @SuppressLint("MissingOnRenderProcessGone")
         object : WebViewClient() {
@@ -175,7 +235,6 @@ class WebViewFragment : Fragment() {
                 return handleUrlOverride(url)
             }
 
-            // ★ NOVO: ao iniciar o carregamento de uma nova página, a barra volta a aparecer ★
             override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 showBottomNav()
@@ -185,10 +244,16 @@ class WebViewFragment : Fragment() {
                 super.onPageFinished(view, url)
                 showWebViewWithAnimation(view)
                 layoutSemInternet.visibility = View.GONE
-                showBottomNav() // ★ NOVO: garante a barra visível ao final do carregamento ★
+                showBottomNav()
             }
+
             override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
-                if (!isOnline()) showNoInternetUI()
+                // Se der erro ao carregar a página, verifica se perdeu a internet
+                viewLifecycleOwner.lifecycleScope.launch {
+                    if (!NetworkChecker.isOnline()) {
+                        showNoInternetUI()
+                    }
+                }
             }
         }
 
@@ -235,8 +300,6 @@ class WebViewFragment : Fragment() {
         }
     }
 
-    // ★ NOVO: configura a detecção de scroll do WebView e conecta ao HideBottomViewOnScrollBehavior
-    // já anexado ao bottom_nav_container via app:layout_behavior no activity_main.xml ★
     @SuppressLint("UseRequiresApi")
     private fun setupBottomNavAutoHide() {
         val container = requireActivity().findViewById<View>(R.id.bottom_nav_container) ?: return
@@ -302,21 +365,13 @@ class WebViewFragment : Fragment() {
         }, 100)
     }
 
-    private fun isOnline(): Boolean {
-        val cm = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager?
-            ?: return false
-        return cm.activeNetwork?.let { cm.getNetworkCapabilities(it) }?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
-    }
-
     private fun showNoInternetUI() {
+        if (!isAdded) return
         webView.visibility = View.GONE
+        loadingContainer.visibility = View.GONE
         layoutSemInternet.visibility = View.VISIBLE
         btnTentarNovamente.setOnClickListener {
-            if (isOnline()) {
-                layoutSemInternet.visibility = View.GONE
-                webView.reload()
-            } else {
-                Toast.makeText(requireContext(), getString(R.string.sem_conexao_internet), Toast.LENGTH_SHORT).show()            }
+            checkConnectionAndLoad()
         }
     }
 
@@ -325,7 +380,6 @@ class WebViewFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        // ★ NOVO: restaura a barra visível ao sair desta tela, evitando que fique escondida em outras telas ★
         showBottomNav()
         if (::webView.isInitialized) webView.destroy()
         super.onDestroyView()
