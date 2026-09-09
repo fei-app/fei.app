@@ -2,7 +2,7 @@
 autostarter = "1.1.0"
 biometric = "1.1.0"
 kotlin             = "2.4.10"
-agp                = "9.3.2"
+agp                = "9.4.0"
 material           = "1.14.0"
 constraintlayout   = "2.2.2"
 navigation         = "2.10.0"
