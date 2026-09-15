@@ -255,7 +255,7 @@ class CalendarioProvas : Fragment() {
             }
 
             // Se a integração com a agenda estiver ativada, sincroniza o cache imediatamente
-            sincronizarAgendaSeNecessario(fetchOnline = false, force = false)
+            sincronizarAgendaSeNecessario(force = false)
 
             val mainActivity = activity as? MainActivity ?: return@launch
             val status = mainActivity.checkConnectionAndSession()
@@ -334,7 +334,7 @@ class CalendarioProvas : Fragment() {
             }
 
             // Sempre que sincronizar eventos, também tenta refletir na agenda do dispositivo
-            sincronizarAgendaSeNecessario(fetchOnline = false, force = mudou)
+            sincronizarAgendaSeNecessario(force = mudou)
 
         } catch (e: Exception) {
             Log.e(TAG, "atualizarProvasOnline erro geral", e)
@@ -349,18 +349,18 @@ class CalendarioProvas : Fragment() {
         }
     }
 
-    private fun sincronizarAgendaSeNecessario(fetchOnline: Boolean, force: Boolean) {
+    private fun sincronizarAgendaSeNecessario(force: Boolean) {
         val ctx = context ?: return
 
         Log.d(
             TAG,
-            "sincronizarAgendaSeNecessario | fetchOnline=$fetchOnline | force=$force"
+            "sincronizarAgendaSeNecessario | force=$force"
         )
 
         lifecycleScope.launch(Dispatchers.IO) {
             CalendarSyncManager.syncIfNeeded(
                 context = ctx,
-                fetchOnline = fetchOnline,
+                fetchOnline = false,
                 force = force
             )
         }
@@ -370,7 +370,10 @@ class CalendarioProvas : Fragment() {
         if (!::adapter.isInitialized) return
         if (!dadosCarregados) return
 
-        val listaCombinada = todasProvasFEI + todosEventosMoodle
+        // Ordena a lista combinada pela data/hora real para não agrupar
+        // todas as provas da FEI antes das tarefas do Moodle.
+        val listaCombinada = (todasProvasFEI + todosEventosMoodle)
+            .sortedBy { parseDateTimeForSorting(it) }
 
         val listaFiltrada = listaCombinada.filter { prova ->
             val passaTipo = when (filtroAtual) {
@@ -383,7 +386,8 @@ class CalendarioProvas : Fragment() {
 
             val partes = prova.dataProva.split("/")
 
-            val passaMes = if (partes.size == 2) {
+            // Aceita formatos "dd/MM" e "dd/MM/yyyy"
+            val passaMes = if (partes.size >= 2) {
                 val mes = partes[1].toIntOrNull() ?: 0
                 mes == mesSelecionado
             } else {
@@ -401,6 +405,40 @@ class CalendarioProvas : Fragment() {
         } else {
             txtSemProvas.visibility = View.GONE
             recyclerProvas.visibility = View.VISIBLE
+        }
+    }
+
+    /**
+     * Extrai um timestamp (Long) baseado na string da data e hora da prova
+     * para permitir a ordenação cronológica independente da fonte (FEI ou Moodle).
+     */
+    private fun parseDateTimeForSorting(prova: ProvaCalendario): Long {
+        try {
+            val dateParts = prova.dataProva.trim().split("/")
+            if (dateParts.size < 2) return Long.MAX_VALUE
+
+            val day = dateParts[0].toIntOrNull() ?: return Long.MAX_VALUE
+            val month = dateParts[1].toIntOrNull() ?: return Long.MAX_VALUE
+
+            // Assume o ano atual caso a string não possua o ano (ex: formato "dd/MM")
+            val year = if (dateParts.size >= 3) {
+                dateParts[2].toIntOrNull() ?: Calendar.getInstance().get(Calendar.YEAR)
+            } else {
+                Calendar.getInstance().get(Calendar.YEAR)
+            }
+
+            val timeRegex = Regex("(\\d{2}):(\\d{2})")
+            val match = timeRegex.find(prova.hora)
+            val hour = match?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
+            val minute = match?.groupValues?.getOrNull(2)?.toIntOrNull() ?: 0
+
+            val calendar = Calendar.getInstance().apply {
+                set(year, month - 1, day, hour, minute, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            return calendar.timeInMillis
+        } catch (_: Exception) {
+            return Long.MAX_VALUE
         }
     }
 
@@ -483,6 +521,7 @@ class CalendarioProvas : Fragment() {
             private val txtTipoProva: TextView =
                 itemView.findViewById(com.marinov.openfei.R.id.txt_tipo_prova)
 
+            @SuppressLint("SetTextI18n")
             fun bind(prova: ProvaCalendario) {
                 if (prova.tipoProva == "Moodle") {
                     txtDisciplina.text = prova.nomeDisciplina
