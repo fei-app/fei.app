@@ -427,6 +427,13 @@ class MainActivity : AppCompatActivity() {
             openFragment(com.marinov.openfei.R.id.option_boletos)
         } else {
             openFragment(com.marinov.openfei.R.id.navigation_home)
+
+            // Garante que a barra inferior de navegação seja restaurada ao voltar para a Home
+            if (::bottomNavContainer.isInitialized) {
+                bottomNavContainer.postDelayed({
+                    showBottomNavigation()
+                }, 100)
+            }
         }
     }
 

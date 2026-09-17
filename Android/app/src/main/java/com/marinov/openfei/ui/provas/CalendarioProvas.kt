@@ -57,6 +57,9 @@ class CalendarioProvas : Fragment() {
     private var filtroAtual: Int = FILTRO_TODOS
     private var dadosCarregados: Boolean = false
 
+    // Flag para garantir que o scroll só resete quando o usuário interagir
+    private var shouldResetScroll = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -105,7 +108,6 @@ class CalendarioProvas : Fragment() {
 
         carregarDados()
 
-        // Garante que a barra de navegação apareça ao entrar/voltar para a tela do calendário
         view.postDelayed({
             if (isAdded) {
                 (activity as? MainActivity)?.showBottomNavigation()
@@ -139,9 +141,9 @@ class CalendarioProvas : Fragment() {
                 id: Long
             ) {
                 mesSelecionado = position + 1
+                shouldResetScroll = true // Interação de usuário
                 aplicarFiltros()
 
-                // Exibe a barra APENAS como resposta à interação do usuário de mudar o mês
                 view?.postDelayed({
                     if (isAdded) {
                         (activity as? MainActivity)?.showBottomNavigation()
@@ -230,9 +232,9 @@ class CalendarioProvas : Fragment() {
                 else -> return@setOnMenuItemClickListener false
             }
 
+            shouldResetScroll = true // Interação de usuário
             aplicarFiltros()
 
-            // Exibe a barra APENAS como resposta à interação do usuário de mudar o filtro
             view?.postDelayed({
                 if (isAdded) {
                     (activity as? MainActivity)?.showBottomNavigation()
@@ -246,7 +248,6 @@ class CalendarioProvas : Fragment() {
 
     private fun carregarDados() {
         lifecycleScope.launch {
-            // 1. Prioriza cache local para montar a UI imediatamente
             val cached = withContext(Dispatchers.IO) {
                 Pair(
                     CalendarioRepository.obterProvasFEICache(),
@@ -275,7 +276,6 @@ class CalendarioProvas : Fragment() {
                 exibirCarregando()
             }
 
-            // Se a integração com a agenda estiver ativada, sincroniza o cache imediatamente
             sincronizarAgendaSeNecessario(force = false)
 
             val mainActivity = activity as? MainActivity ?: return@launch
@@ -354,7 +354,6 @@ class CalendarioProvas : Fragment() {
                 aplicarFiltros()
             }
 
-            // Sempre que sincronizar eventos, também tenta refletir na agenda do dispositivo
             sincronizarAgendaSeNecessario(force = mudou)
 
         } catch (e: Exception) {
@@ -391,8 +390,6 @@ class CalendarioProvas : Fragment() {
         if (!::adapter.isInitialized) return
         if (!dadosCarregados) return
 
-        // Ordena a lista combinada pela data/hora real para não agrupar
-        // todas as provas da FEI antes das tarefas do Moodle.
         val listaCombinada = (todasProvasFEI + todosEventosMoodle)
             .sortedBy { parseDateTimeForSorting(it) }
 
@@ -406,8 +403,6 @@ class CalendarioProvas : Fragment() {
             }
 
             val partes = prova.dataProva.split("/")
-
-            // Aceita formatos "dd/MM" e "dd/MM/yyyy"
             val passaMes = if (partes.size >= 2) {
                 val mes = partes[1].toIntOrNull() ?: 0
                 mes == mesSelecionado
@@ -427,15 +422,14 @@ class CalendarioProvas : Fragment() {
             txtSemProvas.visibility = View.GONE
             recyclerProvas.visibility = View.VISIBLE
 
-            // Garante que a lista volte sempre para o topo ao exibir novos dados
-            recyclerProvas.scrollToPosition(0)
+            // Só executa o scroll se o usuário solicitou uma mudança
+            if (shouldResetScroll) {
+                recyclerProvas.scrollToPosition(0)
+                shouldResetScroll = false
+            }
         }
     }
 
-    /**
-     * Extrai um timestamp (Long) baseado na string da data e hora da prova
-     * para permitir a ordenação cronológica independente da fonte (FEI ou Moodle).
-     */
     private fun parseDateTimeForSorting(prova: ProvaCalendario): Long {
         try {
             val dateParts = prova.dataProva.trim().split("/")
@@ -444,7 +438,6 @@ class CalendarioProvas : Fragment() {
             val day = dateParts[0].toIntOrNull() ?: return Long.MAX_VALUE
             val month = dateParts[1].toIntOrNull() ?: return Long.MAX_VALUE
 
-            // Assume o ano atual caso a string não possua o ano (ex: formato "dd/MM")
             val year = if (dateParts.size >= 3) {
                 dateParts[2].toIntOrNull() ?: Calendar.getInstance().get(Calendar.YEAR)
             } else {
