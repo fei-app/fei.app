@@ -104,6 +104,13 @@ class CalendarioProvas : Fragment() {
         )
 
         carregarDados()
+
+        // Garante que a barra de navegação apareça ao entrar/voltar para a tela do calendário
+        view.postDelayed({
+            if (isAdded) {
+                (activity as? MainActivity)?.showBottomNavigation()
+            }
+        }, 100)
     }
 
     private fun configurarSpinnerMeses() {
@@ -133,6 +140,13 @@ class CalendarioProvas : Fragment() {
             ) {
                 mesSelecionado = position + 1
                 aplicarFiltros()
+
+                // Exibe a barra APENAS como resposta à interação do usuário de mudar o mês
+                view?.postDelayed({
+                    if (isAdded) {
+                        (activity as? MainActivity)?.showBottomNavigation()
+                    }
+                }, 100)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -217,6 +231,13 @@ class CalendarioProvas : Fragment() {
             }
 
             aplicarFiltros()
+
+            // Exibe a barra APENAS como resposta à interação do usuário de mudar o filtro
+            view?.postDelayed({
+                if (isAdded) {
+                    (activity as? MainActivity)?.showBottomNavigation()
+                }
+            }, 100)
             true
         }
 
@@ -405,6 +426,9 @@ class CalendarioProvas : Fragment() {
         } else {
             txtSemProvas.visibility = View.GONE
             recyclerProvas.visibility = View.VISIBLE
+
+            // Garante que a lista volte sempre para o topo ao exibir novos dados
+            recyclerProvas.scrollToPosition(0)
         }
     }
 

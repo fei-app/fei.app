@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.marinov.openfei.R
+import com.marinov.openfei.ui.main.MainActivity
 
 class MateriadeProva : Fragment() {
     companion object {
@@ -59,7 +60,20 @@ class MateriadeProva : Fragment() {
 
         exibirConteudo()
         configurarAcoesCompartilhamento()
+
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Usa um pequeno delay para garantir que a transição de fragmentos e o layout
+        // não engulam o comando de subir a barra de navegação
+        view.postDelayed({
+            if (isAdded) {
+                (activity as? MainActivity)?.showBottomNavigation()
+            }
+        }, 100)
     }
 
     private fun exibirConteudo() {
