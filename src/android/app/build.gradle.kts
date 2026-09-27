@@ -10,7 +10,7 @@ android {
         minSdk = 24
         targetSdk = 37
         versionCode = 1
-        versionName = "10.26092026"
+        versionName = "10.27092026"
         externalNativeBuild {
             cmake {
                 cppFlags += ""

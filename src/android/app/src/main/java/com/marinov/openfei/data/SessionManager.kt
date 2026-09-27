@@ -2,12 +2,13 @@ package com.marinov.openfei.data
 
 import android.content.Context
 import android.util.Log
-import com.marinov.openfei.core.OpenFeiCore
 import com.marinov.openfei.util.WebViewHelper
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.milliseconds
 
 object SessionManager {
     private const val TAG = "SessionManager"
@@ -79,23 +80,54 @@ object SessionManager {
             if (nowInside - lastRenewalTime < RENEWAL_INTERVAL_MS) {
                 return@withLock
             }
+
+            // ★ CORREÇÃO: Tentar login silencioso primeiro, mas se falhar,
+            // tentar RustSession como fallback antes de decidir que precisa de login manual
             val loginResult = try {
                 LoginLogic.performLoginSilent(appContext)
             } catch (e: Exception) {
                 Log.e(TAG, "Erro no login silencioso FEI", e)
                 LoginResult(false, e.message ?: "", isNetworkError = true)
             }
-            if (!loginResult.success) {
-                throw SessionExpiredException("Não foi possível renovar a sessão FEI — login silencioso falhou")
+
+            if (loginResult.success) {
+                // Login silencioso funcionou
+                lastRenewalTime = System.currentTimeMillis()
+                Log.d(TAG, "Login silencioso FEI bem-sucedido")
+                return@withLock
             }
-            lastRenewalTime = System.currentTimeMillis()
+
+            // ★ Login silencioso falhou. Tentar RustSession como fallback
+            // Isso evita chamar a LoginActivity desnecessariamente quando há race conditions
+            Log.w(TAG, "Login silencioso falhou: ${loginResult.errorMessage}. Tentando RustSession como fallback...")
+
+            // Pequeno delay para evitar race conditions com outras tentativas de login
+            delay(100.milliseconds)
+
+            val rustSessionSuccess = try {
+                RustSession.ensureFeiSession()
+            } catch (e: Exception) {
+                Log.e(TAG, "Erro ao tentar RustSession como fallback", e)
+                false
+            }
+
+            if (rustSessionSuccess) {
+                // RustSession conseguiu logar com sucesso
+                lastRenewalTime = System.currentTimeMillis()
+                Log.d(TAG, "RustSession conseguiu logar com sucesso após falha do login silencioso")
+                return@withLock
+            }
+
+            // Ambos falharam - realmente precisa de login manual
+            Log.w(TAG, "Ambos login silencioso e RustSession falharam - precisa de login manual")
+            throw SessionExpiredException("Não foi possível renovar a sessão FEI — login silencioso falhou")
         }
     }
 
     suspend fun forcarRenovacaoCookiesMoodle(): Boolean = withContext(Dispatchers.IO) {
         moodleSessionMutex.withLock {
             Log.d(TAG, "Forçando renovação REAL dos cookies do Moodle (login completo via formulário)")
-            OpenFeiCore.clearSession()
+            com.marinov.openfei.core.OpenFeiCore.clearSession()
             RustSession.resetFeiSession()
 
             val result = LoginLogic.forcarLoginCookiesMoodle(appContext)

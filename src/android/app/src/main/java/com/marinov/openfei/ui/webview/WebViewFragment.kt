@@ -83,10 +83,11 @@ class WebViewFragment : Fragment() {
         private const val TAG = "WebViewFragment"
         private const val ARG_URL = "url"
         private const val ARG_EXIT_TO_HOME = "exit_to_home"
+
         // ★ NOVO: contador de tentativas consecutivas de renovação do Moodle ★
         private var moodleLoginRetryCount = 0
-        private const val HOME_URL_IDENTIFIER = "https://interage.fei.org.br/secureserver/portal/graduacao/home"
 
+        private const val HOME_URL_IDENTIFIER = "https://interage.fei.org.br/secureserver/portal/graduacao/home"
         private const val MOODLE_HOST = "moodle.fei.edu.br"
         private const val MOODLE_LOGIN_PATH_PREFIX = "/login/"
         private const val MOODLE_HOME_URL = "https://moodle.fei.edu.br/my/"
@@ -118,7 +119,6 @@ class WebViewFragment : Fragment() {
         layoutSemInternet = view.findViewById(R.id.layout_sem_internet)
         btnTentarNovamente = view.findViewById(R.id.btn_tentar_novamente)
         loadingContainer = view.findViewById(R.id.loading_container)
-
         return view
     }
 
@@ -150,7 +150,6 @@ class WebViewFragment : Fragment() {
             // 1. Verifica primeiramente com o NCSI se tem internet
             val isOnline = NetworkChecker.isOnline()
             if (!isAdded) return@launch
-
             if (!isOnline) {
                 showNoInternetUI()
                 return@launch
@@ -160,7 +159,6 @@ class WebViewFragment : Fragment() {
             showLoadingUI()
             val status = SessionManager.checkConnectionAndSession()
             if (!isAdded) return@launch
-
             when (status) {
                 SessionManager.STATUS_ONLINE_OK -> {
                     // 3. Sessão OK, entra no WebView
@@ -260,7 +258,6 @@ class WebViewFragment : Fragment() {
             override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 showBottomNav()
-
                 if (url != null) {
                     if (isMoodleUrl(url)) {
                         protegerCookiesMoodleSeNecessario()
@@ -339,7 +336,6 @@ class WebViewFragment : Fragment() {
     private fun setupBottomNavAutoHide() {
         val container = requireActivity().findViewById<View>(R.id.bottom_nav_container) ?: return
         bottomNavContainer = container
-
         val params = container.layoutParams as? CoordinatorLayout.LayoutParams
         @Suppress("UNCHECKED_CAST")
         bottomNavBehavior = params?.behavior as? HideBottomViewOnScrollBehavior<View>
@@ -373,11 +369,13 @@ class WebViewFragment : Fragment() {
             }
             return true
         }
+
         val uri = url.toUri()
         val host = uri.host ?: return false
         if (host.endsWith("fei.edu.br") || host.endsWith("fei.org.br")) {
             return false
         }
+
         try {
             val intent = Intent(Intent.ACTION_VIEW, uri)
             requireContext().startActivity(intent)
@@ -388,24 +386,31 @@ class WebViewFragment : Fragment() {
     }
 
     /**
-     * ★ NOVO: trata o acesso a qualquer link de "https://moodle.fei.edu.br/login/".
+     * ★ CORRIGIDO: trata o acesso a qualquer link de "https://moodle.fei.edu.br/login/".
      * Mostra a tela de loading, desprotege os cookies, força a renovação real
      * da sessão do Moodle, reprotege os cookies e redireciona para /my/.
+     * Se o loop de login for detectado, chama a LoginActivity.
      */
     private fun handleMoodleLoginRedirect() {
         if (handlingMoodleLoginRedirect) return
 
         moodleLoginRetryCount++
+
         if (moodleLoginRetryCount > MAX_MOODLE_LOGIN_RETRIES) {
-            Log.w(TAG, "Loop de login do Moodle detectado (${moodleLoginRetryCount} tentativas) — abortando renovação automática")
+            Log.w(TAG, "Loop de login do Moodle detectado (${moodleLoginRetryCount} tentativas) — chamando LoginActivity")
             moodleLoginRetryCount = 0
             if (isAdded) {
                 hideLoadingUI()
                 Toast.makeText(
                     requireContext(),
-                    "Não foi possível renovar a sessão do Moodle. Tente novamente mais tarde.",
+                    "Sessão do Moodle expirada. Faça login novamente.",
                     Toast.LENGTH_LONG
                 ).show()
+                // ★ CORREÇÃO: Chama a LoginActivity quando o loop é detectado ★
+                val intent = Intent(requireContext(), LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                requireActivity().finish()
             }
             return
         }
@@ -417,6 +422,7 @@ class WebViewFragment : Fragment() {
             try {
                 SessionManager.desprotegerCookiesMoodle()
                 isMoodleProtectionOwner = false
+
                 // ★ Usa a renovação REAL (login por formulário), não a checagem de token ★
                 val sucesso = SessionManager.forcarRenovacaoCookiesMoodle()
                 if (!sucesso) {
