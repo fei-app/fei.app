@@ -6,3 +6,4 @@
 /src/android/.gradle/
 /.idea
 /.kotlin
+/src/android/app/src/main/rustLibs/
