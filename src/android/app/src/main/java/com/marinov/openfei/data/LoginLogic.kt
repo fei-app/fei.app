@@ -29,18 +29,13 @@ data class MoodleLoginResult(
 
 object LoginLogic {
     private const val TAG = "LoginLogic"
-
     private val ALLOWED_DOMAINS = listOf(
         "interage.fei.org.br",
         "fei.org.br",
         "fei.edu.br",
-        "moodle.fei.edu.br"  // ★ Adicionado para permitir cookies do Moodle
+        "moodle.fei.edu.br"
     )
 
-    /**
-     * Login principal - APENAS para o servidor FEI (interage.fei.edu.br)
-     * Usa Rust para fazer o login
-     */
     suspend fun performLogin(user: String, pass: String, context: Context): LoginResult =
         withContext(Dispatchers.IO) {
             try {
@@ -54,10 +49,8 @@ object LoginLogic {
                 when (val result = OpenFeiCore.login(user, pass)) {
                     is CoreResult.Success -> {
                         val loginData = result.data
-
                         if (loginData.success) {
                             injectCookies(loginData.cookies)
-
                             val prefs = LoginActivity.getEncryptedPrefs(context)
                             prefs.edit {
                                 putBoolean(LoginActivity.KEY_IS_LOGGED_IN, true)
@@ -99,16 +92,20 @@ object LoginLogic {
         }
 
     /**
-     * ★ CRÍTICO: Injeta cookies no CookieManager do Android
-     * Remove o atributo 'Secure' para evitar erros em HTTP
+     * ★ CORREÇÃO CRÍTICA PARA ANDROID 7/8:
+     * WebViews antigos (Chrome < 80) NÃO reconhecem o atributo "SameSite"
+     * e rejeitam o cookie INTEIRO silenciosamente quando ele está presente.
+     * O Moodle envia "SameSite=None" em todos os cookies de sessão, fazendo com que
+     * o CookieManager do Android 7/8 ignore completamente o "MoodleSession" ao chamar
+     * setCookie(). Isso causa o loop infinito de login no Moodle.
+     *
+     * Esta função remove "SameSite" (qualquer valor) e "Partitioned" antes de injetar.
      */
     private fun injectCookies(cookies: List<CoreCookie>) {
         val cookieManager = CookieManager.getInstance()
         cookieManager.setAcceptCookie(true)
-
         var injectedCount = 0
         val seenCookies = mutableSetOf<String>()
-        val clearedNames = mutableSetOf<String>()
 
         cookies.forEach { cookie ->
             if (!isAllowedDomain(cookie.origin)) {
@@ -118,10 +115,8 @@ object LoginLogic {
             val domain = extractDomain(cookie.origin)
             if (domain.isEmpty()) return@forEach
 
-            // Sempre injetar em HTTPS (o Moodle usa HTTPS)
             val targetUrl = "https://$domain"
 
-            // Parseia o cookie para garantir que tenha Domain e Path corretos
             val cookieParts = cookie.cookieLine.split(";").map { it.trim() }
             val nameValue = cookieParts.firstOrNull() ?: return@forEach
             val cookieName = nameValue.substringBefore("=").trim()
@@ -143,15 +138,25 @@ object LoginLogic {
                         attrs.add(part)
                     }
                     lower == "secure" -> {
-                        // ★ MANTÉM o atributo Secure! O Moodle exige para HTTPS ★
                         attrs.add(part)
                     }
-                    else -> attrs.add(part)
+                    // ★ CORREÇÃO: Remove SameSite (qualquer valor) e Partitioned
+                    // Esses atributos modernos não são suportados em WebViews do
+                    // Android 7/8 e causam rejeição silenciosa do cookie inteiro
+                    lower.startsWith("samesite=") -> {
+                        // Ignora — remove do cookie
+                    }
+                    lower == "partitioned" -> {
+                        // Ignora — atributo CHIPS moderno
+                    }
+                    else -> {
+                        // Mantém outros atributos (HttpOnly, expires, Max-Age, etc.)
+                        attrs.add(part)
+                    }
                 }
             }
 
             if (!hasDomain) {
-                // ★ Adiciona Domain com o ponto na frente para cobrir subdomínios ★
                 attrs.add("Domain=.$domain")
             }
             if (!hasPath) {
@@ -160,23 +165,12 @@ object LoginLogic {
 
             val finalCookie = "$nameValue; ${attrs.joinToString("; ")}"
 
-            // Evitar duplicatas
             val dedup = "$targetUrl|$finalCookie"
             if (seenCookies.contains(dedup)) return@forEach
             seenCookies.add(dedup)
 
-            // ★ CORREÇÃO DO LOOP: antes de gravar o primeiro valor de um
-            // cookie de nome X nesta leva, limpa qualquer resquício antigo
-            // de X que porventura já esteja no CookieManager sob uma
-            // variante de Domain diferente (ex.: sem o ponto no início,
-            // guardado pelo próprio WebView numa navegação anterior). Por
-            // RFC 6265, dois cookies de mesmo nome mas Domain diferente
-            // coexistem e são enviados JUNTOS nas próximas requisições —
-            // foi isso que fazia o Moodle, ao receber duas MoodleSession na
-            // mesma requisição, tratar a sessão como inválida e mandar o
-            // WebView de volta para /login/ mesmo logo após uma renovação
-            // "bem-sucedida".
-            if (cookieName.isNotEmpty() && clearedNames.add("$domain|$cookieName")) {
+            // Limpa versões antigas do mesmo cookie antes de injetar
+            if (cookieName.isNotEmpty()) {
                 limparCookieAntigo(targetUrl, domain, cookieName)
             }
 
@@ -192,20 +186,15 @@ object LoginLogic {
         cookieManager.flush()
         Log.d(TAG, "★ Total de cookies injetados: $injectedCount de ${cookies.size} recebidos do Rust")
 
-        // Debug final
+        // Log de verificação
         val moodleCookies = cookieManager.getCookie("https://moodle.fei.edu.br")
         Log.d(TAG, "Cookies FINAIS no CookieManager para Moodle: ${moodleCookies ?: "NENHUM"}")
     }
 
-    /**
-     * ★ NOVO: expira um cookie de nome [name] em ambas as variantes de
-     * Domain plausíveis (com e sem o ponto inicial) e sem Domain explícito
-     * (host-only), cobrindo os formatos em que o WebView pode tê-lo
-     * armazenado anteriormente.
-     */
     private fun limparCookieAntigo(targetUrl: String, domain: String, name: String) {
         val cookieManager = CookieManager.getInstance()
         val expirado = "Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+
         cookieManager.setCookie(targetUrl, "$name=; Domain=$domain; $expirado")
         cookieManager.setCookie(targetUrl, "$name=; Domain=.$domain; $expirado")
         cookieManager.setCookie(targetUrl, "$name=; $expirado")
@@ -229,9 +218,6 @@ object LoginLogic {
         }
     }
 
-    /**
-     * Login silencioso - APENAS para FEI (não faz Moodle)
-     */
     suspend fun performLoginSilent(context: Context): LoginResult {
         val prefs = try {
             LoginActivity.getEncryptedPrefs(context)
@@ -248,57 +234,12 @@ object LoginLogic {
         return performLogin(user, pass, context)
     }
 
-    /**
-     * ★ CRÍTICO: Garante que há um token válido do Moodle
-     * Usa Rust para fazer login e injeta os cookies
-     */
-    suspend fun garantirMoodleToken(context: Context): String? = withContext(Dispatchers.IO) {
-        val prefs = try {
-            LoginActivity.getEncryptedPrefs(context)
-        } catch (e: Exception) {
-            Log.e(TAG, "Erro ao acessar credenciais salvas", e)
-            return@withContext null
-        }
-        val user = prefs.getString(LoginActivity.KEY_USER, "") ?: ""
-        val pass = prefs.getString(LoginActivity.KEY_PASS, "") ?: ""
-        if (user.isEmpty() || pass.isEmpty()) {
-            Log.d(TAG, "Sem credenciais salvas — impossível obter token do Moodle")
-            return@withContext null
-        }
-
-        when (val result = OpenFeiCore.moodleToken(user, pass)) {
-            is CoreResult.Success -> {
-                val tokenData = result.data
-                if (tokenData.success) {
-                    // ★ CRÍTICO: Injetar cookies antes de retornar o token ★
-                    if (tokenData.cookies.isNotEmpty()) {
-                        injectCookies(tokenData.cookies)
-                        Log.d(TAG, "Cookies do Moodle injetados com sucesso: ${tokenData.cookies.size} cookies")
-                    }
-                    tokenData.token
-                } else {
-                    Log.e(TAG, "Falha ao obter token do Moodle: ${tokenData.errorMessage}")
-                    null
-                }
-            }
-            is CoreResult.Error -> {
-                Log.e(TAG, "Erro ao obter token do Moodle: ${result.code} - ${result.message}")
-                null
-            }
-        }
-    }
-
-    /**
-     * ★ CRÍTICO: Login separado para o Moodle usando Rust
-     * Retorna também o token do Moodle se obtido com sucesso
-     */
     suspend fun performMoodleLoginSeparate(user: String, pass: String): MoodleLoginResult =
         withContext(Dispatchers.IO) {
             when (val result = OpenFeiCore.moodleLogin(user, pass)) {
                 is CoreResult.Success -> {
                     val tokenData = result.data
                     if (tokenData.success) {
-                        // ★ CRÍTICO: Injetar cookies do Moodle ★
                         if (tokenData.cookies.isNotEmpty()) {
                             injectCookies(tokenData.cookies)
                             Log.d(TAG, "Cookies do Moodle injetados: ${tokenData.cookies.size} cookies")
@@ -328,6 +269,7 @@ object LoginLogic {
                 }
             }
         }
+
     suspend fun forcarLoginCookiesMoodle(context: Context): MoodleLoginResult {
         val prefs = try {
             LoginActivity.getEncryptedPrefs(context)
@@ -341,7 +283,6 @@ object LoginLogic {
             Log.d(TAG, "Sem credenciais salvas — impossível forçar login de cookies do Moodle")
             return MoodleLoginResult(false, "Sem credenciais salvas", isNetworkError = false)
         }
-
         Log.d(TAG, "Forçando login completo do Moodle via Rust")
         return performMoodleLoginSeparate(user, pass)
     }
