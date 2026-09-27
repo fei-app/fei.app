@@ -4,3 +4,5 @@
 /src/android/.idea/
 /src/android/.kotlin/
 /src/android/.gradle/
+/.idea
+/.kotlin
