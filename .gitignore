@@ -1,2 +1,6 @@
-/app/build/
-gradle.properties
+/src/android/app/build/
+/src/android/app/release/
+/src/biblioteca_rust/target/
+/src/android/.idea/
+/src/android/.kotlin/
+/src/android/.gradle/
