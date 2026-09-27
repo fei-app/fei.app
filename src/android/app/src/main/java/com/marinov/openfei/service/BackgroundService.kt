@@ -64,7 +64,9 @@ class BackgroundService : Service() {
 
         fun start(context: Context) {
             val intent = Intent(context, BackgroundService::class.java)
-            context.startForegroundService(intent)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            }
         }
     }
 
@@ -335,56 +337,68 @@ class BackgroundService : Service() {
     private fun createNotificationChannels() {
         val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
-        nm.createNotificationChannel(
-            NotificationChannel(
-                FOREGROUND_CHANNEL_ID,
-                getString(R.string.notif_canal_servico),
-                NotificationManager.IMPORTANCE_LOW
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    FOREGROUND_CHANNEL_ID,
+                    getString(R.string.notif_canal_servico),
+                    NotificationManager.IMPORTANCE_LOW
+                )
             )
-        )
+        }
 
-        nm.createNotificationChannel(
-            NotificationChannel(
-                SYNC_CHANNEL_ID,
-                getString(R.string.notif_canal_sync),
-                NotificationManager.IMPORTANCE_MIN
-            ).apply {
-                setSound(null, null)
-                enableVibration(false)
-            }
-        )
-
-        nm.createNotificationChannel(
-            NotificationChannel(
-                "notas_channel",
-                getString(R.string.notif_canal_notas),
-                NotificationManager.IMPORTANCE_DEFAULT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    SYNC_CHANNEL_ID,
+                    getString(R.string.notif_canal_sync),
+                    NotificationManager.IMPORTANCE_MIN
+                ).apply {
+                    setSound(null, null)
+                    enableVibration(false)
+                }
             )
-        )
+        }
 
-        nm.createNotificationChannel(
-            NotificationChannel(
-                "boletos_channel",
-                getString(R.string.notif_canal_boletos),
-                NotificationManager.IMPORTANCE_DEFAULT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    "notas_channel",
+                    getString(R.string.notif_canal_notas),
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
             )
-        )
+        }
 
-        nm.createNotificationChannel(
-            NotificationChannel(
-                "calendar_update_channel",
-                getString(R.string.notif_canal_horario),
-                NotificationManager.IMPORTANCE_DEFAULT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    "boletos_channel",
+                    getString(R.string.notif_canal_boletos),
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
             )
-        )
+        }
 
-        nm.createNotificationChannel(
-            NotificationChannel(
-                "update_channel",
-                getString(R.string.notif_canal_update),
-                NotificationManager.IMPORTANCE_HIGH
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    "calendar_update_channel",
+                    getString(R.string.notif_canal_horario),
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
             )
-        )
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    "update_channel",
+                    getString(R.string.notif_canal_update),
+                    NotificationManager.IMPORTANCE_HIGH
+                )
+            )
+        }
     }
 
     private fun buildForegroundNotification() =

@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId = "com.marinov.openfei"
-        minSdk = 30
+        minSdk = 24
         targetSdk = 37
         versionCode = 1
         versionName = "10.26092026"
