@@ -2,6 +2,7 @@ package com.marinov.openfei.data
 
 import android.content.Context
 import android.util.Log
+import com.marinov.openfei.core.OpenFeiCore
 import com.marinov.openfei.util.WebViewHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
@@ -53,7 +54,6 @@ object SessionManager {
             Log.d(TAG, "checkConnectionAndSession → NCSI diz que está offline")
             return@withContext STATUS_OFFLINE
         }
-
         try {
             renewSession()
             Log.d(TAG, "checkConnectionAndSession → sessão FEI renovada com sucesso")
@@ -79,33 +79,29 @@ object SessionManager {
             if (nowInside - lastRenewalTime < RENEWAL_INTERVAL_MS) {
                 return@withLock
             }
-
             val loginResult = try {
                 LoginLogic.performLoginSilent(appContext)
             } catch (e: Exception) {
                 Log.e(TAG, "Erro no login silencioso FEI", e)
                 LoginResult(false, e.message ?: "", isNetworkError = true)
             }
-
             if (!loginResult.success) {
                 throw SessionExpiredException("Não foi possível renovar a sessão FEI — login silencioso falhou")
             }
-
             lastRenewalTime = System.currentTimeMillis()
         }
     }
 
-    // ★ REMOVIDO: fetchPage() que usava Jsoup
-    // Os repositórios agora usam diretamente o OpenFeiCore (Rust)
-
     suspend fun forcarRenovacaoCookiesMoodle(): Boolean = withContext(Dispatchers.IO) {
         moodleSessionMutex.withLock {
             Log.d(TAG, "Forçando renovação REAL dos cookies do Moodle (login completo via formulário)")
+            OpenFeiCore.clearSession()
+            RustSession.resetFeiSession()
+
             val result = LoginLogic.forcarLoginCookiesMoodle(appContext)
             if (result.success) {
                 lastMoodleRenewalTime = System.currentTimeMillis()
                 Log.d(TAG, "Cookies do Moodle renovados com sucesso via login completo | token=${result.token != null}")
-
                 // ★ Log de verificação: mostra os cookies que o CookieManager tem para o Moodle
                 val cookieStr = android.webkit.CookieManager.getInstance().getCookie("https://moodle.fei.edu.br")
                 Log.d(TAG, "Cookies atuais no CookieManager para moodle.fei.edu.br: ${cookieStr?.take(200) ?: "NENHUM"}")
@@ -115,5 +111,4 @@ object SessionManager {
             result.success
         }
     }
-
 }

@@ -13,14 +13,19 @@ import kotlinx.coroutines.withContext
 object RustSession {
     private const val TAG = "RustSession"
     private lateinit var appContext: Context
-
     private var lastFeiLoginTime = 0L
-    private const val FEI_RENEW_INTERVAL_MS = 10L * 60L * 1000L // 10 minutos
-
+    private const val FEI_RENEW_INTERVAL_MS = 10L * 60 * 1000L // 10 minutos
     private val loginMutex = Mutex()
 
     fun init(context: Context) {
         appContext = context.applicationContext
+    }
+
+    // ★ NOVO: Invalida a sessão da FEI para forçar um novo login na próxima requisição.
+    // Usado quando o cliente HTTP do Rust é resetado (ex.: para limpar cookies velhos do Moodle).
+    fun resetFeiSession() {
+        lastFeiLoginTime = 0L
+        Log.d(TAG, "Sessão FEI invalidada no RustSession (cliente HTTP resetado)")
     }
 
     suspend fun ensureFeiSession(): Boolean = withContext(Dispatchers.IO) {
@@ -28,30 +33,24 @@ object RustSession {
         if (now - lastFeiLoginTime < FEI_RENEW_INTERVAL_MS) {
             return@withContext true
         }
-
         loginMutex.withLock {
             val nowInside = System.currentTimeMillis()
             if (nowInside - lastFeiLoginTime < FEI_RENEW_INTERVAL_MS) {
                 return@withLock true
             }
-
             val prefs = runCatching {
                 LoginActivity.getEncryptedPrefs(appContext)
             }.getOrNull()
-
             if (prefs == null) {
                 Log.e(TAG, "Não conseguiu acessar credenciais criptografadas")
                 return@withLock false
             }
-
             val user = prefs.getString(LoginActivity.KEY_USER, "") ?: ""
             val pass = prefs.getString(LoginActivity.KEY_PASS, "") ?: ""
-
             if (user.isEmpty() || pass.isEmpty()) {
                 Log.w(TAG, "Sem credenciais salvas para login Rust")
                 return@withLock false
             }
-
             when (val result = OpenFeiCore.login(user, pass)) {
                 is CoreResult.Success -> {
                     val loginData = result.data
@@ -71,5 +70,4 @@ object RustSession {
             }
         }
     }
-
 }
