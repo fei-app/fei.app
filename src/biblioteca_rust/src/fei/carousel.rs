@@ -1,4 +1,4 @@
-use scraper::{ElementRef, Html, Selector};
+use scraper::{Html, Selector};
 
 use crate::error::CoreError;
 use crate::http::{execute_get_follow, http_client};
@@ -8,10 +8,6 @@ const FEI_HOME_URL: &str = "https://interage.fei.org.br/secureserver/portal/grad
 
 fn sel(selector: &str) -> Selector {
     Selector::parse(selector).expect("Seletor CSS inválido")
-}
-
-fn text(el: &ElementRef) -> String {
-    el.text().collect::<String>().trim().to_string()
 }
 
 fn ensure_authenticated(doc: &Html) -> Result<(), CoreError> {
@@ -37,14 +33,14 @@ pub fn fetch_carousel() -> Result<Vec<CarouselItem>, CoreError> {
 
     for item in doc.select(&sel("#carousel-example-generic .item")) {
         let link_href = item
-            .select(&sel("a"))
-            .next()
-            .and_then(|a| a.value().attr("href").map(|s| s.to_string()));
+        .select(&sel("a"))
+        .next()
+        .and_then(|a| a.value().attr("href").map(|s| s.to_string()));
 
         let img_src = item
-            .select(&sel("img"))
-            .next()
-            .and_then(|img| img.value().attr("src").map(|s| s.to_string()));
+        .select(&sel("img"))
+        .next()
+        .and_then(|img| img.value().attr("src").map(|s| s.to_string()));
 
         if let (Some(link), Some(img)) = (link_href, img_src) {
             let absolute_image = if img.starts_with("http") {
@@ -55,7 +51,7 @@ pub fn fetch_carousel() -> Result<Vec<CarouselItem>, CoreError> {
 
             items.push(CarouselItem {
                 image_url: Some(absolute_image),
-                link_url: Some(link),
+                       link_url: Some(link),
             });
         }
     }
