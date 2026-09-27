@@ -1,8 +1,8 @@
 use scraper::{ElementRef, Html, Selector};
 
 use crate::error::CoreError;
-use crate::http::{execute_get_follow, http_client, collect_set_cookies};
-use crate::models::{Disciplina, CookieRecord};
+use crate::http::{execute_get_follow, http_client};
+use crate::models::Disciplina;
 
 const FEI_URL_DISCIPLINAS: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/sala-dos-professores/consultas/tabela-de-aulas";
 

@@ -3,8 +3,8 @@ use std::collections::HashMap;
 
 use crate::error::CoreError;
 use crate::fei::disciplinas::fetch_disciplinas;
-use crate::http::{execute_get_follow, http_client, collect_set_cookies};
-use crate::models::{ProvaCalendario, CookieRecord};
+use crate::http::{execute_get_follow, http_client};
+use crate::models::ProvaCalendario;
 
 const FEI_URL_PROVAS: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/sala-dos-professores/informacoes-academicas/provas";
 

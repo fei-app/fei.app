@@ -4,8 +4,8 @@ use std::path::Path;
 use std::fs;
 
 use crate::error::CoreError;
-use crate::http::{execute_get_follow, http_client, collect_set_cookies};
-use crate::models::{Boleto, DownloadBoletoResult, CookieRecord};
+use crate::http::{execute_get_follow, http_client};
+use crate::models::{Boleto, DownloadBoletoResult};
 
 const FEI_URL_BOLETOS: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/tesouraria/consultas/boletos";
 const FEI_URL_GERAR_BOLETO: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/tesouraria/consultas/boletos/titulos/gerar";

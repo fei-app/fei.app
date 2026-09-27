@@ -2,7 +2,7 @@ use scraper::{ElementRef, Html, Selector};
 use std::collections::HashMap;
 
 use crate::error::CoreError;
-use crate::http::{execute_get_follow, http_client, collect_set_cookies};
+use crate::http::{execute_get_follow, http_client};
 use crate::models::Nota;
 
 const FEI_URL_NOTAS: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/secretaria/consultas/notas";

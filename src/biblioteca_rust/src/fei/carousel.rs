@@ -1,8 +1,8 @@
 use scraper::{ElementRef, Html, Selector};
 
 use crate::error::CoreError;
-use crate::http::{execute_get_follow, http_client, collect_set_cookies};
-use crate::models::{CarouselItem, CookieRecord};
+use crate::http::{execute_get_follow, http_client};
+use crate::models::CarouselItem;
 
 const FEI_HOME_URL: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/home";
 
