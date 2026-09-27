@@ -10,7 +10,7 @@ android {
         minSdk = 30
         targetSdk = 37
         versionCode = 1
-        versionName = "10.16092026"
+        versionName = "10.26092026"
         externalNativeBuild {
             cmake {
                 cppFlags += ""
@@ -50,7 +50,6 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.webkit)
     implementation(libs.core.ktx)
-    //implementation (libs.jsoup)
     implementation (libs.gson)
     implementation (libs.work.runtime.ktx)
     implementation (libs.glide)
