@@ -60,8 +60,8 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
         barOffline = view.findViewById(com.marinov.openfei.R.id.barOffline)
         rvNotas = view.findViewById(com.marinov.openfei.R.id.rvNotas)
         tvEmptyNotas = view.findViewById(com.marinov.openfei.R.id.tvEmptyNotas)
-
         val btnLogin: Button = view.findViewById(com.marinov.openfei.R.id.btnLogin)
+
         val isTablet = resources.configuration.smallestScreenWidthDp >= 600
         rvNotas.layoutManager = if (isTablet) {
             GridLayoutManager(requireContext(), 2)
@@ -93,6 +93,9 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
         lifecycleScope.launch {
             val mainActivity = activity as? MainActivity ?: return@launch
             val status = mainActivity.checkConnectionAndSession()
+            // ★ PROTEÇÃO CONTRA CRASH: fragment pode ter sido desanexado durante checkConnectionAndSession
+            if (!isAdded) return@launch
+
             when (status) {
                 MainActivity.STATUS_OFFLINE, MainActivity.STATUS_LOGIN_NEEDED -> {
                     showOfflineBar()
@@ -103,6 +106,7 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
                     loadNotasData(online = true)
                 }
             }
+
             if (isRefreshing) {
                 mainActivity.setRefreshing(false)
                 isRefreshing = false
@@ -126,7 +130,12 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
             val disciplinas = disciplinasDeferred.await()
             val medias = mediasDeferred.await()
 
+            // ★ PROTEÇÃO CONTRA CRASH: fragment pode ter sido desanexado durante fetch
+            if (!isAdded) return
+
             withContext(Dispatchers.Main) {
+                // ★ PROTEÇÃO CONTRA CRASH: verificar novamente na thread principal
+                if (!isAdded) return@withContext
                 if (notas.isNotEmpty()) {
                     buildCards(notas, disciplinas, medias)
                     showContent()
@@ -136,7 +145,10 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
             }
         } catch (e: Exception) {
             Log.e("NotasFragment", "Erro ao obter notas", e)
+            // ★ PROTEÇÃO CONTRA CRASH: verificar antes de atualizar UI
+            if (!isAdded) return
             withContext(Dispatchers.Main) {
+                if (!isAdded) return@withContext
                 showEmptyState()
             }
         }
@@ -201,8 +213,8 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
             val context = holder.itemView.context
 
             holder.tvDisciplinaTitle.text = "${item.codigo} - ${item.nome}"
-            holder.llNotasContainer.removeAllViews()
 
+            holder.llNotasContainer.removeAllViews()
             for (nota in item.notas) {
                 val valorExibicao = nota.valor.takeIf { it.isNotBlank() } ?: context.getString(com.marinov.openfei.R.string.sem_valor)
                 val tvNota = TextView(context).apply {
@@ -216,14 +228,12 @@ class NotasFragment : Fragment(), MainActivity.RefreshableFragment {
 
             if (item.media.isNotBlank()) {
                 holder.tvMedia.visibility = View.VISIBLE
-
                 val isNightMode = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
                 val colorAprovado = if (isNightMode) "#81C784".toColorInt() else "#2E7D32".toColorInt()
                 val colorReprovado = if (isNightMode) "#E57373".toColorInt() else "#C62828".toColorInt()
                 val colorDefault = ContextCompat.getColor(context, com.marinov.openfei.R.color.colorOnSurface)
 
                 val mediaValue = item.media.replace(",", ".").toFloatOrNull()
-
                 if (mediaValue != null) {
                     if (mediaValue >= 5.0f) {
                         holder.tvMedia.text = context.getString(com.marinov.openfei.R.string.notas_media_aprovado, item.media)

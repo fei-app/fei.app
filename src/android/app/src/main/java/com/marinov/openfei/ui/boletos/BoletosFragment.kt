@@ -56,8 +56,6 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     if (AppMode.isResponsavelFinanceiro) {
-                        // No modo responsável financeiro, o BoletosFragment é a tela principal.
-                        // Voltar deve fechar o aplicativo completamente.
                         requireActivity().finishAffinity()
                     } else {
                         (activity as? MainActivity)?.navigateToHome()
@@ -79,13 +77,18 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
             val mainActivity = activity as? MainActivity ?: return@launch
             showLoading()
             val status = mainActivity.checkConnectionAndSession()
-            val online = status == MainActivity.STATUS_ONLINE_OK
+            // ★ PROTEÇÃO CONTRA CRASH: fragment pode ter sido desanexado durante checkConnectionAndSession
+            if (!isAdded) return@launch
 
+            val online = status == MainActivity.STATUS_ONLINE_OK
             if (online) hideOfflineBar() else showOfflineBar()
 
             val boletos = withContext(Dispatchers.IO) {
                 runCatching { BoletosRepository.getBoletos(online = online) }.getOrElse { emptyList() }
             }
+
+            // ★ PROTEÇÃO CONTRA CRASH: fragment pode ter sido desanexado durante fetch
+            if (!isAdded) return@launch
 
             val boletosOrdenados = boletos.sortedByDescending { boleto ->
                 val partes = boleto.vencimento.split("/")
@@ -120,11 +123,17 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
             val uri = withContext(Dispatchers.IO) {
                 runCatching { BoletosRepository.baixaBoleto(boleto.tituloId, boleto.vencimento) }.getOrNull()
             }
+
+            // ★ PROTEÇÃO CONTRA CRASH: fragment pode ter sido desanexado durante download
+            if (!isAdded) return@launch
+
             if (uri == null) {
                 Toast.makeText(requireContext(), getString(R.string.boletos_erro_gerar), Toast.LENGTH_LONG).show()
                 return@launch
             }
+
             Toast.makeText(requireContext(), getString(R.string.boletos_salvo_em), Toast.LENGTH_SHORT).show()
+
             try {
                 val intent = Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(uri, "application/pdf")
@@ -173,7 +182,6 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
         private var boletos: List<Boleto>,
         private val onBaixar: (Boleto) -> Unit
     ) : RecyclerView.Adapter<BoletoAdapter.ViewHolder>() {
-
         @SuppressLint("NotifyDataSetChanged")
         fun update(newList: List<Boleto>) {
             boletos = newList

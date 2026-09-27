@@ -31,19 +31,19 @@ import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 class HorariosAula : Fragment(){
-
     private lateinit var viewPagerAulas: ViewPager2
     private lateinit var barOffline: LinearLayout
     private lateinit var progressBar: CircularProgressIndicator
     private lateinit var tvMessage: TextView
     private lateinit var btnLogin: MaterialButton
+
     private var chipGroupDias: ChipGroup? = null
     private var scrollChips: HorizontalScrollView? = null
     private var layoutDias: LinearLayout? = null
     private val tabletDayButtons = LinkedHashMap<String, MaterialButton>()
+
     private var todasAulas: List<Aula> = emptyList()
     private var diasVisiveis: List<String> = emptyList()
-
     private val ordemDias: List<String> by lazy {
         listOf(
             getString(com.marinov.openfei.R.string.horarios_segunda),
@@ -64,7 +64,6 @@ class HorariosAula : Fragment(){
         savedInstanceState: Bundle?
     ): View {
         val root = inflater.inflate(com.marinov.openfei.R.layout.fragment_horarios, container, false)
-
         viewPagerAulas = root.findViewById(com.marinov.openfei.R.id.viewPagerAulas)
         barOffline     = root.findViewById(com.marinov.openfei.R.id.barOffline)
         progressBar    = root.findViewById(com.marinov.openfei.R.id.progressBar)
@@ -145,7 +144,6 @@ class HorariosAula : Fragment(){
     private fun construirBotoesTablet(dayLayout: LinearLayout) {
         dayLayout.removeAllViews()
         tabletDayButtons.clear()
-
         diasVisiveis.forEach { dia ->
             val btn = MaterialButton(
                 requireContext(),
@@ -159,7 +157,6 @@ class HorariosAula : Fragment(){
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply { setMargins(0, 4.dp, 0, 4.dp) }
-
                 setOnClickListener {
                     if (::viewPagerAulas.isInitialized) {
                         viewPagerAulas.setCurrentItem(diasVisiveis.indexOf(dia), true)
@@ -199,7 +196,6 @@ class HorariosAula : Fragment(){
         val bgSel   = MaterialColors.getColor(ctx, com.google.android.material.R.attr.colorSecondaryContainer, 0)
         val textSel = MaterialColors.getColor(ctx, com.google.android.material.R.attr.colorOnSecondaryContainer, 0)
         val textNorm= MaterialColors.getColor(ctx, com.google.android.material.R.attr.colorOnSurface, 0)
-
         tabletDayButtons.forEach { (dia, btn) ->
             if (dia == diaSelecionado) {
                 btn.setBackgroundColor(bgSel)
@@ -215,21 +211,24 @@ class HorariosAula : Fragment(){
 
     private fun carregarHorarios() {
         val mainActivity = activity as? MainActivity ?: return
-
         lifecycleScope.launch {
             exibirCarregando()
-
             val status = mainActivity.checkConnectionAndSession()
+            // ★ PROTEÇÃO CONTRA CRASH: fragment pode ter sido desanexado durante checkConnectionAndSession
+            if (!isAdded) return@launch
+
             if (status == MainActivity.STATUS_LOGIN_NEEDED) {
                 mainActivity.setRefreshing(false)
                 return@launch
             }
-
             val online = status == MainActivity.STATUS_ONLINE_OK
             barOffline.visibility = if (!online) View.VISIBLE else View.GONE
 
             try {
                 val aulas = withContext(Dispatchers.IO) { AulasRepository.aulas(online) }
+                // ★ PROTEÇÃO CONTRA CRASH: fragment pode ter sido desanexado durante fetch
+                if (!isAdded) return@launch
+
                 progressBar.visibility = View.GONE
 
                 if (aulas.isEmpty()) {
@@ -246,6 +245,8 @@ class HorariosAula : Fragment(){
                 withContext(Dispatchers.Main) { mainActivity.checkConnectionAndSession() }
             } catch (e: Exception) {
                 Log.e("HorariosAula", "Erro ao carregar horários", e)
+                // ★ PROTEÇÃO CONTRA CRASH: verificar antes de acessar getString()
+                if (!isAdded) return@launch
                 progressBar.visibility = View.GONE
                 mostrarMensagem(getString(com.marinov.openfei.R.string.horarios_erro_carregar))
             } finally {
@@ -259,24 +260,18 @@ class HorariosAula : Fragment(){
             mostrarMensagem(getString(com.marinov.openfei.R.string.horarios_nenhuma_aula))
             return
         }
-
         val aulasPorDia = diasVisiveis.associateWith { dia ->
             todasAulas.filter { it.diaSemana == dia }.sortedBy { it.horaInicio }
         }
-
         viewPagerAulas.orientation = if (layoutDias != null)
             ViewPager2.ORIENTATION_VERTICAL
         else
             ViewPager2.ORIENTATION_HORIZONTAL
-
         viewPagerAulas.adapter = DiasPageAdapter(diasVisiveis, aulasPorDia)
-
         val initialIndex = diasVisiveis.indexOf(diaSelecionado).coerceAtLeast(0)
         viewPagerAulas.setCurrentItem(initialIndex, false)
-
         viewPagerAulas.unregisterOnPageChangeCallback(pageChangeCallback)
         viewPagerAulas.registerOnPageChangeCallback(pageChangeCallback)
-
         tvMessage.visibility     = View.GONE
         viewPagerAulas.visibility = View.VISIBLE
     }
@@ -309,26 +304,20 @@ class HorariosAula : Fragment(){
         private val dias: List<String>,
         private val aulasPorDia: Map<String, List<Aula>>
     ) : RecyclerView.Adapter<DiasPageAdapter.PageHolder>() {
-
         override fun getItemCount() = dias.size
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(com.marinov.openfei.R.layout.item_dia_page, parent, false)
             return PageHolder(view)
         }
-
         override fun onBindViewHolder(holder: PageHolder, position: Int) {
             val dia = dias[position]
             holder.bind(aulasPorDia[dia] ?: emptyList(), dia)
         }
-
         inner class PageHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             private val recycler: RecyclerView = itemView.findViewById(com.marinov.openfei.R.id.recyclerAulasPage)
             private val tvEmpty: TextView      = itemView.findViewById(com.marinov.openfei.R.id.tvEmptyPage)
-
             init { recycler.layoutManager = LinearLayoutManager(itemView.context) }
-
             fun bind(aulas: List<Aula>, dia: String) {
                 if (aulas.isEmpty()) {
                     recycler.visibility = View.GONE
@@ -347,23 +336,18 @@ class HorariosAula : Fragment(){
     private inner class AulasAdapter(
         private val items: List<Aula>
     ) : RecyclerView.Adapter<AulasAdapter.ViewHolder>() {
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(com.marinov.openfei.R.layout.item_aula_horario, parent, false)
             return ViewHolder(view)
         }
-
         override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(items[position])
-
         override fun getItemCount() = items.size
-
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             private val txtCodigo:  TextView = itemView.findViewById(com.marinov.openfei.R.id.txtCodigoDisciplina)
             private val txtNome:    TextView = itemView.findViewById(com.marinov.openfei.R.id.txtNomeDisciplina)
             private val txtHorario: TextView = itemView.findViewById(com.marinov.openfei.R.id.txtHorario)
             private val txtSala:    TextView = itemView.findViewById(com.marinov.openfei.R.id.txtSala)
-
             @SuppressLint("SetTextI18n")
             fun bind(aula: Aula) {
                 txtCodigo.text  = aula.codigoDisciplina
