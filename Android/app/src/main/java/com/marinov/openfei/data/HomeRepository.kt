@@ -2,15 +2,14 @@ package com.marinov.openfei.data
 
 import android.content.Context
 import android.util.Log
-import android.webkit.CookieManager
+import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.marinov.openfei.core.CoreResult
+import com.marinov.openfei.core.OpenFeiCore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import java.io.IOException
-import androidx.core.content.edit
 
 data class CarouselItem(val imageUrl: String?, val linkUrl: String?)
 
@@ -18,22 +17,17 @@ object HomeRepository {
     private const val PREFS_NAME = "HomeFragmentCache"
     private const val KEY_CAROUSEL_ITEMS = "carousel_items"
     private const val KEY_CACHE_TIMESTAMP = "cache_timestamp"
-    private const val HOME_URL = "https://interage.fei.org.br/secureserver/portal/graduacao/home"
-    private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 16; sdk_gphone64_x86_64 Build/BE2A.250530.026.D1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/133.0.6943.137 Mobile Safari/537.36"
 
     suspend fun obterCarrossel(context: Context, online: Boolean): List<CarouselItem> {
         if (!online) {
             return getCarouselCache(context)
         }
-
         return try {
-            val doc = fetchPageData(HOME_URL)
-            val newCarousel = processPageContent(doc)
+            val newCarousel = fetchCarouselFromRust()
             if (newCarousel.isNotEmpty()) {
                 saveCarouselCache(newCarousel, context)
                 newCarousel
             } else {
-                // Fallback: se a busca online retornar vazio, tenta usar o cache para não deixar o carrossel sumir
                 getCarouselCache(context)
             }
         } catch (e: Exception) {
@@ -61,26 +55,27 @@ object HomeRepository {
         }
     }
 
-    @Throws(IOException::class)
-    private suspend fun fetchPageData(url: String): Document? = withContext(Dispatchers.IO) {
-        val cookies = CookieManager.getInstance().getCookie(url)
-        if (cookies.isNullOrBlank()) return@withContext null
-        Jsoup.connect(url)
-            .header("Cookie", cookies)
-            .userAgent(USER_AGENT)
-            .timeout(20000)
-            .get()
-    }
-
-    private fun processPageContent(doc: Document?): List<CarouselItem> {
-        if (doc == null) return emptyList()
-        val newCarousel = mutableListOf<CarouselItem>()
-        for (item in doc.select("#carousel-example-generic .item")) {
-            val linkHref = item.selectFirst("a")?.attr("href") ?: continue
-            val imgSrc = item.selectFirst("img")?.attr("src") ?: continue
-            val absoluteImageUrl = if (imgSrc.startsWith("http")) imgSrc else "https://interage.fei.org.br$imgSrc"
-            newCarousel.add(CarouselItem(absoluteImageUrl, linkHref))
+    private suspend fun fetchCarouselFromRust(): List<CarouselItem> = withContext(Dispatchers.IO) {
+        // ★ CORREÇÃO: Garante sessão FEI antes de buscar carrossel
+        if (!RustSession.ensureFeiSession()) {
+            throw SessionExpiredException("Não foi possível garantir sessão FEI para carrossel")
         }
-        return newCarousel
+
+        when (val result = OpenFeiCore.fetchCarousel()) {
+            is CoreResult.Success -> {
+                result.data.map { core ->
+                    CarouselItem(
+                        imageUrl = core.imageUrl,
+                        linkUrl = core.linkUrl
+                    )
+                }
+            }
+            is CoreResult.Error -> {
+                if (result.code == "SESSION_EXPIRED") {
+                    throw SessionExpiredException(result.message)
+                }
+                throw IOException(result.message)
+            }
+        }
     }
 }

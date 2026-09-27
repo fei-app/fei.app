@@ -17,6 +17,7 @@ object Dados {
         SessionManager.init(context)
         CalendarioRepository.init(context)
         BoletosRepository.init(context)
+        RustSession.init(context)
     }
     suspend fun atualizarNotas(online: Boolean) = NotasRepository.atualizarNotas(online)
 

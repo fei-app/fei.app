@@ -1,48 +1,53 @@
 package com.marinov.openfei.data
 
 import android.util.Log
+import com.marinov.openfei.core.CoreResult
+import com.marinov.openfei.core.OpenFeiCore
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.IOException
 
 object DisciplinasRepository {
     private const val TAG = "DisciplinasRepository"
-    private const val URL_DISCIPLINAS = "https://interage.fei.org.br/secureserver/portal/graduacao/sala-dos-professores/consultas/tabela-de-aulas"
 
     suspend fun obterDisciplinas(online: Boolean): List<Disciplina> {
         return if (online) {
             try {
-                val disciplinas = fetchDisciplinasFromServer()
+                val disciplinas = fetchDisciplinasFromRust()
                 CacheHelper.saveDisciplinasCache(disciplinas)
                 disciplinas
-            } catch (e: SessionExpiredException) { throw e }
-            catch (e: Exception) {
-                if (e !is CancellationException) Log.e(TAG, "Erro ao buscar disciplinas online", e)
+            } catch (e: SessionExpiredException) {
+                throw e
+            } catch (e: Exception) {
+                if (e !is CancellationException) {
+                    Log.e(TAG, "Erro ao buscar disciplinas online", e)
+                }
                 CacheHelper.getCachedDisciplinas()
             }
-        } else { CacheHelper.getCachedDisciplinas() }
+        } else {
+            CacheHelper.getCachedDisciplinas()
+        }
     }
 
-    private suspend fun fetchDisciplinasFromServer(): List<Disciplina> {
-        val doc = SessionManager.fetchPage(URL_DISCIPLINAS)
-        val container = doc.selectFirst("body > div.container > div:nth-child(2) > div.col-md-9 > div:nth-child(2)")
-            ?: throw SessionExpiredException("Container de disciplinas não encontrado")
+    private suspend fun fetchDisciplinasFromRust(): List<Disciplina> = withContext(Dispatchers.IO) {
+        // ★ CORREÇÃO: Garante sessão FEI antes de buscar disciplinas
+        if (!RustSession.ensureFeiSession()) {
+            throw SessionExpiredException("Não foi possível garantir sessão FEI para disciplinas")
+        }
 
-        val tabela = container.selectFirst("table.table.table-striped")
-            ?: throw SessionExpiredException("Tabela de disciplinas não encontrada")
-
-        val disciplinas = mutableListOf<Disciplina>()
-        val linhas = tabela.select("tbody > tr")
-
-        for (linha in linhas) {
-            val codigoElement = linha.selectFirst("td.Código")
-            val nomeElement = linha.selectFirst("td.Disciplina")
-            if (codigoElement != null && nomeElement != null) {
-                val codigo = codigoElement.text().trim()
-                val nome = nomeElement.text().trim()
-                if (codigo.isNotEmpty() && nome.isNotEmpty()) {
-                    disciplinas.add(Disciplina(codigo, nome))
+        when (val result = OpenFeiCore.fetchDisciplinas()) {
+            is CoreResult.Success -> {
+                result.data.map { core ->
+                    Disciplina(codigo = core.codigo, nome = core.nome)
                 }
             }
+            is CoreResult.Error -> {
+                if (result.code == "SESSION_EXPIRED") {
+                    throw SessionExpiredException(result.message)
+                }
+                throw IOException(result.message)
+            }
         }
-        return disciplinas
     }
 }

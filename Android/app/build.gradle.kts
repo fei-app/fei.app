@@ -11,6 +11,11 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "10.16092026"
+        externalNativeBuild {
+            cmake {
+                cppFlags += ""
+            }
+        }
     }
 
     buildTypes {
@@ -30,6 +35,12 @@ android {
         viewBinding = true
         buildConfig = true
     }
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
 }
 
 dependencies {
@@ -39,7 +50,7 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.webkit)
     implementation(libs.core.ktx)
-    implementation (libs.jsoup)
+    //implementation (libs.jsoup)
     implementation (libs.gson)
     implementation (libs.work.runtime.ktx)
     implementation (libs.glide)

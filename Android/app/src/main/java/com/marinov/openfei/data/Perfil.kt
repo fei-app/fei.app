@@ -1,51 +1,23 @@
 package com.marinov.openfei.data
 
 import android.util.Log
+import com.marinov.openfei.core.CoreResult
+import com.marinov.openfei.core.OpenFeiCore
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.IOException
 
 object PerfilRepository {
-
     private const val TAG = "PerfilRepository"
-    private const val URL_PERFIL =
-        "https://interage.fei.org.br/secureserver/portal/graduacao/secretaria/dados-pessoais"
 
-    suspend fun retornaDadosUsuario(online: Boolean): Perfil {
-        return if (online) {
-            try {
-                val perfil = fetchPerfilFromServer()
-
-                if (perfilTemDados(perfil)) {
-                    CacheHelper.savePerfilCache(perfil)
-                    perfil
-                } else {
-                    CacheHelper.getCachedPerfil() ?: Perfil("", "", "", "")
-                }
-            } catch (e: SessionExpiredException) {
-                throw e
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                Log.e(TAG, "Erro ao buscar perfil online", e)
-                CacheHelper.getCachedPerfil() ?: Perfil("", "", "", "")
-            }
-        } else {
-            CacheHelper.getCachedPerfil() ?: Perfil("", "", "", "")
-        }
-    }
-
-    /**
-     * Busca o perfil online e retorna null se não conseguir.
-     * Isso permite que a UI decida se mantém cache ou mostra estado vazio/offline.
-     */
     suspend fun obterPerfilOnlineOrNull(): Perfil? {
         return try {
-            val perfil = fetchPerfilFromServer()
-
+            val perfil = fetchPerfilFromRust()
             if (!perfilTemDados(perfil)) {
                 Log.w(TAG, "Perfil online veio vazio. Mantendo cache atual.")
                 return null
             }
-
             CacheHelper.savePerfilCache(perfil)
             perfil
         } catch (e: SessionExpiredException) {
@@ -70,32 +42,27 @@ object PerfilRepository {
                 perfil.email.isNotBlank()
     }
 
-    private suspend fun fetchPerfilFromServer(): Perfil {
-        val doc = SessionManager.fetchPage(URL_PERFIL)
-
-        val panelBody = doc.selectFirst(
-            "body > div.container > div:nth-child(2) > div.col-md-9 > div.panel.panel-default.hidden-xs.bloco-conteudo-cabecalho > div.panel-body"
-        ) ?: throw SessionExpiredException("Painel de perfil não encontrado")
-
-        var nome = ""
-        var matricula = ""
-        var curso = ""
-
-        panelBody.children().forEach { col ->
-            val b = col.selectFirst("b")?.text()?.trim() ?: ""
-            val em = col.selectFirst("small em")?.text()?.trim() ?: ""
-
-            when {
-                b.equals("Nome", ignoreCase = true) -> nome = em
-                b.equals("Matrícula", ignoreCase = true) -> matricula = em
-                b.equals("Curso", ignoreCase = true) -> curso = em
-            }
+    private suspend fun fetchPerfilFromRust(): Perfil = withContext(Dispatchers.IO) {
+        // ★ CORREÇÃO: Garante sessão FEI antes de buscar perfil
+        if (!RustSession.ensureFeiSession()) {
+            throw SessionExpiredException("Não foi possível garantir sessão FEI para perfil")
         }
 
-        val emailGroup = doc.selectFirst("#form-atualizar-dados-pessoais > div:nth-child(19)")
-        val emailElement = emailGroup?.selectFirst("p.form-control-static")
-        val email = emailElement?.text()?.trim() ?: ""
-
-        return Perfil(nome, matricula, curso, email)
+        when (val result = OpenFeiCore.fetchPerfil()) {
+            is CoreResult.Success -> {
+                Perfil(
+                    nome = result.data.nome,
+                    matricula = result.data.matricula,
+                    curso = result.data.curso,
+                    email = result.data.email
+                )
+            }
+            is CoreResult.Error -> {
+                if (result.code == "SESSION_EXPIRED") {
+                    throw SessionExpiredException(result.message)
+                }
+                throw IOException(result.message)
+            }
+        }
     }
 }

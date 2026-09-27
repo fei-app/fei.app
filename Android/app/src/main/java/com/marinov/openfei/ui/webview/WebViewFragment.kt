@@ -6,7 +6,6 @@ import android.app.DownloadManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -496,10 +495,6 @@ class WebViewFragment : Fragment() {
         btnTentarNovamente.setOnClickListener {
             checkConnectionAndLoad()
         }
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
     }
 
     override fun onDestroyView() {

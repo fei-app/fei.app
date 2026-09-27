@@ -44,14 +44,3 @@ data class Boleto(
     val tituloId: String
 )
 
-// Modelos internos para API do Moodle
-internal data class MoodleCourse(val id: Int, val shortname: String, val fullname: String)
-
-internal data class MoodleEvent(
-    val id: Int,
-    val name: String,
-    val courseid: Int?,
-    val timestart: Long,
-    val eventtype: String?,
-    val modulename: String?
-)
