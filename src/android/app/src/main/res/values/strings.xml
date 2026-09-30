@@ -24,13 +24,18 @@
     <string name="login_entrar">Entrar</string>
     <string name="login_preencha_usuario">Preencha o usuário</string>
     <string name="login_preencha_senha">Preencha a senha</string>
-    <string name="login_token_erro">Não foi possível obter o token de segurança.</string>
+    <string name="login_token_erro">Erro no servidor. Tente novamente mais tarde.</string>
     <string name="login_credenciais_invalidas">Usuário ou senha incorretos.</string>
     <string name="login_erro_conexao">Erro de conexão: %1$s</string>
     <string name="login_biometria_titulo">Verificar identidade</string>
     <string name="login_biometria_subtitulo">Autentique-se para visualizar a senha</string>
     <string name="login_biometria_indisponivel">Configure um bloqueio de tela para visualizar a senha</string>
     <string name="login_biometria_erro">Erro de autenticação: %1$s</string>
+
+    <!-- ==================== WEBVIEW / SESSÃO ==================== -->
+    <string name="erro_servidor_tente_novamente">Erro no servidor. Tente novamente mais tarde.</string>
+    <string name="sessao_expirada_login">Sessão expirada. Faça login novamente.</string>
+    <string name="sessao_moodle_expirada_login">Sessão do Moodle expirada. Faça login novamente.</string>
 
     <!-- ==================== NOTAS ==================== -->
     <string name="notas_vazio">Não há notas disponíveis</string>
@@ -175,12 +180,12 @@
     <string name="atividades_complementares">Atividades Complementares</string>
     <string name="cursos_de_f_rias">Cursos de Férias</string>
     <string name="site_completo">Site completo</string>
-
     <string name="outros_session">Outros</string>
     <string name="modo_responsavel_financeiro">Modo responsável financeiro</string>
     <string name="modo_resp_titulo">Modo responsável financeiro</string>
     <string name="modo_resp_ativar_msg">Deseja ativar?</string>
     <string name="modo_resp_desativar_msg">Deseja voltar ao modo normal?</string>
+
     <string name="menu_inicio">Início</string>
     <string name="menu_moodle">Moodle</string>
     <string name="menu_calendario">Calendário</string>
@@ -191,10 +196,10 @@
     <string name="menu_filtro_calendario_p2">P2</string>
     <string name="menu_filtro_calendario_p3">P3</string>
     <string name="menu_filtro_calendario_moodle">Moodle</string>
+
     <string name="top_bar_perfil">Perfil</string>
     <string name="top_bar_configuracoes">Configurações</string>
     <string name="menu_mais">Mais</string>
-
     <string name="ver_mais">Ver mais</string>
     <string name="no_grades_home">Ainda não há notas para serem exibidas!</string>
     <string name="exibir_tarefas_e_provas_na_agenda_do_sistema">Exibir tarefas e provas na agenda do sistema</string>
