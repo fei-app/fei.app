@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.marinov.openfei.R
 import com.marinov.openfei.data.Perfil
 import com.marinov.openfei.data.PerfilRepository
@@ -30,7 +29,7 @@ class ProfileFragment : Fragment(), MainActivity.RefreshableFragment {
     private lateinit var btnTentarNovamente: MaterialButton
     private lateinit var profileCard: MaterialCardView
     private lateinit var ivProfilePhoto: ImageView
-    private lateinit var progressBar: CircularProgressIndicator
+    private lateinit var progressBar: View
 
     private var perfilAtual: Perfil? = null
     private var isRefreshing = false

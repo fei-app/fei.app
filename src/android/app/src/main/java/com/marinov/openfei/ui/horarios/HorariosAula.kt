@@ -20,7 +20,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.marinov.openfei.data.Aula
 import com.marinov.openfei.data.AulasRepository
 import com.marinov.openfei.data.SessionExpiredException
@@ -33,7 +32,7 @@ import java.util.Calendar
 class HorariosAula : Fragment(){
     private lateinit var viewPagerAulas: ViewPager2
     private lateinit var barOffline: LinearLayout
-    private lateinit var progressBar: CircularProgressIndicator
+    private lateinit var progressBar: View
     private lateinit var tvMessage: TextView
     private lateinit var btnLogin: MaterialButton
 

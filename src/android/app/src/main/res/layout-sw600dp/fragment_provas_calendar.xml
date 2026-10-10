@@ -19,45 +19,12 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1">
-            <!-- Barra Offline -->
-            <LinearLayout
+            <!-- Barra Offline (global: layout/include_offline_bar.xml) -->
+            <include
                 android:id="@+id/barOffline"
+                layout="@layout/include_offline_bar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?attr/colorErrorContainer"
-                android:orientation="horizontal"
-                android:padding="8dp"
-                android:visibility="gone"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:contentDescription="@string/sem_conexao_internet"
-                    android:src="@drawable/ic_sem_internet"
-                    app:tint="?attr/colorOnErrorContainer"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/sem_conexao_internet"
-                    android:textAppearance="?attr/textAppearanceBody2"
-                    android:textColor="?attr/colorOnErrorContainer"/>
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnLogin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/try_again"
-                    android:textAllCaps="true"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
-            </LinearLayout>
+                android:layout_height="wrap_content" />
 
             <!-- Spinner + Filtro -->
             <LinearLayout
@@ -143,23 +110,28 @@
                 android:visibility="gone"
                 android:padding="24dp"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerProvas"
+            <!-- Lista de provas + Loading global (sobrepostos na área da lista) -->
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:clipToPadding="false"
-                android:paddingBottom="16dp"
-                tools:ignore="NestedWeights" />
+                tools:ignore="NestedWeights">
 
-            <!-- Loading -->
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/progress_circular"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                app:indicatorColor="?attr/colorPrimary"/>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerProvas"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:paddingBottom="16dp" />
+
+                <!-- Loading (global: layout/include_loading.xml) -->
+                <include
+                    android:id="@+id/progress_circular"
+                    layout="@layout/include_loading"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone" />
+            </FrameLayout>
         </LinearLayout>
 
         <!-- Divisor -->

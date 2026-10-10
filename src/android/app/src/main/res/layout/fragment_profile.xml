@@ -6,39 +6,13 @@
     android:layout_height="match_parent"
     android:background="@color/fundocartao">
 
-    <!-- Tela Offline -->
-    <LinearLayout
+    <!-- Tela Offline (global: layout/include_offline_screen.xml) -->
+    <include
         android:id="@+id/layout_sem_internet"
+        layout="@layout/include_offline_screen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="24dp"
-        android:visibility="gone"
-        android:background="@color/fundocartao">
-
-        <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:contentDescription="@string/sem_conexao_internet"
-            android:src="@drawable/ic_sem_internet"
-            app:tint="?attr/colorOnSurface" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sem_conexao_internet"
-            android:layout_marginTop="16dp"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_tentar_novamente"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/try_again"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-    </LinearLayout>
+        android:visibility="gone" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -91,13 +65,12 @@
         </com.google.android.material.card.MaterialCardView>
     </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
+    <!-- Loading (global: layout/include_loading.xml) -->
+    <include
         android:id="@+id/progress_circular"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        app:indicatorSize="48dp"
-        app:trackThickness="4dp" />
+        layout="@layout/include_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

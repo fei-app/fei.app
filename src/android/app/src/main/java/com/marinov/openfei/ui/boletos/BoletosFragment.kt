@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.marinov.openfei.R
 import com.marinov.openfei.app.AppMode
 import com.marinov.openfei.data.Boleto
@@ -28,7 +27,7 @@ import kotlinx.coroutines.withContext
 
 class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
     private lateinit var recyclerBoletos: RecyclerView
-    private lateinit var progressCircular: CircularProgressIndicator
+    private lateinit var progressCircular: View
     private lateinit var barOffline: LinearLayout
     private lateinit var txtSemDados: TextView
     private lateinit var btnTentar: Button

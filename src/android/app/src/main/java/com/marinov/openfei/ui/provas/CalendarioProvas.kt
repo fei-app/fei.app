@@ -18,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.marinov.openfei.data.CalendarioRepository
 import com.marinov.openfei.data.CalendarSyncManager
 import com.marinov.openfei.data.ProvaCalendario
@@ -42,7 +41,7 @@ class CalendarioProvas : Fragment() {
     }
 
     private lateinit var recyclerProvas: RecyclerView
-    private lateinit var progressBar: CircularProgressIndicator
+    private lateinit var progressBar: View
     private lateinit var barOffline: View
     private lateinit var txtSemProvas: TextView
     private lateinit var txtSemDados: TextView

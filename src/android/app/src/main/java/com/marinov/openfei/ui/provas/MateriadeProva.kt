@@ -8,7 +8,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.marinov.openfei.R
 import com.marinov.openfei.ui.main.MainActivity
 
@@ -21,7 +20,7 @@ class MateriadeProva : Fragment() {
     }
 
     private lateinit var barraCompartilhamento: LinearLayout
-    private lateinit var progressBar: CircularProgressIndicator
+    private lateinit var progressBar: View
     private lateinit var txtErro: TextView
     private lateinit var txtTitulo: TextView
     private lateinit var txtConteudo: TextView

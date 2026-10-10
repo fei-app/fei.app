@@ -95,13 +95,12 @@
         android:textAppearance="?attr/textAppearanceBodyLarge"
         android:visibility="gone" />
 
-    <!-- Loading Indicator -->
-    <com.google.android.material.progressindicator.CircularProgressIndicator
+    <!-- Loading (global: layout/include_loading.xml) -->
+    <include
         android:id="@+id/progress_circular"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        app:indicatorColor="?attr/colorPrimary" />
+        layout="@layout/include_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
