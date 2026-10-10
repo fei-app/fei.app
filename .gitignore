@@ -13,3 +13,11 @@
 /src/android/app/src/main/rustLibs/
 /src/android/build/
 /src/biblioteca_rust/Cargo.lock
+/src/android_legacy/app/build/
+/src/android_legacy/app/release/
+/src/android_legacy/.idea/
+/src/android_legacy/.kotlin/
+/src/android_legacy/.gradle/
+/src/android_legacy/app/build/
+/src/android_legacy/app/release/
+/src/android_legacy/app/.cxx/

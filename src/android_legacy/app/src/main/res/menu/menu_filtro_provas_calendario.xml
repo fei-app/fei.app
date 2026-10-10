@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/filtro_todos"
+            android:title="@string/menu_filtro_calendario_todos" />
+        <item
+            android:id="@+id/filtro_p1"
+            android:title="@string/menu_filtro_calendario_p1" />
+        <item
+            android:id="@+id/filtro_p2"
+            android:title="@string/menu_filtro_calendario_p2" />
+        <item
+            android:id="@+id/filtro_p3"
+            android:title="@string/menu_filtro_calendario_p3" />
+        <item
+            android:id="@+id/filtro_moodle"
+            android:title="@string/menu_filtro_calendario_moodle" />
+    </group>
+</menu>
