@@ -66,6 +66,9 @@ class BackgroundService : Service() {
             val intent = Intent(context, BackgroundService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
+            } else {
+                // Essencial para iniciar o serviço no Android 7 (API 24/25)
+                context.startService(intent)
             }
         }
     }
@@ -146,7 +149,6 @@ class BackgroundService : Service() {
         serviceScope.launch {
             Log.d(TAG, "Tarefa de calendário iniciada. Intervalo=${CALENDARIO_INTERVAL_MS}ms")
 
-            // Execução imediata ao subir o serviço (importante no boot receiver)
             if (!AppMode.isResponsavelFinanceiro) {
                 Log.d(TAG, "Calendário: execução imediata no start do serviço")
 
@@ -345,9 +347,7 @@ class BackgroundService : Service() {
                     NotificationManager.IMPORTANCE_LOW
                 )
             )
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(
                 NotificationChannel(
                     SYNC_CHANNEL_ID,
@@ -358,9 +358,7 @@ class BackgroundService : Service() {
                     enableVibration(false)
                 }
             )
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(
                 NotificationChannel(
                     "notas_channel",
@@ -368,9 +366,7 @@ class BackgroundService : Service() {
                     NotificationManager.IMPORTANCE_DEFAULT
                 )
             )
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(
                 NotificationChannel(
                     "boletos_channel",
@@ -378,9 +374,7 @@ class BackgroundService : Service() {
                     NotificationManager.IMPORTANCE_DEFAULT
                 )
             )
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(
                 NotificationChannel(
                     "calendar_update_channel",
@@ -388,9 +382,7 @@ class BackgroundService : Service() {
                     NotificationManager.IMPORTANCE_DEFAULT
                 )
             )
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(
                 NotificationChannel(
                     "update_channel",
@@ -406,8 +398,8 @@ class BackgroundService : Service() {
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(getString(R.string.notif_servico_titulo))
             .setContentText(getString(R.string.notif_servico_texto))
+            .setPriority(NotificationCompat.PRIORITY_LOW) // Essencial para Android 7
             .setOngoing(true)
-            .setSilent(true)
             .build()
 
     private fun showSyncNotification(notificationId: Int) {
@@ -417,7 +409,7 @@ class BackgroundService : Service() {
             .setSmallIcon(R.drawable.ic_service)
             .setContentTitle(getString(R.string.notif_sync_titulo))
             .setContentText(getString(R.string.notif_sync_texto))
-            .setSilent(true)
+            .setPriority(NotificationCompat.PRIORITY_MIN) // Essencial para Android 7
             .setOngoing(true)
             .build()
 
@@ -437,14 +429,10 @@ class BackgroundService : Service() {
     }
 
     private fun hasNotificationPermission(): Boolean =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED
 
     private fun sendNotasNotification(notasAlteradas: List<Nota>) {
         if (!hasNotificationPermission()) return

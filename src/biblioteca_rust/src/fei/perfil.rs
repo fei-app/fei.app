@@ -1,10 +1,10 @@
-use scraper::{ElementRef, Html, Selector};
-
+use scraper::{Element, ElementRef, Html, Selector};
 use crate::error::CoreError;
 use crate::http::{execute_get_follow, http_client};
 use crate::models::Perfil;
 
-const FEI_URL_PERFIL: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/secretaria/dados-pessoais";
+const FEI_URL_PERFIL: &str =
+    "https://interage.fei.org.br/secureserver/portal/graduacao/secretaria/dados-pessoais";
 
 fn sel(selector: &str) -> Selector {
     Selector::parse(selector).expect("Seletor CSS inválido")
@@ -26,11 +26,10 @@ fn ensure_authenticated(doc: &Html) -> Result<(), CoreError> {
 pub fn fetch_perfil() -> Result<Perfil, CoreError> {
     let client = http_client();
     let mut cookies = Vec::new();
-
     let (resp, _) = execute_get_follow(&client, FEI_URL_PERFIL, &mut cookies)?;
+
     let html = resp.text()?;
     let doc = Html::parse_document(&html);
-
     ensure_authenticated(&doc)?;
 
     let panel_body = doc
@@ -45,20 +44,18 @@ pub fn fetch_perfil() -> Result<Perfil, CoreError> {
     let mut matricula = String::new();
     let mut curso = String::new();
 
-    for col in panel_body.select(&sel("div")) {
-        let b = col.select(&sel("b")).next();
-        let em = col.select(&sel("small em")).next();
+    for b in panel_body.select(&sel("b")) {
+        let label = text(&b).to_lowercase();
 
-        if let (Some(b), Some(em)) = (b, em) {
-            let label = text(&b).to_lowercase();
-            let value = text(&em);
-
-            if label == "nome" {
-                nome = value;
-            } else if label == "matrícula" {
-                matricula = value;
-            } else if label == "curso" {
-                curso = value;
+        if let Some(small) = b.next_sibling_element() {
+            if let Some(em) = small.select(&sel("em")).next() {
+                let value = text(&em);
+                match label.as_str() {
+                    "nome" => nome = value,
+                    "matrícula" | "matricula" => matricula = value,
+                    "curso" => curso = value,
+                    _ => {}
+                }
             }
         }
     }
