@@ -4,6 +4,12 @@
 /src/android/.idea/
 /src/android/.kotlin/
 /src/android/.gradle/
+/src/.gradle/
+/src/.kotlin/
+/src/.idea/
+/src/android/app/.cxx/
 /.idea
 /.kotlin
 /src/android/app/src/main/rustLibs/
+/src/android/build/
+/src/biblioteca_rust/Cargo.lock
