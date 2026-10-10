@@ -1,5 +1,4 @@
 [versions]
-autostarter = "1.1.0"
 biometric = "1.1.0"
 kotlin             = "2.4.10"
 agp                = "9.4.1"
@@ -21,7 +20,6 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android      = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
 [libraries]
-autostarter = { module = "com.github.judemanutd:autostarter", version.ref = "autostarter" }
 biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 material              = { group = "com.google.android.material",  name = "material",              version.ref = "material" }
 constraintlayout      = { group = "androidx.constraintlayout",    name = "constraintlayout",      version.ref = "constraintlayout" }
