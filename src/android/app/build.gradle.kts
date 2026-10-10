@@ -56,6 +56,5 @@ dependencies {
     annotationProcessor (libs.compiler)
     implementation (libs.swiperefreshlayout)
     implementation(libs.security.crypto)
-    implementation(libs.autostarter)
     implementation(libs.biometric)
 }

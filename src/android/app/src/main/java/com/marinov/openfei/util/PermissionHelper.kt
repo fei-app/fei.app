@@ -15,8 +15,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.net.toUri
-import com.judemanutd.autostarter.AutoStartPermissionHelper
-
 object PermissionHelper {
     private const val TAG = "PermissionHelper"
     private const val REQUEST_PERMISSIONS_CODE = 100
@@ -31,14 +29,6 @@ object PermissionHelper {
 
         solicitarPermissoesNecessarias(activity)
         solicitarIsencaoOtimizacaoBateria(activity)
-
-        try {
-            if (AutoStartPermissionHelper.getInstance().isAutoStartPermissionAvailable(activity)) {
-                AutoStartPermissionHelper.getInstance().getAutoStartPermission(activity)
-            }
-        } catch (e: Exception) {
-            Log.w(TAG, "Falha ao solicitar permissão de AutoStart (OEM)", e)
-        }
 
         prefs.edit { putBoolean(PREF_KEY_PERMISSIONS_REQUESTED, true) }
     }
