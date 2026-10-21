@@ -13,3 +13,6 @@
 /src/android/app/src/main/rustLibs/
 /src/android/build/
 /src/biblioteca_rust/Cargo.lock
+/src/iOS/.build/
+/src/iOS/.swiftpm/
+/src/iOS/xtool/
