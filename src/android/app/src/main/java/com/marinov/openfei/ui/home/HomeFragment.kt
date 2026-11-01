@@ -42,12 +42,10 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.marinov.openfei.R
 import com.marinov.openfei.data.Aula
 import com.marinov.openfei.data.AulasRepository
-import com.marinov.openfei.data.CalendarioRepository
 import com.marinov.openfei.data.CarouselItem
 import com.marinov.openfei.data.HomeRepository
 import com.marinov.openfei.data.Nota
 import com.marinov.openfei.data.NotasRepository
-import com.marinov.openfei.data.ProvaCalendario
 import com.marinov.openfei.data.SessionExpiredException
 import com.marinov.openfei.ui.main.MainActivity
 import kotlinx.coroutines.Dispatchers
@@ -58,6 +56,7 @@ import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 
 class HomeFragment : Fragment() {
+
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var viewPager: ViewPager2? = null
     private var layoutSemInternet: LinearLayout? = null
@@ -171,13 +170,11 @@ class HomeFragment : Fragment() {
     private fun loadInitialData() {
         val mainActivity = activity as? MainActivity ?: return
         val context = context ?: return
-
         lifecycleScope.launch {
             // 1. Prioriza cache local para montar a UI imediatamente (Padrão UI First)
             val cachedCarousel = withContext(Dispatchers.IO) { HomeRepository.obterCarrossel(context, online = false) }
             val cachedNotas    = withContext(Dispatchers.IO) { NotasRepository.obterNotas(online = false) }
             val cachedAulas    = withContext(Dispatchers.IO) { AulasRepository.retornaAulasDia(online = false) }
-            val cachedProvas   = withContext(Dispatchers.IO) { CalendarioRepository.obterCalendarioProvasCache() }
 
             if (!isFragmentDestroyed) {
                 val hasCachedData = cachedCarousel.isNotEmpty() || cachedNotas.isNotEmpty() || cachedAulas.isNotEmpty()
@@ -186,7 +183,6 @@ class HomeFragment : Fragment() {
                 carouselItems.clear()
                 carouselItems.addAll(cachedCarousel)
                 carouselAdapter.notifyDataSetChanged()
-
                 if (carouselItems.isNotEmpty()) {
                     carouselLoadingIndicator?.visibility = View.GONE
                     viewPager?.visibility = View.VISIBLE
@@ -196,7 +192,7 @@ class HomeFragment : Fragment() {
                 }
 
                 if (hasCachedData) {
-                    setupNotasTable(cachedNotas, cachedProvas)
+                    setupNotasTable(cachedNotas)
                     setupAulasDia(cachedAulas)
                     showContentState()
                 } else {
@@ -206,6 +202,7 @@ class HomeFragment : Fragment() {
 
             val status = mainActivity.checkConnectionAndSession()
             if (isFragmentDestroyed) return@launch
+
             when (status) {
                 MainActivity.STATUS_LOGIN_NEEDED -> { return@launch }
                 MainActivity.STATUS_OFFLINE -> { showOfflineState() }
@@ -221,28 +218,27 @@ class HomeFragment : Fragment() {
         }
         val mainActivity = activity as? MainActivity ?: return
         val context = context ?: return
-
         lifecycleScope.launch {
             try {
                 val result = supervisorScope {
                     val carrosselDeferred = async(Dispatchers.IO) { HomeRepository.obterCarrossel(context, online = true) }
                     val notasDeferred     = async { NotasRepository.obterNotas(online = true) }
                     val aulasDeferred     = async { AulasRepository.retornaAulasDia(online = true) }
-                    val provasDeferred    = async { CalendarioRepository.obterCalendarioProvas(online = true) }
+
                     try {
                         val carousel = carrosselDeferred.await()
                         val notas    = notasDeferred.await()
                         val aulas    = aulasDeferred.await()
-                        val provas   = provasDeferred.await()
-                        Triple(carousel, notas, Pair(aulas, provas))
+                        Triple(carousel, notas, aulas)
                     } catch (e: SessionExpiredException) {
                         coroutineContext.cancelChildren()
                         throw e
                     }
                 }
+
                 if (isFragmentDestroyed) return@launch
-                val (carouselOnline, notas, aulasPair) = result
-                val (aulasDia, provas) = aulasPair
+
+                val (carouselOnline, notas, aulasDia) = result
 
                 // Verifica se o carrossel mudou para atualizar a tela instantaneamente
                 val carouselMudou = carouselOnline != carouselItems
@@ -256,7 +252,7 @@ class HomeFragment : Fragment() {
                     }
                 }
 
-                setupNotasTable(notas, provas)
+                setupNotasTable(notas)
                 setupAulasDia(aulasDia)
 
                 if (carouselItems.isEmpty() && notas.isEmpty() && aulasDia.isEmpty()) {
@@ -264,7 +260,6 @@ class HomeFragment : Fragment() {
                 } else {
                     showContentState()
                 }
-
             } catch (_: SessionExpiredException) {
                 Log.w("HomeFragment", "Sessão expirada durante fetch")
                 withContext(Dispatchers.Main) {
@@ -285,20 +280,24 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun setupNotasTable(notas: List<Nota>, provas: List<ProvaCalendario>) {
+    private fun setupNotasTable(notas: List<Nota>) {
         if (isFragmentDestroyed || tableRecentGrades == null) return
         val context = context ?: return
+
         tableRecentGrades?.removeAllViews()
         recentGradesSectionContainer?.visibility = View.VISIBLE
+
         val notasPreenchidas = notas.filter { it.valor.isNotEmpty() }
+
         if (notasPreenchidas.isEmpty()) {
             cardRecentGrades?.visibility = View.GONE
             txtSemNotas?.visibility = View.VISIBLE
             return
         }
+
         cardRecentGrades?.visibility = View.VISIBLE
         txtSemNotas?.visibility = View.GONE
-        val sortedNotas = NotasRepository.ordenarNotasParaHome(notasPreenchidas, provas)
+
         val headerRow = TableRow(context).apply {
             setBackgroundColor(ContextCompat.getColor(context, R.color.header_bg))
             addView(createTableCell(getString(R.string.home_coluna_disciplina), true, context))
@@ -306,7 +305,8 @@ class HomeFragment : Fragment() {
             addView(createTableCell(getString(R.string.home_coluna_nota), true, context))
         }
         tableRecentGrades?.addView(headerRow)
-        for (nota in sortedNotas.take(3)) {
+
+        for (nota in notasPreenchidas.take(3)) {
             tableRecentGrades?.addView(TableRow(context).apply {
                 addView(createTableCell(nota.nomeDisciplina, false, context))
                 addView(createTableCell(nota.tipoProva, false, context))
@@ -321,13 +321,16 @@ class HomeFragment : Fragment() {
         val context = context ?: return
         aulasContainer?.removeAllViews()
         aulasSectionContainer?.visibility = View.VISIBLE
+
         if (aulas.isEmpty()) {
             aulasContainer?.visibility = View.GONE
             txtSemAulas?.visibility = View.VISIBLE
             return
         }
+
         aulasContainer?.visibility = View.VISIBLE
         txtSemAulas?.visibility = View.GONE
+
         for (aula in aulas) {
             val card = LayoutInflater.from(context).inflate(R.layout.item_aula_card, aulasContainer, false) as MaterialCardView
             card.findViewById<TextView>(R.id.txtAulaDisciplina).text = aula.nomeDisciplina
@@ -354,6 +357,7 @@ class HomeFragment : Fragment() {
         val viewPager = this.viewPager ?: return
         val context = context ?: return
         if (resources.configuration.screenWidthDp >= 600) return
+
         val screenWidth = resources.displayMetrics.widthPixels
         val horizontalPadding = resources.getDimensionPixelSize(R.dimen.carousel_margin) * 2 +
                 context.resources.getDimensionPixelSize(R.dimen.activity_horizontal_margin)
@@ -408,13 +412,11 @@ class HomeFragment : Fragment() {
             val headersBuilder = LazyHeaders.Builder()
                 .addHeader("User-Agent", USER_AGENT)
                 .addHeader("Referer", HOME_URL)
-
             if (!domainCookies.isNullOrEmpty()) {
                 headersBuilder.addHeader("Cookie", domainCookies)
             }
 
             val glideUrl = GlideUrl(item.imageUrl, headersBuilder.build())
-
             val requestOptions = RequestOptions()
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                 .timeout(15000)
