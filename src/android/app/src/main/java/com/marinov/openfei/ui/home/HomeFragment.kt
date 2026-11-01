@@ -1,6 +1,7 @@
 package com.marinov.openfei.ui.home
 
 import android.annotation.SuppressLint
+import com.marinov.openfei.service.BackgroundService
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -93,10 +94,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         isFragmentDestroyed = false
+
         initializeViews(view)
         setupAdapters()
         setupListeners()
         configureCarouselHeight()
+
+        // Garante que o serviço em segundo plano esteja ativo assim que a Home aparecer.
+        // Isso cobre principalmente o fluxo de primeiro login após instalação limpa.
+        startBackgroundServiceWhenHomeIsReady(view)
+
         loadInitialData()
     }
 
@@ -109,6 +116,21 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         isFragmentDestroyed = true
         handler.removeCallbacksAndMessages(null)
+    }
+
+    private fun startBackgroundServiceWhenHomeIsReady(view: View) {
+        view.post {
+            if (!isAdded || isFragmentDestroyed) return@post
+
+            val appContext = context?.applicationContext ?: return@post
+
+            try {
+                Log.d("HomeFragment", "Garantindo BackgroundService ativo a partir da Home")
+                BackgroundService.start(appContext)
+            } catch (e: Exception) {
+                Log.e("HomeFragment", "Erro ao iniciar BackgroundService a partir da Home", e)
+            }
+        }
     }
 
     private fun initializeViews(view: View) {
