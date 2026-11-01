@@ -8,7 +8,7 @@ import com.marinov.openfei.service.BackgroundService
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
-            BackgroundService.start(context)
+            BackgroundService.start(context, syncOnStart = true)
         }
     }
 }

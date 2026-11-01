@@ -7,20 +7,20 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.webkit.CookieManager
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.ProgressBar
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
@@ -32,45 +32,38 @@ import com.marinov.openfei.R
 import com.marinov.openfei.app.AppMode
 import com.marinov.openfei.data.CalendarSyncManager
 import com.marinov.openfei.data.Dados
+import com.marinov.openfei.data.SyncPrefs
 import com.marinov.openfei.data.UpdateChecker
 import com.marinov.openfei.ui.login.LoginActivity
 import com.marinov.openfei.ui.main.MainActivity
+import com.marinov.openfei.util.AppUpdateDownloader
 import com.marinov.openfei.util.PermissionHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
-import java.net.HttpURLConnection
-import java.net.URL
 
 class SettingsActivity : AppCompatActivity() {
 
     private val tag = "SettingsActivity"
-
     private val coroutineScope = CoroutineScope(Dispatchers.Main + Job())
-
-    private var progressBar: ProgressBar? = null
-
+    private lateinit var updateDownloader: AppUpdateDownloader
     private lateinit var switchModoResponsavel: MaterialSwitch
     private lateinit var switchExibirAgenda: MaterialSwitch
+    private lateinit var spinnerFrequenciaMoodle: Spinner
+    private lateinit var switchSomenteRedesIlimitadas: MaterialSwitch
 
     private val calendarPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
             val readGranted = result[Manifest.permission.READ_CALENDAR] == true
             val writeGranted = result[Manifest.permission.WRITE_CALENDAR] == true
             val granted = readGranted && writeGranted
-
             if (granted) {
                 switchExibirAgenda.setOnCheckedChangeListener(null)
                 switchExibirAgenda.isChecked = true
                 switchExibirAgenda.setOnCheckedChangeListener(exibirAgendaListener)
-
                 CalendarSyncManager.setEnabled(this, true)
-
                 coroutineScope.launch {
                     CalendarSyncManager.syncIfNeeded(
                         context = this@SettingsActivity,
@@ -78,7 +71,6 @@ class SettingsActivity : AppCompatActivity() {
                         force = true
                     )
                 }
-
                 Toast.makeText(
                     this,
                     "Eventos adicionados à agenda do sistema",
@@ -88,9 +80,7 @@ class SettingsActivity : AppCompatActivity() {
                 switchExibirAgenda.setOnCheckedChangeListener(null)
                 switchExibirAgenda.isChecked = false
                 switchExibirAgenda.setOnCheckedChangeListener(exibirAgendaListener)
-
                 CalendarSyncManager.setEnabled(this, false)
-
                 Toast.makeText(
                     this,
                     "Permissão de calendário necessária para ativar este recurso",
@@ -104,18 +94,15 @@ class SettingsActivity : AppCompatActivity() {
             switchView.setOnCheckedChangeListener(null)
             switchView.isChecked = !isChecked
             switchView.setOnCheckedChangeListener(modoResponsavelListener)
-
             confirmarMudancaModoResponsavel(isChecked)
         }
 
     private val exibirAgendaListener: android.widget.CompoundButton.OnCheckedChangeListener =
         android.widget.CompoundButton.OnCheckedChangeListener { switchView, isChecked ->
             switchView.setOnCheckedChangeListener(null)
-
             if (isChecked) {
                 if (CalendarSyncManager.hasCalendarPermission(this@SettingsActivity)) {
                     CalendarSyncManager.setEnabled(this@SettingsActivity, true)
-
                     coroutineScope.launch {
                         CalendarSyncManager.syncIfNeeded(
                             context = this@SettingsActivity,
@@ -123,7 +110,6 @@ class SettingsActivity : AppCompatActivity() {
                             force = true
                         )
                     }
-
                     Toast.makeText(
                         this@SettingsActivity,
                         "Eventos adicionados à agenda do sistema",
@@ -136,23 +122,19 @@ class SettingsActivity : AppCompatActivity() {
                             Manifest.permission.WRITE_CALENDAR
                         )
                     )
-
                     switchView.isChecked = false
                 }
             } else {
                 CalendarSyncManager.setEnabled(this@SettingsActivity, false)
-
                 coroutineScope.launch {
                     CalendarSyncManager.removeAll(this@SettingsActivity)
                 }
-
                 Toast.makeText(
                     this@SettingsActivity,
                     "Eventos removidos da agenda do sistema",
                     Toast.LENGTH_SHORT
                 ).show()
             }
-
             switchView.setOnCheckedChangeListener(exibirAgendaListener)
         }
 
@@ -160,14 +142,14 @@ class SettingsActivity : AppCompatActivity() {
         configureSystemBarsForLegacyDevices()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-
         Dados.init(applicationContext)
-
+        SyncPrefs.init(applicationContext)
+        updateDownloader = AppUpdateDownloader(this, coroutineScope)
         setupToolbar()
         setupUI()
+        setupSyncOptions()
         setupModoResponsavelFinanceiro()
         setupExibirEventosNaAgenda()
-
         if (intent.getBooleanExtra("open_update_directly", false)) {
             checkUpdate()
         }
@@ -192,20 +174,16 @@ class SettingsActivity : AppCompatActivity() {
                     currentNightMode == Configuration.UI_MODE_NIGHT_YES
                 }
             }
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 window.apply {
                     @Suppress("DEPRECATION")
                     clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
                     addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-
                     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
                         @Suppress("DEPRECATION")
                         statusBarColor = Color.BLACK
-
                         @Suppress("DEPRECATION")
                         navigationBarColor = Color.BLACK
-
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             @Suppress("DEPRECATION")
                             var flags = decorView.systemUiVisibility
@@ -221,11 +199,9 @@ class SettingsActivity : AppCompatActivity() {
                     }
                 }
             }
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 @Suppress("DEPRECATION")
                 var flags = window.decorView.systemUiVisibility
-
                 if (isDarkMode) {
                     @Suppress("DEPRECATION")
                     flags = flags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
@@ -233,11 +209,9 @@ class SettingsActivity : AppCompatActivity() {
                     @Suppress("DEPRECATION")
                     flags = flags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                 }
-
                 @Suppress("DEPRECATION")
                 window.decorView.systemUiVisibility = flags
             }
-
             if (!isDarkMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 @Suppress("DEPRECATION")
                 var flags = window.decorView.systemUiVisibility
@@ -262,35 +236,87 @@ class SettingsActivity : AppCompatActivity() {
         val btnClear = findViewById<Button>(R.id.btn_clear_data)
         val btnClearPassword = findViewById<Button>(R.id.btn_clear_password)
         val btnGitlab = findViewById<Button>(R.id.btn_gitlab)
-
         btnGitlab.setOnClickListener {
             openUrl("https://gitlab.com/fei.app/")
         }
-
         btnCheck.setOnClickListener {
             checkUpdate()
         }
-
         btnClear.setOnClickListener {
             CookieManager.getInstance().removeAllCookies(null)
             CookieManager.getInstance().flush()
             clearAllCacheData()
-
             Toast.makeText(
                 this,
                 getString(R.string.settings_base_apagada),
                 Toast.LENGTH_SHORT
             ).show()
         }
-
         btnClearPassword.setOnClickListener {
             clearAutoFill()
-
             Toast.makeText(
                 this,
                 getString(R.string.settings_autofill_apagado),
                 Toast.LENGTH_SHORT
             ).show()
+        }
+    }
+
+    private fun setupSyncOptions() {
+        setupFrequenciaAtualizacaoMoodle()
+        setupSomenteRedesIlimitadas()
+    }
+
+    private fun setupFrequenciaAtualizacaoMoodle() {
+        spinnerFrequenciaMoodle = findViewById(R.id.spinner_frequencia_moodle)
+        val cardFrequenciaMoodle = findViewById<View>(R.id.card_frequencia_moodle)
+
+        // No modo responsável financeiro, a frequência do Moodle não faz sentido
+        if (AppMode.isResponsavelFinanceiro) {
+            spinnerFrequenciaMoodle.isEnabled = false
+            cardFrequenciaMoodle.alpha = 0.5f
+            return
+        }
+
+        val valoresHoras = SyncPrefs.ALLOWED_MOODLE_FREQUENCIES // [1, 2, 3, 6]
+        val rotulos = valoresHoras.map { h ->
+            if (h == 1) getString(R.string.frequencia_1_hora)
+            else getString(R.string.frequencia_x_horas, h)
+        }
+        spinnerFrequenciaMoodle.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            rotulos
+        ).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+        val freqAtual = SyncPrefs.moodleFrequencyHours
+        val index = valoresHoras.indexOf(freqAtual).coerceAtLeast(0)
+        spinnerFrequenciaMoodle.setSelection(index)
+        spinnerFrequenciaMoodle.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val novoValor = valoresHoras[position]
+                    if (SyncPrefs.moodleFrequencyHours != novoValor) {
+                        SyncPrefs.moodleFrequencyHours = novoValor
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+    }
+
+    private fun setupSomenteRedesIlimitadas() {
+        switchSomenteRedesIlimitadas = findViewById(R.id.switch_somente_redes_ilimitadas)
+        // Esta opção permanece ativa mesmo no modo responsável financeiro
+        switchSomenteRedesIlimitadas.isChecked = SyncPrefs.syncOnlyOnUnmeteredNetworks
+        switchSomenteRedesIlimitadas.setOnCheckedChangeListener { _, isChecked ->
+            SyncPrefs.syncOnlyOnUnmeteredNetworks = isChecked
         }
     }
 
@@ -303,7 +329,6 @@ class SettingsActivity : AppCompatActivity() {
     private fun setupExibirEventosNaAgenda() {
         switchExibirAgenda = findViewById(R.id.switch_exibir_agenda)
         val cardExibirAgenda = findViewById<View>(R.id.card_exibir_agenda)
-
         if (AppMode.isResponsavelFinanceiro) {
             switchExibirAgenda.isEnabled = false
             switchExibirAgenda.isChecked = false
@@ -311,14 +336,11 @@ class SettingsActivity : AppCompatActivity() {
         } else {
             switchExibirAgenda.isEnabled = true
             cardExibirAgenda.alpha = 1.0f
-
             val enabledInPrefs = CalendarSyncManager.isEnabled(this)
             val hasPermission = CalendarSyncManager.hasCalendarPermission(this)
-
             if (enabledInPrefs && !hasPermission) {
                 CalendarSyncManager.setEnabled(this, false)
             }
-
             switchExibirAgenda.isChecked = enabledInPrefs && hasPermission
             switchExibirAgenda.setOnCheckedChangeListener(exibirAgendaListener)
         }
@@ -330,7 +352,6 @@ class SettingsActivity : AppCompatActivity() {
         } else {
             getString(R.string.modo_resp_desativar_msg)
         }
-
         MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.modo_resp_titulo))
             .setMessage(mensagem)
@@ -355,23 +376,19 @@ class SettingsActivity : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-
         startActivity(intent)
         finish()
     }
 
     private fun resetarAppEIrParaLogin() {
         clearAllCacheData()
-
         LoginActivity.getEncryptedPrefs(this).edit { clear() }
         getSharedPreferences(PermissionHelper.PREFS_NAME, MODE_PRIVATE).edit { clear() }
         getSharedPreferences("update_prompt_prefs", MODE_PRIVATE).edit { clear() }
         getSharedPreferences("UpdatePrefs", MODE_PRIVATE).edit { clear() }
-
         val intent = Intent(this, LoginActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-
         startActivity(intent)
         finish()
     }
@@ -379,31 +396,23 @@ class SettingsActivity : AppCompatActivity() {
     private fun clearAllCacheData() {
         Dados.init(applicationContext)
         Dados.clearAllCacheFiles()
-
         getSharedPreferences("HomeFragmentCache", MODE_PRIVATE).edit { clear() }
-
         CookieManager.getInstance().removeAllCookies(null)
         CookieManager.getInstance().flush()
-
         android.webkit.WebStorage.getInstance().deleteAllData()
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             android.webkit.WebView.clearClientCertPreferences(null)
         }
-
         val context = applicationContext
-
         android.webkit.WebView(context).apply {
             clearCache(true)
             clearHistory()
             clearFormData()
             destroy()
         }
-
         CoroutineScope(Dispatchers.IO).launch {
             com.bumptech.glide.Glide.get(context).clearDiskCache()
         }
-
         com.bumptech.glide.Glide.get(context).clearMemory()
     }
 
@@ -474,127 +483,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun startManualDownload(apkUrl: String) {
-        coroutineScope.launch {
-            val progressDialog = createProgressDialog().apply { show() }
-
-            try {
-                val apkFile = withContext(Dispatchers.IO) {
-                    downloadApk(apkUrl)
-                }
-
-                progressDialog.dismiss()
-
-                apkFile?.let(::showInstallDialog)
-                    ?: showError(getString(R.string.settings_update_erro_download))
-            } catch (e: Exception) {
-                progressDialog.dismiss()
-                Log.e(tag, getString(R.string.settings_erro_download_log), e)
-                showError(
-                    getString(
-                        R.string.settings_update_erro_download_msg,
-                        e.message ?: ""
-                    )
-                )
-            }
-        }
-    }
-
-    @SuppressLint("InflateParams")
-    private fun createProgressDialog(): androidx.appcompat.app.AlertDialog {
-        val view = layoutInflater.inflate(R.layout.dialog_download_progress, null)
-        progressBar = view.findViewById(R.id.progress_bar)
-
-        return MaterialAlertDialogBuilder(this)
-            .setView(view)
-            .setCancelable(false)
-            .create()
-    }
-
-    private suspend fun downloadApk(apkUrl: String): File? = withContext(Dispatchers.IO) {
-        try {
-            val connection = URL(apkUrl).openConnection() as HttpURLConnection
-            connection.connect()
-
-            val downloadsDir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-
-            val outputDir = File(downloadsDir, "Update").apply {
-                if (exists()) deleteRecursively()
-                mkdirs()
-            }
-
-            val outputFile = File(outputDir, "app_release.apk")
-
-            connection.inputStream.use { input ->
-                FileOutputStream(outputFile).use { output ->
-                    val buffer = ByteArray(4096)
-                    var bytesRead: Int
-                    var total: Long = 0
-                    val fileLength = connection.contentLength.toLong()
-
-                    while (input.read(buffer).also { bytesRead = it } != -1) {
-                        output.write(buffer, 0, bytesRead)
-                        total += bytesRead
-
-                        if (fileLength > 0) {
-                            val progress = (total * 100 / fileLength).toInt()
-
-                            withContext(Dispatchers.Main) {
-                                progressBar?.progress = progress
-                            }
-                        }
-                    }
-                }
-            }
-
-            outputFile
-        } catch (e: Exception) {
-            Log.e(tag, "Erro no download.", e)
-            null
-        }
-    }
-
-    private fun showInstallDialog(apkFile: File) {
-        runOnUiThread {
-            try {
-                if (!apkFile.exists()) {
-                    showError(getString(R.string.settings_apk_nao_encontrado))
-                    return@runOnUiThread
-                }
-
-                val apkUri = FileProvider.getUriForFile(
-                    this@SettingsActivity,
-                    "${BuildConfig.APPLICATION_ID}.fileprovider",
-                    apkFile
-                )
-
-                val installIntent = Intent(Intent.ACTION_VIEW).apply {
-                    setDataAndType(apkUri, "application/vnd.android.package-archive")
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-
-                if (installIntent.resolveActivity(packageManager) != null) {
-                    MaterialAlertDialogBuilder(this@SettingsActivity)
-                        .setTitle(getString(R.string.settings_download_concluido))
-                        .setMessage(getString(R.string.settings_instalar_msg))
-                        .setPositiveButton(getString(R.string.instalar)) { _, _ ->
-                            startActivity(installIntent)
-                        }
-                        .setNegativeButton(getString(R.string.cancelar), null)
-                        .show()
-                } else {
-                    showError(getString(R.string.settings_nenhum_app_instalar))
-                }
-            } catch (e: Exception) {
-                Log.e(tag, getString(R.string.settings_erro_instalacao), e)
-                showError(
-                    getString(
-                        R.string.settings_erro_instalacao_msg,
-                        e.message ?: ""
-                    )
-                )
-            }
-        }
+        updateDownloader.startDownload(apkUrl, forced = false)
     }
 
     private fun showMessage() {
@@ -615,6 +504,8 @@ class SettingsActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         coroutineScope.cancel()
-        progressBar = null
+        if (::updateDownloader.isInitialized) {
+            updateDownloader.destroy()
+        }
     }
 }

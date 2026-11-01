@@ -8,6 +8,7 @@ import com.marinov.openfei.util.WebViewHelper
  * Mantém a API pública original para compatibilidade.
  */
 object Dados {
+
     private lateinit var appContext: Context
 
     fun init(context: Context) {
@@ -18,13 +19,14 @@ object Dados {
         CalendarioRepository.init(context)
         BoletosRepository.init(context)
         RustSession.init(context)
+        SyncPrefs.init(context)
     }
+
     suspend fun atualizarNotas(online: Boolean) = NotasRepository.atualizarNotas(online)
 
     // ===================== AULAS =====================
     suspend fun aulas(online: Boolean) = AulasRepository.aulas(online)
     suspend fun novoHorario(online: Boolean) = AulasRepository.novoHorario(online)
-
     suspend fun atualizaBoletos() = BoletosRepository.atualizaBoletos()
 
     // ===================== CACHE =====================

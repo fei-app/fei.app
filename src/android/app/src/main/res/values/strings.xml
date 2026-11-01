@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OpenFEI</string>
-
     <!-- ==================== GERAL ==================== -->
     <string name="ok">OK</string>
     <string name="erro">Erro</string>
@@ -19,7 +18,6 @@
     <string name="sem_dados">Sem dados.</string>
     <string name="sem_valor">--</string>
     <string name="loading">Carregando…</string>
-
     <!-- ==================== LOGIN ==================== -->
     <string name="login_entrar">Entrar</string>
     <string name="login_preencha_usuario">Preencha o usuário</string>
@@ -31,18 +29,15 @@
     <string name="login_biometria_subtitulo">Autentique-se para visualizar a senha</string>
     <string name="login_biometria_indisponivel">Configure um bloqueio de tela para visualizar a senha</string>
     <string name="login_biometria_erro">Erro de autenticação: %1$s</string>
-
     <!-- ==================== WEBVIEW / SESSÃO ==================== -->
     <string name="erro_servidor_tente_novamente">Erro no servidor. Tente novamente mais tarde.</string>
     <string name="sessao_expirada_login">Sessão expirada. Faça login novamente.</string>
     <string name="sessao_moodle_expirada_login">Sessão do Moodle expirada. Faça login novamente.</string>
-
     <!-- ==================== NOTAS ==================== -->
     <string name="notas_vazio">Não há notas disponíveis</string>
     <string name="notas_media_aprovado">Média: %1$s (APROVADO)</string>
     <string name="notas_media_reprovado">Média: %1$s (REPROVADO)</string>
     <string name="notas_media">Média: %1$s</string>
-
     <!-- ==================== HOME ==================== -->
     <string name="home_coluna_disciplina">Disciplina</string>
     <string name="home_coluna_prova">Prova</string>
@@ -51,7 +46,6 @@
     <string name="ads_home">Anúncio</string>
     <string name="today_class_home">Aulas do dia</string>
     <string name="no_class_today">Nenhuma aula hoje!</string>
-
     <!-- ==================== HORÁRIOS ==================== -->
     <string name="horarios_nenhuma_aula">Nenhuma aula encontrada</string>
     <string name="horarios_erro_carregar">Erro ao carregar horários</string>
@@ -63,7 +57,6 @@
     <string name="horarios_quinta">Quinta</string>
     <string name="horarios_sexta">Sexta</string>
     <string name="horarios_sabado">Sábado</string>
-
     <!-- ==================== BOLETOS ==================== -->
     <string name="boletos_sem_id">Boleto sem ID disponível.</string>
     <string name="boletos_gerando">Gerando boleto, aguarde…</string>
@@ -77,7 +70,6 @@
     <string name="pago_em">Pago em</string>
     <string name="gerar_e_baixar_boleto">Gerar e Baixar Boleto</string>
     <string name="data_generica">--/--/----</string>
-
     <!-- ==================== PERFIL ==================== -->
     <string name="perfil_nome">Nome</string>
     <string name="perfil_matricula">Matrícula</string>
@@ -90,7 +82,6 @@
     <string name="faca_login_para_continuar">Faça login para continuar</string>
     <string name="usuario">Usuário</string>
     <string name="senha">Senha</string>
-
     <!-- ==================== PROVAS / MATÉRIA ==================== -->
     <string name="materia_descricao_breve">Em breve será possível ver uma breve descrição da prova/tarefa.</string>
     <string name="materia_resumo_prompt">Faça um resumo para minha prova: %1$s\n%2$s</string>
@@ -98,7 +89,6 @@
     <string name="filtrar_provas">Filtrar provas</string>
     <string name="sem_provas_esse_mes">Nenhuma prova/tarefa a ser mostrada nesse mês.</string>
     <string name="selecione_uma_prova">Selecione uma prova/tarefa.</string>
-
     <!-- ==================== CONFIGURAÇÕES ==================== -->
     <string name="settings_base_apagada">Base de dados apagada com sucesso!</string>
     <string name="settings_autofill_apagado">Dados de preenchimento automático apagados com sucesso!</string>
@@ -122,18 +112,15 @@
     <string name="data_session">Dados</string>
     <string name="update_session">Atualizações</string>
     <string name="verify_update">Verificar atualizações do app</string>
-
     <!-- ==================== UPDATE CHECKER ==================== -->
     <string name="update_nenhuma_release">Nenhuma release encontrada no repositório.</string>
     <string name="update_sem_notas">Sem notas de lançamento.</string>
     <string name="update_apk_nao_encontrado">Arquivo APK não foi encontrado nos assets da release da versão %1$s.</string>
     <string name="update_erro_http">HTTP error: %1$s</string>
     <string name="update_erro_desconhecido">Erro desconhecido</string>
-
     <!-- ==================== ATUALIZAÇÃO AUTOMÁTICA ==================== -->
     <string name="update_available_title">Atualização disponível</string>
     <string name="update_available_message">Deseja atualizar agora?</string>
-
     <!-- ==================== NOTIFICAÇÕES ==================== -->
     <string name="notif_canal_servico">Serviço em segundo plano</string>
     <string name="notif_canal_sync">Atualizações em segundo plano</string>
@@ -155,10 +142,8 @@
     <string name="notif_horario_big_text">O horário de aulas foi atualizado. Confira as mudanças.</string>
     <string name="notif_update_titulo">Atualização Disponível (v%1$s)</string>
     <string name="notif_update_texto">Clique aqui para baixar a nova versão do aplicativo.</string>
-
     <!-- Mensagem de Offline / Sem Internet -->
     <string name="try_again">Recarregar</string>
-
     <!-- Atalhos do Aplicativo (App Shortcuts) -->
     <string name="shortcut_notas_short">Notas</string>
     <string name="shortcut_notas_long">Ver Notas</string>
@@ -166,7 +151,6 @@
     <string name="shortcut_horarios_long">Horários de aula</string>
     <string name="shortcut_provas_short">Calendário</string>
     <string name="shortcut_provas_long">Calendário de Provas</string>
-
     <!-- MoreFragment -->
     <string name="recarregar_perfil">Recarregar perfil</string>
     <string name="faltas">Faltas</string>
@@ -185,7 +169,6 @@
     <string name="modo_resp_titulo">Modo responsável financeiro</string>
     <string name="modo_resp_ativar_msg">Deseja ativar?</string>
     <string name="modo_resp_desativar_msg">Deseja voltar ao modo normal?</string>
-
     <string name="menu_inicio">Início</string>
     <string name="menu_moodle">Moodle</string>
     <string name="menu_calendario">Calendário</string>
@@ -196,11 +179,17 @@
     <string name="menu_filtro_calendario_p2">P2</string>
     <string name="menu_filtro_calendario_p3">P3</string>
     <string name="menu_filtro_calendario_moodle">Moodle</string>
-
     <string name="top_bar_perfil">Perfil</string>
     <string name="top_bar_configuracoes">Configurações</string>
     <string name="menu_mais">Mais</string>
     <string name="ver_mais">Ver mais</string>
     <string name="no_grades_home">Ainda não há notas para serem exibidas!</string>
     <string name="exibir_tarefas_e_provas_na_agenda_do_sistema">Exibir tarefas e provas na agenda do sistema</string>
+    <!-- ==================== SINCRONIZAÇÃO EM SEGUNDO PLANO ==================== -->
+    <string name="frequencia_atualizacao">Frequência de atualização</string>
+    <string name="sincronizar_apenas_redes_ilimitadas">Sincronizar apenas em redes ilimitadas</string>
+    <string name="frequencia_1_hora">1 hora</string>
+    <string name="frequencia_x_horas">%1$d horas</string>
+    <string name="sync_session">Sincronização</string>
+
 </resources>

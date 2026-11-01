@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Build
 import com.google.android.material.color.DynamicColors
 import com.marinov.openfei.core.OpenFeiCore
+import com.marinov.openfei.data.SyncPrefs
 import com.marinov.openfei.util.WebViewHelper
 
 class MyApplication : Application() {
@@ -11,6 +12,8 @@ class MyApplication : Application() {
         super.onCreate()
         // ★ Inicializa o estado do Modo Responsável Financeiro o quanto antes ★
         AppMode.init(this)
+        // ★ Inicializa preferências de sincronização em segundo plano ★
+        SyncPrefs.init(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             DynamicColors.applyToActivitiesIfAvailable(this)
         }
@@ -20,7 +23,6 @@ class MyApplication : Application() {
             try {
                 val isOnline = OpenFeiCore.isOnline()
                 android.util.Log.d("RUST_TEST", "isOnline: $isOnline")
-
                 val disciplinas = OpenFeiCore.fetchDisciplinas()
                 android.util.Log.d("RUST_TEST", "disciplinas: $disciplinas")
             } catch (e: Throwable) {
