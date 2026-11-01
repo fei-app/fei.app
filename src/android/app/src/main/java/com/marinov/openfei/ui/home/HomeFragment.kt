@@ -306,7 +306,7 @@ class HomeFragment : Fragment() {
             addView(createTableCell(getString(R.string.home_coluna_nota), true, context))
         }
         tableRecentGrades?.addView(headerRow)
-        for (nota in sortedNotas.take(6)) {
+        for (nota in sortedNotas.take(3)) {
             tableRecentGrades?.addView(TableRow(context).apply {
                 addView(createTableCell(nota.nomeDisciplina, false, context))
                 addView(createTableCell(nota.tipoProva, false, context))

@@ -154,7 +154,6 @@
                             android:shrinkColumns="*"
                             android:stretchColumns="*"
                             android:background="@color/fundocartao" />
-
                     </com.google.android.material.card.MaterialCardView>
 
                     <TextView
@@ -167,7 +166,6 @@
                         android:gravity="center"
                         android:padding="16dp"
                         android:visibility="gone" />
-
                 </LinearLayout>
 
                 <!-- Seção de Aulas do Dia -->
@@ -230,6 +228,17 @@
                         android:visibility="gone" />
                 </LinearLayout>
 
+                <!--
+                    Espaço inferior para evitar que a barra de navegação
+                    flutuante cubra o conteúdo.
+                    Altura = actionBarSize (altura da barra)
+                           + 32dp (marginBottom 20dp + paddingBottom 8dp + folga)
+                -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_marginBottom="32dp" />
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
@@ -242,5 +251,4 @@
             android:visibility="gone" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
