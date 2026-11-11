@@ -21,7 +21,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
 import com.google.android.material.button.MaterialButton
 import com.marinov.openfei.R
-import com.marinov.openfei.data.NetworkChecker
+import com.marinov.openfei.network.NetworkChecker
 import com.marinov.openfei.ui.main.MainActivity
 import kotlinx.coroutines.launch
 

@@ -1,8 +1,10 @@
 package com.marinov.openfei.data
 
 import android.util.Log
+import com.marinov.openfei.cache.CacheHelper
 import com.marinov.openfei.core.CoreResult
 import com.marinov.openfei.core.OpenFeiCore
+import com.marinov.openfei.login.RustSession
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -10,17 +12,13 @@ import java.io.IOException
 import java.util.Calendar
 
 object AulasRepository {
+
     private const val TAG = "AulasRepository"
 
     suspend fun aulas(online: Boolean): List<Aula> {
         return if (online) {
             try {
-                val aulasBrutas = fetchAulasFromRust()
-                val disciplinas = DisciplinasRepository.obterDisciplinas(online = true)
-                val mapaNomes = disciplinas.associate { it.codigo to it.nome }
-                val aulasComNomes = aulasBrutas.map { aula ->
-                    aula.copy(nomeDisciplina = mapaNomes[aula.codigoDisciplina] ?: aula.codigoDisciplina)
-                }
+                val aulasComNomes = fetchAulasComNomes()
                 CacheHelper.saveAulasCache(aulasComNomes)
                 aulasComNomes
             } catch (e: SessionExpiredException) {
@@ -36,29 +34,6 @@ object AulasRepository {
         }
     }
 
-    suspend fun novoHorario(online: Boolean): Boolean {
-        if (!online) return false
-        try {
-            val novasAulas = fetchAulasFromRust()
-            val disciplinas = DisciplinasRepository.obterDisciplinas(online = true)
-            val mapaNomes = disciplinas.associate { it.codigo to it.nome }
-            val novasComNomes = novasAulas.map { it.copy(nomeDisciplina = mapaNomes[it.codigoDisciplina] ?: it.codigoDisciplina) }
-            val antigasAulas = CacheHelper.getCachedAulas()
-            if (antigasAulas.isEmpty()) {
-                CacheHelper.saveAulasCache(novasComNomes)
-                return false
-            }
-            val alterado = novasComNomes.toSet() != antigasAulas.toSet()
-            if (alterado) CacheHelper.saveAulasCache(novasComNomes)
-            return alterado
-        } catch (e: SessionExpiredException) {
-            throw e
-        } catch (e: Exception) {
-            Log.e(TAG, "Erro em novoHorario", e)
-            return false
-        }
-    }
-
     suspend fun retornaAulasDia(online: Boolean): List<Aula> {
         val todas = aulas(online)
         if (todas.isEmpty()) return emptyList()
@@ -66,12 +41,25 @@ object AulasRepository {
         return todas.filter { it.diaSemana.equals(diaSemana, ignoreCase = true) }
     }
 
+    /**
+     * Busca as aulas no Rust e resolve os nomes das disciplinas, SEM salvar no cache.
+     * Compartilhado com HorariosRepository.novoHorario(), que precisa comparar
+     * os dados novos com o cache antigo antes de sobrescrevê-lo.
+     */
+    internal suspend fun fetchAulasComNomes(): List<Aula> {
+        val aulasBrutas = fetchAulasFromRust()
+        val disciplinas = DisciplinasRepository.obterDisciplinas(online = true)
+        val mapaNomes = disciplinas.associate { it.codigo to it.nome }
+        return aulasBrutas.map { aula ->
+            aula.copy(nomeDisciplina = mapaNomes[aula.codigoDisciplina] ?: aula.codigoDisciplina)
+        }
+    }
+
     private suspend fun fetchAulasFromRust(): List<Aula> = withContext(Dispatchers.IO) {
         // ★ CORREÇÃO: Garante sessão FEI antes de buscar aulas
         if (!RustSession.ensureFeiSession()) {
             throw SessionExpiredException("Não foi possível garantir sessão FEI para aulas")
         }
-
         when (val result = OpenFeiCore.fetchAulas()) {
             is CoreResult.Success -> {
                 result.data.map { core ->

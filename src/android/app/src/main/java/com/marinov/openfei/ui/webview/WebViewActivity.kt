@@ -27,7 +27,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.color.MaterialColors
 import com.marinov.openfei.R
-import com.marinov.openfei.data.NetworkChecker
+import com.marinov.openfei.network.NetworkChecker
 import kotlinx.coroutines.launch
 
 @Suppress("ANNOTATIONS_ON_BLOCK_LEVEL_EXPRESSION_ON_THE_SAME_LINE")

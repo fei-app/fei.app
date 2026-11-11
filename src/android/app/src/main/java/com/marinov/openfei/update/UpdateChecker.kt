@@ -1,4 +1,4 @@
-package com.marinov.openfei.data
+package com.marinov.openfei.update
 
 import android.content.Context
 import android.util.Log
@@ -12,6 +12,7 @@ import java.net.URL
 import java.util.stream.Collectors
 
 object UpdateChecker {
+
     private const val TAG = "UpdateChecker"
     private const val PREFS_NAME = "UpdatePrefs"
     private const val KEY_LAST_VERSION = "last_version"

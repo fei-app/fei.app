@@ -94,7 +94,7 @@
         </receiver>
 
         <service
-            android:name=".service.BackgroundService"
+            android:name=".background.BackgroundService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />

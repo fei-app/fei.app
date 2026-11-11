@@ -1,4 +1,4 @@
-package com.marinov.openfei.util
+package com.marinov.openfei.update
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -108,12 +108,14 @@ class AppUpdateDownloader(
             connection.connectTimeout = 15000
             connection.readTimeout = 15000
             connection.connect()
+
             val downloadsDir = activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
             val outputDir = File(downloadsDir, "Update").apply {
                 if (exists()) deleteRecursively()
                 mkdirs()
             }
             val outputFile = File(outputDir, "app_release.apk")
+
             connection.inputStream.use { input ->
                 FileOutputStream(outputFile).use { output ->
                     val buffer = ByteArray(4096)

@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.marinov.openfei.core.CoreResult
 import com.marinov.openfei.core.OpenFeiCore
+import com.marinov.openfei.login.RustSession
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -14,6 +15,7 @@ import java.io.IOException
 data class CarouselItem(val imageUrl: String?, val linkUrl: String?)
 
 object HomeRepository {
+
     private const val PREFS_NAME = "HomeFragmentCache"
     private const val KEY_CAROUSEL_ITEMS = "carousel_items"
     private const val KEY_CACHE_TIMESTAMP = "cache_timestamp"
@@ -60,7 +62,6 @@ object HomeRepository {
         if (!RustSession.ensureFeiSession()) {
             throw SessionExpiredException("Não foi possível garantir sessão FEI para carrossel")
         }
-
         when (val result = OpenFeiCore.fetchCarousel()) {
             is CoreResult.Success -> {
                 result.data.map { core ->

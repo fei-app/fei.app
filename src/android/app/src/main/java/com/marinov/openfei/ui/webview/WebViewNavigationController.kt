@@ -9,7 +9,7 @@ import android.webkit.WebView
 import android.widget.Toast
 import androidx.core.net.toUri
 import com.marinov.openfei.R
-import com.marinov.openfei.data.SessionManager
+import com.marinov.openfei.login.SessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

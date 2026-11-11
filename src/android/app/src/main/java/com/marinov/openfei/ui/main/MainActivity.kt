@@ -38,11 +38,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigationrail.NavigationRailView
 import com.marinov.openfei.BuildConfig
 import com.marinov.openfei.app.AppMode
-import com.marinov.openfei.data.Dados
-import com.marinov.openfei.data.NetworkChecker
-import com.marinov.openfei.data.SessionManager
-import com.marinov.openfei.data.UpdateChecker
-import com.marinov.openfei.service.BackgroundService
 import com.marinov.openfei.ui.boletos.BoletosFragment
 import com.marinov.openfei.ui.home.HomeFragment
 import com.marinov.openfei.ui.horarios.HorariosAula
@@ -53,7 +48,6 @@ import com.marinov.openfei.ui.notas.NotasFragment
 import com.marinov.openfei.ui.profile.ProfileFragment
 import com.marinov.openfei.ui.provas.CalendarioProvas
 import com.marinov.openfei.ui.settings.SettingsActivity
-import com.marinov.openfei.util.AppUpdateDownloader
 import com.marinov.openfei.util.WebViewHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +55,12 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.marinov.openfei.background.BackgroundService
+import com.marinov.openfei.data.DataInitializer
+import com.marinov.openfei.login.SessionManager
+import com.marinov.openfei.network.NetworkChecker
+import com.marinov.openfei.update.AppUpdateDownloader
+import com.marinov.openfei.update.UpdateChecker
 
 @Suppress("ANNOTATIONS_ON_BLOCK_LEVEL_EXPRESSION_ON_THE_SAME_LINE")
 class MainActivity : AppCompatActivity() {
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
             launchLogin()
             return
         }
-        Dados.init(applicationContext)
+        DataInitializer.init(applicationContext)
         WebViewHelper.ensureWebView(applicationContext)
         configureSystemBarsForLegacyDevices()
         MaterialColors.getColor(

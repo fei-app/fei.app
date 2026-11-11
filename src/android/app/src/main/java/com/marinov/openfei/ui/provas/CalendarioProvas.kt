@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.marinov.openfei.data.CalendarioRepository
-import com.marinov.openfei.data.CalendarSyncManager
+import com.marinov.openfei.background.CalendarSyncManager
 import com.marinov.openfei.data.ProvaCalendario
 import com.marinov.openfei.data.SessionExpiredException
 import com.marinov.openfei.ui.main.MainActivity

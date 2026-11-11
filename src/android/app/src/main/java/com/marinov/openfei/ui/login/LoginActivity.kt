@@ -22,7 +22,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.marinov.openfei.R
-import com.marinov.openfei.data.LoginLogic
+import com.marinov.openfei.login.LoginLogic
 import com.marinov.openfei.ui.main.MainActivity
 import com.marinov.openfei.util.PermissionHelper
 import kotlinx.coroutines.Dispatchers

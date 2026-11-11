@@ -1,4 +1,4 @@
-package com.marinov.openfei.data
+package com.marinov.openfei.background
 
 import android.content.Context
 import android.content.SharedPreferences

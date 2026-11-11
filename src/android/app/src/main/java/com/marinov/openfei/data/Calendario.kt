@@ -2,8 +2,10 @@ package com.marinov.openfei.data
 
 import android.content.Context
 import android.util.Log
+import com.marinov.openfei.cache.CacheHelper
 import com.marinov.openfei.core.CoreResult
 import com.marinov.openfei.core.OpenFeiCore
+import com.marinov.openfei.login.RustSession
 import com.marinov.openfei.ui.login.LoginActivity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -11,6 +13,7 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 
 object CalendarioRepository {
+
     private const val TAG = "CalendarioRepository"
     private lateinit var appContext: Context
 
@@ -122,7 +125,6 @@ object CalendarioRepository {
         if (!RustSession.ensureFeiSession()) {
             throw SessionExpiredException("Não foi possível garantir sessão FEI para provas")
         }
-
         when (val result = OpenFeiCore.fetchProvasFei()) {
             is CoreResult.Success -> {
                 result.data.map { core ->
@@ -153,15 +155,12 @@ object CalendarioRepository {
             Log.e(TAG, "Erro ao acessar credenciais salvas", e)
             throw SessionExpiredException("Erro ao acessar credenciais")
         }
-
         val user = prefs.getString(LoginActivity.KEY_USER, "") ?: ""
         val pass = prefs.getString(LoginActivity.KEY_PASS, "") ?: ""
-
         if (user.isEmpty() || pass.isEmpty()) {
             Log.d(TAG, "Sem credenciais salvas — impossível buscar eventos Moodle")
             throw SessionExpiredException("Sem credenciais salvas")
         }
-
         when (val result = OpenFeiCore.fetchEventosMoodle(user, pass)) {
             is CoreResult.Success -> {
                 result.data.map { core ->

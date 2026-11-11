@@ -1,4 +1,4 @@
-package com.marinov.openfei.data
+package com.marinov.openfei.login
 
 import android.content.Context
 import android.util.Log
@@ -28,7 +28,9 @@ data class MoodleLoginResult(
 )
 
 object LoginLogic {
+
     private const val TAG = "LoginLogic"
+
     private val ALLOWED_DOMAINS = listOf(
         "interage.fei.org.br",
         "fei.org.br",
@@ -111,10 +113,8 @@ object LoginLogic {
             if (!isAllowedDomain(cookie.origin)) {
                 return@forEach
             }
-
             val domain = extractDomain(cookie.origin)
             if (domain.isEmpty()) return@forEach
-
             val targetUrl = "https://$domain"
 
             val cookieParts = cookie.cookieLine.split(";").map { it.trim() }
@@ -164,7 +164,6 @@ object LoginLogic {
             }
 
             val finalCookie = "$nameValue; ${attrs.joinToString("; ")}"
-
             val dedup = "$targetUrl|$finalCookie"
             if (seenCookies.contains(dedup)) return@forEach
             seenCookies.add(dedup)
@@ -194,7 +193,6 @@ object LoginLogic {
     private fun limparCookieAntigo(targetUrl: String, domain: String, name: String) {
         val cookieManager = CookieManager.getInstance()
         val expirado = "Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
-
         cookieManager.setCookie(targetUrl, "$name=; Domain=$domain; $expirado")
         cookieManager.setCookie(targetUrl, "$name=; Domain=.$domain; $expirado")
         cookieManager.setCookie(targetUrl, "$name=; $expirado")

@@ -1,7 +1,7 @@
 package com.marinov.openfei.ui.home
 
 import android.annotation.SuppressLint
-import com.marinov.openfei.service.BackgroundService
+import com.marinov.openfei.background.BackgroundService
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration

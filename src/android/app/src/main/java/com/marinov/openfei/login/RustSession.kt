@@ -1,4 +1,4 @@
-package com.marinov.openfei.data
+package com.marinov.openfei.login
 
 import android.content.Context
 import android.util.Log
@@ -11,17 +11,20 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 object RustSession {
+
     private const val TAG = "RustSession"
     private lateinit var appContext: Context
+
     private var lastFeiLoginTime = 0L
     private const val FEI_RENEW_INTERVAL_MS = 10L * 60 * 1000L // 10 minutos
+
     private val loginMutex = Mutex()
 
     fun init(context: Context) {
         appContext = context.applicationContext
     }
 
-    // ★ NOVO: Invalida a sessão da FEI para forçar um novo login na próxima requisição.
+    // Invalida a sessão da FEI para forçar um novo login na próxima requisição.
     // Usado quando o cliente HTTP do Rust é resetado (ex.: para limpar cookies velhos do Moodle).
     fun resetFeiSession() {
         lastFeiLoginTime = 0L

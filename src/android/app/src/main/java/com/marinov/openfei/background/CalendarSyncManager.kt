@@ -1,4 +1,4 @@
-package com.marinov.openfei.data
+package com.marinov.openfei.background
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -10,6 +10,10 @@ import android.database.Cursor
 import android.provider.CalendarContract
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
+import com.marinov.openfei.cache.CacheHelper
+import com.marinov.openfei.data.CalendarioRepository
+import com.marinov.openfei.data.ProvaCalendario
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
@@ -17,13 +21,11 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.TimeZone
 import java.util.UUID
-import androidx.core.content.edit
 
 @SuppressLint("MissingPermission")
 object CalendarSyncManager {
 
     private const val TAG = "CalendarSyncManager"
-
     private const val PREFS_NAME = "CalendarSyncPrefs"
     private const val KEY_ENABLED = "exibir_eventos_agenda_sistema"
 
@@ -31,9 +33,7 @@ object CalendarSyncManager {
     private const val ACCOUNT_NAME = "com.marinov.openfei.calendar"
     private const val ACCOUNT_TYPE = CalendarContract.ACCOUNT_TYPE_LOCAL
     private const val CALENDAR_NAME = "OpenFEI - Provas e Tarefas"
-
     private const val EVENT_URI_PREFIX = "openfei://event/"
-
     private const val CALENDAR_COLOR = 0xFF3F51B5.toInt()
 
     // 6 horas antes, 1 dia antes, 2 dias antes, 3 dias antes
@@ -76,7 +76,6 @@ object CalendarSyncManager {
             .edit {
                 putBoolean(KEY_ENABLED, enabled)
             }
-
         Log.d(TAG, "Recurso de agenda do sistema enabled=$enabled")
     }
 
@@ -85,12 +84,10 @@ object CalendarSyncManager {
             context,
             Manifest.permission.READ_CALENDAR
         ) == PackageManager.PERMISSION_GRANTED
-
         val write = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.WRITE_CALENDAR
         ) == PackageManager.PERMISSION_GRANTED
-
         return read && write
     }
 
@@ -106,38 +103,31 @@ object CalendarSyncManager {
     ) {
         val enabled = isEnabled(context)
         val hasPermission = hasCalendarPermission(context)
-
         Log.d(
             TAG,
             "syncIfNeeded inicio | enabled=$enabled | permission=$hasPermission | fetchOnline=$fetchOnline | force=$force"
         )
-
         if (!enabled) {
             Log.d(TAG, "syncIfNeeded abortado: recurso desativado")
             return
         }
-
         if (!hasPermission) {
             Log.w(TAG, "syncIfNeeded abortado: permissão de calendário não concedida")
             return
         }
-
         withContext(Dispatchers.IO) {
             try {
                 CacheHelper.init(context)
                 CalendarioRepository.init(context)
-
                 val result = if (fetchOnline) {
                     fetchOnlineWithFallback()
                 } else {
                     FetchResult(getCachedEvents(), false)
                 }
-
                 Log.d(
                     TAG,
                     "syncIfNeeded eventos obtidos=${result.eventos.size} | allowDeleteMissing=${result.allowDeleteMissing}"
                 )
-
                 syncEventsIncremental(
                     context = context,
                     eventos = result.eventos,
@@ -161,33 +151,23 @@ object CalendarSyncManager {
     ) {
         val enabled = isEnabled(context)
         val hasPermission = hasCalendarPermission(context)
-
         Log.d(
             TAG,
             "syncCached inicio | enabled=$enabled | permission=$hasPermission | force=$force | allowDeleteMissing=$allowDeleteMissing"
         )
-
         if (!enabled) {
             Log.d(TAG, "syncCached abortado: recurso desativado")
             return
         }
-
         if (!hasPermission) {
             Log.w(TAG, "syncCached abortado: permissão de calendário não concedida")
             return
         }
-
         withContext(Dispatchers.IO) {
             try {
                 CacheHelper.init(context)
-
                 val eventos = getCachedEvents()
-
-                Log.d(
-                    TAG,
-                    "syncCached eventos do cache=${eventos.size}"
-                )
-
+                Log.d(TAG, "syncCached eventos do cache=${eventos.size}")
                 syncEventsIncremental(
                     context = context,
                     eventos = eventos,
@@ -202,16 +182,13 @@ object CalendarSyncManager {
 
     suspend fun removeAll(context: Context) {
         Log.d(TAG, "removeAll iniciado")
-
         withContext(Dispatchers.IO) {
             try {
                 if (!hasCalendarPermission(context)) {
                     Log.w(TAG, "removeAll abortado: sem permissão de calendário")
                     return@withContext
                 }
-
                 deleteAllAppEvents(context)
-
                 Log.d(TAG, "Eventos do calendário OpenFEI removidos da agenda do sistema")
             } catch (e: Exception) {
                 Log.e(TAG, "Erro ao remover eventos da agenda do sistema", e)
@@ -222,18 +199,12 @@ object CalendarSyncManager {
     private fun getCachedEvents(): List<ProvaCalendario> {
         val provasFei = CacheHelper.getCachedProvasFEI()
         val eventosMoodle = CacheHelper.getCachedEventosMoodle()
-
-        Log.d(
-            TAG,
-            "getCachedEvents | FEI=${provasFei.size} | Moodle=${eventosMoodle.size}"
-        )
-
+        Log.d(TAG, "getCachedEvents | FEI=${provasFei.size} | Moodle=${eventosMoodle.size}")
         return provasFei + eventosMoodle
     }
 
     private suspend fun fetchOnlineWithFallback(): FetchResult {
         Log.d(TAG, "fetchOnlineWithFallback iniciado")
-
         var feiOk = false
         var moodleOk = false
 
@@ -241,7 +212,6 @@ object CalendarSyncManager {
         if (provasFeiOnline != null) {
             feiOk = true
         }
-
         val eventosMoodleOnline = CalendarioRepository.obterEventosMoodleOnlineOrNull()
         if (eventosMoodleOnline != null) {
             moodleOk = true
@@ -254,7 +224,6 @@ object CalendarSyncManager {
             TAG,
             "fetchOnlineWithFallback | feiOk=$feiOk | moodleOk=$moodleOk | FEI=${provasFei.size} | Moodle=${eventosMoodle.size}"
         )
-
         return FetchResult(
             eventos = provasFei + eventosMoodle,
             allowDeleteMissing = feiOk && moodleOk
@@ -271,7 +240,6 @@ object CalendarSyncManager {
             TAG,
             "syncEventsIncremental iniciado | eventos=${eventos.size} | ensureAllReminders=$ensureAllReminders | allowDeleteMissing=$allowDeleteMissing"
         )
-
         val calendarId = ensureCalendar(context)
         if (calendarId == null) {
             Log.e(TAG, "syncEventsIncremental abortado: não foi possível obter/criar o calendário interno")
@@ -280,7 +248,6 @@ object CalendarSyncManager {
 
         val currentYear = ZonedDateTime.now(ZoneId.systemDefault()).year
         val currentItems = buildEventItems(eventos, currentYear)
-
         Log.d(TAG, "syncEventsIncremental currentItems=${currentItems.size} | currentYear=$currentYear")
 
         val existingEvents = queryExistingEvents(context, calendarId)
@@ -289,12 +256,10 @@ object CalendarSyncManager {
 
         for (existing in existingEvents) {
             val uid = existing.uid
-
             if (uid == null) {
                 invalidOrDuplicateIds.add(existing.id)
                 continue
             }
-
             val prev = existingByUid[uid]
             if (prev == null) {
                 existingByUid[uid] = existing
@@ -305,7 +270,6 @@ object CalendarSyncManager {
 
         val ops = ArrayList<ContentProviderOperation>()
         val currentUids = HashSet<String>()
-
         var insertCount = 0
         var updateCount = 0
         var reminderRefreshCount = 0
@@ -313,24 +277,19 @@ object CalendarSyncManager {
 
         for (item in currentItems) {
             currentUids.add(item.uid)
-
             val existing = existingByUid[item.uid]
-
             if (existing == null) {
                 val eventIndex = ops.size
-
                 ops.add(
                     ContentProviderOperation
                         .newInsert(CalendarContract.Events.CONTENT_URI)
                         .withValues(buildEventValues(context, calendarId, item))
                         .build()
                 )
-
                 addReminderOps(ops, eventId = null, eventIndex = eventIndex)
                 insertCount++
             } else {
                 val changed = hasChanged(existing, item)
-
                 if (changed) {
                     ops.add(
                         ContentProviderOperation
@@ -342,10 +301,8 @@ object CalendarSyncManager {
                             .withValues(buildEventValues(context, calendarId, item))
                             .build()
                     )
-
                     updateCount++
                 }
-
                 if (changed || ensureAllReminders) {
                     ops.add(
                         ContentProviderOperation
@@ -356,7 +313,6 @@ object CalendarSyncManager {
                             )
                             .build()
                     )
-
                     addReminderOps(ops, eventId = existing.id, eventIndex = null)
                     reminderRefreshCount++
                 }
@@ -369,11 +325,9 @@ object CalendarSyncManager {
                 addDeleteEventOps(ops, eventId)
                 deleteCount++
             }
-
             // Remove eventos que não existem mais na FEI/Moodle
             for (existing in existingByUid.values) {
                 val uid = existing.uid ?: continue
-
                 if (!currentUids.contains(uid)) {
                     addDeleteEventOps(ops, existing.id)
                     deleteCount++
@@ -385,7 +339,6 @@ object CalendarSyncManager {
             if (ops.isNotEmpty()) {
                 context.contentResolver.applyBatch(CalendarContract.AUTHORITY, ops)
             }
-
             Log.d(
                 TAG,
                 "syncEventsIncremental concluído | inserted=$insertCount | updated=$updateCount | remindersRefreshed=$reminderRefreshCount | deleted=$deleteCount"
@@ -406,13 +359,10 @@ object CalendarSyncManager {
         )
 
         val parsedEvents = mutableListOf<ParsedEvent>()
-
         for (prova in eventos) {
             val start = parseStart(prova, currentYear) ?: continue
             val end = parseEnd(prova, start)
-
             if (!end.isAfter(start)) continue
-
             parsedEvents.add(ParsedEvent(prova, start, end))
         }
 
@@ -426,16 +376,12 @@ object CalendarSyncManager {
 
         val occurrenceCount = HashMap<String, Int>()
         val result = mutableListOf<CalendarEventItem>()
-
         for (parsed in sorted) {
             val key = stableKey(parsed.prova)
-
             val occurrence = occurrenceCount[key] ?: 0
             occurrenceCount[key] = occurrence + 1
-
             val uidSource = "$key#$occurrence"
             val uid = UUID.nameUUIDFromBytes(uidSource.toByteArray()).toString()
-
             result.add(
                 CalendarEventItem(
                     uid = uid,
@@ -448,7 +394,6 @@ object CalendarSyncManager {
                 )
             )
         }
-
         return result
     }
 
@@ -467,18 +412,14 @@ object CalendarSyncManager {
     private fun parseStart(prova: ProvaCalendario, currentYear: Int): ZonedDateTime? {
         val dateParts = prova.dataProva.trim().split("/")
         if (dateParts.size < 2) return null
-
         val day = dateParts[0].toIntOrNull() ?: return null
         val month = dateParts[1].toIntOrNull() ?: return null
-
         val year = if (dateParts.size >= 3) {
             val parsedYear = dateParts[2].toIntOrNull() ?: return null
-
             // Única restrição: pertencer ao mesmo ano
             if (parsedYear != currentYear) {
                 return null
             }
-
             parsedYear
         } else {
             currentYear
@@ -486,7 +427,6 @@ object CalendarSyncManager {
 
         val timeRegex = Regex("(\\d{2}):(\\d{2})")
         val match = timeRegex.find(prova.hora)
-
         val hour = match?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
         val minute = match?.groupValues?.getOrNull(2)?.toIntOrNull() ?: 0
 
@@ -507,22 +447,18 @@ object CalendarSyncManager {
                 .findAll(prova.hora)
                 .map { it.value }
                 .toList()
-
             if (times.size >= 2) {
                 val endParts = times[1].split(":")
                 val endHour = endParts[0].toIntOrNull() ?: return start.plusHours(1)
                 val endMinute = endParts[1].toIntOrNull() ?: return start.plusHours(1)
-
                 var end = start
                     .withHour(endHour)
                     .withMinute(endMinute)
                     .withSecond(0)
                     .withNano(0)
-
                 if (!end.isAfter(start)) {
                     end = end.plusDays(1)
                 }
-
                 end
             } else {
                 start.plusHours(1)
@@ -543,11 +479,9 @@ object CalendarSyncManager {
     private fun buildDescription(prova: ProvaCalendario): String {
         return buildString {
             append("Tipo: ").append(prova.tipoProva)
-
             if (prova.coordenador.isNotBlank()) {
                 append("\nCoordenador: ").append(prova.coordenador)
             }
-
             if (prova.tipoProva != "Moodle" && prova.disciplina.isNotBlank()) {
                 append("\nCódigo: ").append(prova.disciplina)
             }
@@ -584,16 +518,13 @@ object CalendarSyncManager {
     ) {
         REMINDER_MINUTES.forEach { minutes ->
             val builder = ContentProviderOperation.newInsert(CalendarContract.Reminders.CONTENT_URI)
-
             if (eventId != null) {
                 builder.withValue(CalendarContract.Reminders.EVENT_ID, eventId)
             } else if (eventIndex != null) {
                 builder.withValueBackReference(CalendarContract.Reminders.EVENT_ID, eventIndex)
             }
-
             builder.withValue(CalendarContract.Reminders.MINUTES, minutes)
             builder.withValue(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT)
-
             ops.add(builder.build())
         }
     }
@@ -611,7 +542,6 @@ object CalendarSyncManager {
                 )
                 .build()
         )
-
         ops.add(
             ContentProviderOperation
                 .newDelete(CalendarContract.Events.CONTENT_URI)
@@ -634,10 +564,8 @@ object CalendarSyncManager {
             CalendarContract.Events.DTSTART,
             CalendarContract.Events.DTEND
         )
-
         val selection = "${CalendarContract.Events.CALENDAR_ID} = ?"
         val args = arrayOf(calendarId.toString())
-
         return try {
             context.contentResolver.query(
                 CalendarContract.Events.CONTENT_URI,
@@ -647,7 +575,6 @@ object CalendarSyncManager {
                 null
             )?.use { cursor ->
                 val list = mutableListOf<ExistingEvent>()
-
                 while (cursor.moveToNext()) {
                     val id = cursor.getLong(0)
                     val uidColumn = getStringFromCursor(cursor, 1)
@@ -657,7 +584,6 @@ object CalendarSyncManager {
                     val location = getStringFromCursor(cursor, 5)
                     val dtStart = getLongFromCursor(cursor, 6)
                     val dtEnd = getLongFromCursor(cursor, 7)
-
                     list.add(
                         ExistingEvent(
                             id = id,
@@ -670,7 +596,6 @@ object CalendarSyncManager {
                         )
                     )
                 }
-
                 list
             } ?: emptyList()
         } catch (e: Exception) {
@@ -691,10 +616,8 @@ object CalendarSyncManager {
         if (!uidColumn.isNullOrBlank()) {
             return uidColumn.trim()
         }
-
         if (customUri != null && customUri.startsWith(EVENT_URI_PREFIX)) {
             val candidate = customUri.removePrefix(EVENT_URI_PREFIX).trim()
-
             if (candidate.isNotBlank()) {
                 return try {
                     UUID.fromString(candidate)
@@ -704,7 +627,6 @@ object CalendarSyncManager {
                 }
             }
         }
-
         return null
     }
 
@@ -722,21 +644,17 @@ object CalendarSyncManager {
             Log.d(TAG, "Calendário interno já existente | id=$existing")
             return existing
         }
-
         Log.d(TAG, "Calendário interno não encontrado, tentando criar...")
-
         val createdAsSyncAdapter = createCalendar(context, asSyncAdapter = true)
         if (createdAsSyncAdapter != null) {
             Log.d(TAG, "Calendário interno criado como sync adapter | id=$createdAsSyncAdapter")
             return createdAsSyncAdapter
         }
-
         val createdNormal = createCalendar(context, asSyncAdapter = false)
         if (createdNormal != null) {
             Log.d(TAG, "Calendário interno criado em modo normal | id=$createdNormal")
             return createdNormal
         }
-
         Log.e(TAG, "Falha ao criar calendário interno")
         return null
     }
@@ -747,7 +665,6 @@ object CalendarSyncManager {
             val selection =
                 "${CalendarContract.Calendars.ACCOUNT_NAME} = ? AND ${CalendarContract.Calendars.ACCOUNT_TYPE} = ?"
             val args = arrayOf(ACCOUNT_NAME, ACCOUNT_TYPE)
-
             context.contentResolver.query(
                 CalendarContract.Calendars.CONTENT_URI,
                 projection,
@@ -784,7 +701,6 @@ object CalendarSyncManager {
                 put(CalendarContract.Calendars.SYNC_EVENTS, 1)
                 put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, TimeZone.getDefault().id)
             }
-
             val uri = if (asSyncAdapter) {
                 CalendarContract.Calendars.CONTENT_URI
                     .buildUpon()
@@ -795,7 +711,6 @@ object CalendarSyncManager {
             } else {
                 CalendarContract.Calendars.CONTENT_URI
             }
-
             val result = context.contentResolver.insert(uri, values)
             result?.lastPathSegment?.toLongOrNull()
         } catch (e: Exception) {
@@ -807,10 +722,8 @@ object CalendarSyncManager {
     private fun deleteAllAppEvents(context: Context) {
         try {
             val calendarId = getCalendarId(context)
-
             if (calendarId != null) {
                 val existing = queryExistingEvents(context, calendarId)
-
                 existing.forEach { event ->
                     context.contentResolver.delete(
                         CalendarContract.Reminders.CONTENT_URI,
@@ -818,22 +731,18 @@ object CalendarSyncManager {
                         arrayOf(event.id.toString())
                     )
                 }
-
                 val deletedByCalendar = context.contentResolver.delete(
                     CalendarContract.Events.CONTENT_URI,
                     "${CalendarContract.Events.CALENDAR_ID} = ?",
                     arrayOf(calendarId.toString())
                 )
-
                 Log.d(TAG, "deleteAllAppEvents by calendarId=$calendarId | deleted=$deletedByCalendar")
             }
-
             val deletedByPackage = context.contentResolver.delete(
                 CalendarContract.Events.CONTENT_URI,
                 "${CalendarContract.Events.CUSTOM_APP_PACKAGE} = ?",
                 arrayOf(context.packageName)
             )
-
             Log.d(
                 TAG,
                 "deleteAllAppEvents by packageName=${context.packageName} | deleted=$deletedByPackage"

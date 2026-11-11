@@ -27,22 +27,22 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
-import com.marinov.openfei.BuildConfig
 import com.marinov.openfei.R
 import com.marinov.openfei.app.AppMode
-import com.marinov.openfei.data.CalendarSyncManager
-import com.marinov.openfei.data.Dados
-import com.marinov.openfei.data.SyncPrefs
-import com.marinov.openfei.data.UpdateChecker
 import com.marinov.openfei.ui.login.LoginActivity
 import com.marinov.openfei.ui.main.MainActivity
-import com.marinov.openfei.util.AppUpdateDownloader
 import com.marinov.openfei.util.PermissionHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import com.marinov.openfei.background.CalendarSyncManager
+import com.marinov.openfei.background.SyncPrefs
+import com.marinov.openfei.cache.CacheHelper
+import com.marinov.openfei.data.DataInitializer
+import com.marinov.openfei.update.AppUpdateDownloader
+import com.marinov.openfei.update.UpdateChecker
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -142,7 +142,7 @@ class SettingsActivity : AppCompatActivity() {
         configureSystemBarsForLegacyDevices()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-        Dados.init(applicationContext)
+        DataInitializer.init(applicationContext)
         SyncPrefs.init(applicationContext)
         updateDownloader = AppUpdateDownloader(this, coroutineScope)
         setupToolbar()
@@ -394,8 +394,8 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun clearAllCacheData() {
-        Dados.init(applicationContext)
-        Dados.clearAllCacheFiles()
+        DataInitializer.init(applicationContext)
+        CacheHelper.clearAllCacheFiles()
         getSharedPreferences("HomeFragmentCache", MODE_PRIVATE).edit { clear() }
         CookieManager.getInstance().removeAllCookies(null)
         CookieManager.getInstance().flush()

@@ -1,4 +1,4 @@
-package com.marinov.openfei.data
+package com.marinov.openfei.network
 
 import android.content.Context
 import android.net.ConnectivityManager

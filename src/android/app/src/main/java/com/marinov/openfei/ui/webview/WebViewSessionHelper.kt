@@ -2,8 +2,8 @@ package com.marinov.openfei.ui.webview
 
 import android.app.Activity
 import android.content.Intent
-import com.marinov.openfei.data.NetworkChecker
-import com.marinov.openfei.data.SessionManager
+import com.marinov.openfei.login.SessionManager
+import com.marinov.openfei.network.NetworkChecker
 import com.marinov.openfei.ui.login.LoginActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,7 +21,6 @@ object WebViewSessionHelper {
         if (!isOnline) {
             return@withContext SessionState.Offline
         }
-
         when (SessionManager.checkConnectionAndSession()) {
             SessionManager.STATUS_ONLINE_OK -> SessionState.OnlineOk
             SessionManager.STATUS_OFFLINE -> SessionState.Offline

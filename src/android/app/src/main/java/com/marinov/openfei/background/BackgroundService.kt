@@ -1,4 +1,4 @@
-package com.marinov.openfei.service
+package com.marinov.openfei.background
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -16,15 +16,15 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.marinov.openfei.R
 import com.marinov.openfei.app.AppMode
+import com.marinov.openfei.data.BoletosRepository
 import com.marinov.openfei.data.CalendarioRepository
-import com.marinov.openfei.data.CalendarSyncManager
-import com.marinov.openfei.data.Dados
-import com.marinov.openfei.data.NetworkChecker
+import com.marinov.openfei.data.DataInitializer
+import com.marinov.openfei.data.HorariosRepository
 import com.marinov.openfei.data.Nota
+import com.marinov.openfei.data.NotasRepository
 import com.marinov.openfei.data.SessionExpiredException
-import com.marinov.openfei.data.SyncPrefs
+import com.marinov.openfei.network.NetworkChecker
 import com.marinov.openfei.ui.main.MainActivity
-import com.marinov.openfei.util.WebViewHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -48,7 +48,6 @@ class BackgroundService : Service() {
         private const val NOTIF_ID_NOTAS = 4001
         private const val NOTIF_ID_BOLETOS = 3001
         private const val NOTIF_ID_HORARIO = 2001
-
         private const val EXTRA_SYNC_ON_START = "sync_on_start"
 
         /**
@@ -95,9 +94,8 @@ class BackgroundService : Service() {
         } catch (e: Exception) {
             Log.w(TAG, "Erro ao chamar startForeground()", e)
         }
-        Dados.init(applicationContext)
-        SyncPrefs.init(applicationContext)
-        WebViewHelper.ensureWebView(applicationContext)
+        // Inicializa cache, sessões, repositórios, SyncPrefs e WebView de uma vez
+        DataInitializer.init(applicationContext)
         startPeriodicTasks()
         Log.d(TAG, "Serviço em segundo plano iniciado.")
     }
@@ -135,9 +133,7 @@ class BackgroundService : Service() {
                 Log.d(TAG, "Sincronização imediata ignorada (rede limitada)")
                 return@launch
             }
-
             val isResponsavel = AppMode.isResponsavelFinanceiro
-
             runWithSyncNotification(SYNC_ID_BOOT) {
                 if (!isResponsavel) {
                     runNotasLogic()
@@ -150,7 +146,6 @@ class BackgroundService : Service() {
                     syncSystemCalendar()
                 }
             }
-
             Log.d(TAG, "Sincronização imediata (boot) concluída")
         }
     }
@@ -220,7 +215,6 @@ class BackgroundService : Service() {
     private fun nextFeiScheduleTime(): Long {
         val tz = TimeZone.getTimeZone(BRASALIA_TZ)
         val now = Calendar.getInstance(tz)
-
         if (now.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
             for (h in FEI_HOURS) {
                 val candidate = Calendar.getInstance(tz).apply {
@@ -235,7 +229,6 @@ class BackgroundService : Service() {
                 }
             }
         }
-
         val nextDay = Calendar.getInstance(tz).apply {
             timeInMillis = now.timeInMillis
             add(Calendar.DAY_OF_YEAR, 1)
@@ -259,7 +252,6 @@ class BackgroundService : Service() {
         val tz = TimeZone.getTimeZone(BRASALIA_TZ)
         val now = Calendar.getInstance(tz)
         val freqHours = SyncPrefs.moodleFrequencyHours
-
         var hour = MOODLE_START_HOUR
         while (hour <= MOODLE_END_HOUR) {
             val candidate = Calendar.getInstance(tz).apply {
@@ -274,7 +266,6 @@ class BackgroundService : Service() {
             }
             hour += freqHours
         }
-
         val tomorrow = Calendar.getInstance(tz).apply {
             timeInMillis = now.timeInMillis
             add(Calendar.DAY_OF_YEAR, 1)
@@ -296,15 +287,12 @@ class BackgroundService : Service() {
      */
     private suspend fun runFeiSync() {
         val isResponsavel = AppMode.isResponsavelFinanceiro
-
         if (!isResponsavel) {
             runNotasLogic()
             runHorarioLogic()
             runProvasFeiLogic()
         }
-
         runBoletosLogic()
-
         if (!isResponsavel) {
             syncSystemCalendar()
         }
@@ -320,7 +308,7 @@ class BackgroundService : Service() {
 
     private suspend fun runNotasLogic() {
         try {
-            val notasAlteradas = Dados.atualizarNotas(online = true)
+            val notasAlteradas = NotasRepository.atualizarNotas(online = true)
             if (notasAlteradas.isNotEmpty()) {
                 Log.d(TAG, "NotasLogic: ${notasAlteradas.size} nota(s) alterada(s).")
                 sendNotasNotification(notasAlteradas)
@@ -336,7 +324,7 @@ class BackgroundService : Service() {
 
     private suspend fun runBoletosLogic() {
         try {
-            val houve = Dados.atualizaBoletos()
+            val houve = BoletosRepository.atualizaBoletos()
             if (houve) {
                 Log.d(TAG, "BoletosLogic: alteração detectada.")
                 sendBoletosNotification()
@@ -352,7 +340,7 @@ class BackgroundService : Service() {
 
     private suspend fun runHorarioLogic() {
         try {
-            val horarioAlterado = Dados.novoHorario(online = true)
+            val horarioAlterado = HorariosRepository.novoHorario(online = true)
             if (horarioAlterado) {
                 Log.d(TAG, "HorarioLogic: alteração detectada.")
                 sendHorarioNotification()
@@ -454,7 +442,6 @@ class BackgroundService : Service() {
                     NotificationManager.IMPORTANCE_DEFAULT
                 )
             )
-
             nm.deleteNotificationChannel("update_channel")
         }
     }

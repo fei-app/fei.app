@@ -4,21 +4,23 @@ import android.app.Application
 import android.os.Build
 import com.google.android.material.color.DynamicColors
 import com.marinov.openfei.core.OpenFeiCore
-import com.marinov.openfei.data.SyncPrefs
-import com.marinov.openfei.util.WebViewHelper
+import com.marinov.openfei.data.DataInitializer
 
 class MyApplication : Application() {
+
     override fun onCreate() {
         super.onCreate()
+
         // ★ Inicializa o estado do Modo Responsável Financeiro o quanto antes ★
         AppMode.init(this)
-        // ★ Inicializa preferências de sincronização em segundo plano ★
-        SyncPrefs.init(this)
+
+        // ★ Inicializa cache, sessões (FEI/Moodle), repositórios, SyncPrefs e WebView ★
+        DataInitializer.init(this)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             DynamicColors.applyToActivitiesIfAvailable(this)
         }
-        // ★ Garante que o WebView exista desde o início para o CookieManager funcionar ★
-        WebViewHelper.ensureWebView(this)
+
         Thread {
             try {
                 val isOnline = OpenFeiCore.isOnline()

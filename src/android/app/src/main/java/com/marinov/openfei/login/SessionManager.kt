@@ -1,7 +1,9 @@
-package com.marinov.openfei.data
+package com.marinov.openfei.login
 
 import android.content.Context
 import android.util.Log
+import com.marinov.openfei.data.SessionExpiredException
+import com.marinov.openfei.network.NetworkChecker
 import com.marinov.openfei.util.WebViewHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -11,6 +13,7 @@ import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
 
 object SessionManager {
+
     private const val TAG = "SessionManager"
     private lateinit var appContext: Context
 
@@ -74,7 +77,6 @@ object SessionManager {
             Log.d(TAG, "Sessão FEI já renovada recentemente, pulando login completo.")
             return
         }
-
         sessionMutex.withLock {
             val nowInside = System.currentTimeMillis()
             if (nowInside - lastRenewalTime < RENEWAL_INTERVAL_MS) {
@@ -129,7 +131,6 @@ object SessionManager {
             Log.d(TAG, "Forçando renovação REAL dos cookies do Moodle (login completo via formulário)")
             com.marinov.openfei.core.OpenFeiCore.clearSession()
             RustSession.resetFeiSession()
-
             val result = LoginLogic.forcarLoginCookiesMoodle(appContext)
             if (result.success) {
                 lastMoodleRenewalTime = System.currentTimeMillis()

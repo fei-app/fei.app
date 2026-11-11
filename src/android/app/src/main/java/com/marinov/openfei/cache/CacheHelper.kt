@@ -1,18 +1,24 @@
-package com.marinov.openfei.data
+package com.marinov.openfei.cache
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.marinov.openfei.data.Aula
+import com.marinov.openfei.data.Boleto
+import com.marinov.openfei.data.Disciplina
+import com.marinov.openfei.data.Nota
+import com.marinov.openfei.data.Perfil
+import com.marinov.openfei.data.ProvaCalendario
 import java.io.File
 
 object CacheHelper {
+
     private const val PREFS_NAME = "DadosFEI"
-
     private lateinit var appContext: Context
-    val gson = Gson()
 
+    val gson = Gson()
     val prefs: SharedPreferences by lazy { appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE) }
 
     fun init(context: Context) {
@@ -26,6 +32,7 @@ object CacheHelper {
     const val KEY_PROVAS_FEI = "provas_fei_cache"
     const val KEY_EVENTOS_MOODLE = "eventos_moodle_cache"
     const val KEY_BOLETOS = "boletos_cache"
+
     const val KEY_LAST_UPDATE_DISCIPLINAS = "last_update_disciplinas"
     const val KEY_LAST_UPDATE_NOTAS = "last_update_notas"
     const val KEY_LAST_UPDATE_PERFIL = "last_update_perfil"
@@ -162,17 +169,33 @@ object CacheHelper {
     }
 
     // ===================== LIMPEZA =====================
+    /**
+     * ★ BUGFIX: a versão antiga tentava apagar arquivos .json que nunca existiram
+     * (disciplinas, aulas, provas, boletos e perfil ficam no SharedPreferences)
+     * e não removia as chaves de dados — só os timestamps.
+     * Agora remove TODOS os caches (arquivos + SharedPreferences) de verdade.
+     */
     fun clearAllCacheFiles() {
-        listOf(
-            "notas_cache.json", "disciplinas_cache.json", "aulas_cache.json",
-            "provas_cache.json", "boletos_cache.json", "perfil_cache.json", "medias_cache.json"
-        ).forEach { nome -> File(appContext.filesDir, nome).delete() }
-
+        // Caches em arquivo
+        listOf("notas_cache.json", "medias_cache.json").forEach { nome ->
+            File(appContext.filesDir, nome).delete()
+        }
+        // Caches em SharedPreferences + todos os timestamps
         prefs.edit {
-            remove(KEY_LAST_UPDATE_NOTAS); remove(KEY_LAST_UPDATE_DISCIPLINAS)
-            remove(KEY_LAST_UPDATE_AULAS); remove(KEY_LAST_UPDATE_CALENDARIO_PROVAS)
-            remove(KEY_LAST_UPDATE_PROVAS_FEI); remove(KEY_LAST_UPDATE_EVENTOS_MOODLE)
-            remove(KEY_LAST_UPDATE_BOLETOS); remove(KEY_LAST_UPDATE_PERFIL)
+            remove(KEY_DISCIPLINAS)
+            remove(KEY_PERFIL)
+            remove(KEY_AULAS)
+            remove(KEY_PROVAS_FEI)
+            remove(KEY_EVENTOS_MOODLE)
+            remove(KEY_BOLETOS)
+            remove(KEY_LAST_UPDATE_DISCIPLINAS)
+            remove(KEY_LAST_UPDATE_NOTAS)
+            remove(KEY_LAST_UPDATE_PERFIL)
+            remove(KEY_LAST_UPDATE_AULAS)
+            remove(KEY_LAST_UPDATE_CALENDARIO_PROVAS)
+            remove(KEY_LAST_UPDATE_PROVAS_FEI)
+            remove(KEY_LAST_UPDATE_EVENTOS_MOODLE)
+            remove(KEY_LAST_UPDATE_BOLETOS)
             remove(KEY_LAST_UPDATE_MEDIAS)
         }
     }
