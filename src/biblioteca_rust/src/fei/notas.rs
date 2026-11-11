@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use crate::error::CoreError;
 use crate::http::{execute_get_follow, http_client};
 use crate::models::Nota;
-
+use crate::fei::session::{ensure_authenticated};
 const FEI_URL_NOTAS: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/secretaria/consultas/notas";
 
 fn sel(selector: &str) -> Selector {
@@ -43,15 +43,6 @@ fn cell_text_by_class_contains(row: &ElementRef, needle: &str) -> Option<String>
 fn fallback_cell_text(row: &ElementRef, index: usize) -> Option<String> {
     let td_sel = sel("td");
     row.select(&td_sel).nth(index).map(|c| text(&c))
-}
-
-fn ensure_authenticated(doc: &Html) -> Result<(), CoreError> {
-    if doc.select(&sel("#btn-login")).next().is_some() {
-        return Err(CoreError::SessionExpired(
-            "Página de login detectada — sessão inválida".to_string(),
-        ));
-    }
-    Ok(())
 }
 
 fn is_media_row(row: &ElementRef) -> bool {

@@ -3,6 +3,8 @@ use scraper::{ElementRef, Html, Selector};
 use crate::error::CoreError;
 use crate::http::{execute_get_follow, http_client};
 use crate::models::Disciplina;
+use crate::fei::session::{ensure_authenticated, unexpected_page};
+
 
 const FEI_URL_DISCIPLINAS: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/sala-dos-professores/consultas/tabela-de-aulas";
 
@@ -31,15 +33,6 @@ fn fallback_cell_text(row: &ElementRef, index: usize) -> Option<String> {
     row.select(&td_sel).nth(index).map(|c| text(&c))
 }
 
-fn ensure_authenticated(doc: &Html) -> Result<(), CoreError> {
-    if doc.select(&sel("#btn-login")).next().is_some() {
-        return Err(CoreError::SessionExpired(
-            "Página de login detectada — sessão inválida".to_string(),
-        ));
-    }
-    Ok(())
-}
-
 pub fn fetch_disciplinas() -> Result<Vec<Disciplina>, CoreError> {
     let client = http_client();
     let mut cookies = Vec::new();
@@ -50,10 +43,8 @@ pub fn fetch_disciplinas() -> Result<Vec<Disciplina>, CoreError> {
 
     ensure_authenticated(&doc)?;
 
-    let tabela = doc
-        .select(&sel("table.table.table-striped"))
-        .next()
-        .ok_or_else(|| CoreError::SessionExpired("Tabela de disciplinas não encontrada".into()))?;
+    let tabela = doc.select(&sel("table.table.table-striped")).next()
+        .ok_or_else(|| unexpected_page("Tabela não encontrada"))?;
 
     let mut disciplinas = Vec::new();
     let tr_sel = sel("tbody > tr");

@@ -70,11 +70,7 @@ class WebViewNavigationController(
         val uri = url.toUri()
         val host = uri.host ?: return false
 
-        if (host.endsWith("fei.edu.br") || host.endsWith("fei.org.br")) {
-            return false
-        }
-
-        return try {
+        return !(host.endsWith("fei.edu.br") || host.endsWith("fei.org.br")) && try {
             val intent = Intent(Intent.ACTION_VIEW, uri)
             context.startActivity(intent)
             true

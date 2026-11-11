@@ -191,5 +191,21 @@
     <string name="frequencia_1_hora">1 hora</string>
     <string name="frequencia_x_horas">%1$d horas</string>
     <string name="sync_session">Sincronização</string>
+    <!-- ==================== CORREÇÕES: TEXTOS QUE ESTAVAM HARDCODED ==================== -->
+    <string name="settings_titulo">Configurações</string>
+    <string name="settings_agenda_ativada">Eventos adicionados à agenda do sistema</string>
+    <string name="settings_agenda_removida">Eventos removidos da agenda do sistema</string>
+    <string name="settings_agenda_permissao_necessaria">Permissão de calendário necessária para ativar este recurso</string>
+
+    <string name="calendario_nome">OpenFEI - Provas e Tarefas</string>
+
+    <string name="erro_biblioteca_nativa">Falha ao carregar a biblioteca nativa do aplicativo. Reinstale o app.</string>
+    <string name="update_apk_invalido">O arquivo baixado não é um APK válido do OpenFEI.</string>
+    <string name="download_nao_suportado">Este tipo de download não é suportado pelo aplicativo.</string>
+
+    <string name="boletos_permissao_negada">Sem permissão de armazenamento. O boleto será salvo na pasta do aplicativo.</string>
+    <string name="boletos_salvo_em_app">Boleto salvo na pasta do aplicativo</string>
+
+    <string name="login_conta_reconectar">Sua sessão expirou. Confirme sua senha para continuar.</string>
 
 </resources>

@@ -79,7 +79,16 @@ pub extern "C" fn openfei_free_string(ptr: *mut c_char) {
 
 #[no_mangle]
 pub extern "C" fn openfei_clear_session() {
-    http::reset_client();
+    http::reset_all_clients();
+}
+#[no_mangle]
+pub extern "C" fn openfei_clear_moodle_session() {
+    http::reset_moodle_client();
+}
+
+#[no_mangle]
+pub extern "C" fn openfei_clear_fei_session() {
+    http::reset_fei_client();
 }
 
 #[no_mangle]

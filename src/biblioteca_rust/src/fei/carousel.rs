@@ -3,20 +3,13 @@ use scraper::{Html, Selector};
 use crate::error::CoreError;
 use crate::http::{execute_get_follow, http_client};
 use crate::models::CarouselItem;
+use crate::fei::session::{ensure_authenticated};
+
 
 const FEI_HOME_URL: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/home";
 
 fn sel(selector: &str) -> Selector {
     Selector::parse(selector).expect("Seletor CSS inválido")
-}
-
-fn ensure_authenticated(doc: &Html) -> Result<(), CoreError> {
-    if doc.select(&sel("#btn-login")).next().is_some() {
-        return Err(CoreError::SessionExpired(
-            "Página de login detectada — sessão inválida".to_string(),
-        ));
-    }
-    Ok(())
 }
 
 pub fn fetch_carousel() -> Result<Vec<CarouselItem>, CoreError> {

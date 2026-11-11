@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
 }
+
 android {
     namespace = "com.marinov.openfei"
     compileSdk = 37
@@ -10,7 +11,8 @@ android {
         minSdk = 24
         targetSdk = 37
         versionCode = 1
-        versionName = "11.20261101"
+        versionName = "11.20261111"
+
         externalNativeBuild {
             cmake {
                 cppFlags += ""
@@ -27,14 +29,18 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
+
     buildFeatures {
         viewBinding = true
         buildConfig = true
     }
+
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
@@ -50,11 +56,12 @@ dependencies {
     implementation(libs.navigation.ui)
     implementation(libs.webkit)
     implementation(libs.core.ktx)
-    implementation (libs.gson)
-    implementation (libs.work.runtime.ktx)
-    implementation (libs.glide)
-    annotationProcessor (libs.compiler)
-    implementation (libs.swiperefreshlayout)
+    implementation(libs.gson)
+    implementation(libs.work.runtime.ktx)
+    implementation(libs.glide)
+    annotationProcessor(libs.compiler)
+    implementation(libs.swiperefreshlayout)
     implementation(libs.security.crypto)
     implementation(libs.biometric)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }

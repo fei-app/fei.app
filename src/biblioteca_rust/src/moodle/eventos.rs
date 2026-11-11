@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use crate::error::CoreError;
-use crate::http::http_client;
+use crate::http::moodle_client;
 use crate::models::ProvaCalendario;
 use crate::moodle::login::get_moodle_token;
 
@@ -28,7 +28,7 @@ fn moodle_api(
     function: &str,
     extra: Vec<(String, String)>,
 ) -> Result<String, CoreError> {
-    let client = http_client();
+    let client = moodle_client();
 
     let mut form = vec![
         ("wstoken".to_string(), token.to_string()),

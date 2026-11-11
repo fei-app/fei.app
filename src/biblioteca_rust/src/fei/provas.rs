@@ -5,6 +5,8 @@ use crate::error::CoreError;
 use crate::fei::disciplinas::fetch_disciplinas;
 use crate::http::{execute_get_follow, http_client};
 use crate::models::ProvaCalendario;
+use crate::fei::session::{ensure_authenticated, unexpected_page};
+
 
 const FEI_URL_PROVAS: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/sala-dos-professores/informacoes-academicas/provas";
 
@@ -28,15 +30,6 @@ fn cell_text_by_class_contains(row: &ElementRef, needle: &str) -> Option<String>
     }).map(|c| text(&c))
 }
 
-fn ensure_authenticated(doc: &Html) -> Result<(), CoreError> {
-    if doc.select(&sel("#btn-login")).next().is_some() {
-        return Err(CoreError::SessionExpired(
-            "Página de login detectada — sessão inválida".to_string(),
-        ));
-    }
-    Ok(())
-}
-
 pub fn fetch_provas_fei() -> Result<Vec<ProvaCalendario>, CoreError> {
     let client = http_client();
     let mut cookies = Vec::new();
@@ -53,10 +46,8 @@ pub fn fetch_provas_fei() -> Result<Vec<ProvaCalendario>, CoreError> {
         .map(|d| (d.codigo, d.nome))
         .collect();
 
-    let accordion = doc
-        .select(&sel("#accordion-provas"))
-        .next()
-        .ok_or_else(|| CoreError::SessionExpired("Accordion de provas não encontrado".into()))?;
+    let accordion = doc.select(&sel("#accordion-provas")).next()
+        .ok_or_else(|| unexpected_page("Accordion de provas não encontrado"))?;
 
     let mut provas = Vec::new();
 

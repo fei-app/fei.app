@@ -16,6 +16,7 @@ import com.google.android.material.card.MaterialCardView
 import com.marinov.openfei.R
 import com.marinov.openfei.data.Perfil
 import com.marinov.openfei.data.PerfilRepository
+import com.marinov.openfei.login.SessionManager
 import com.marinov.openfei.ui.main.MainActivity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -112,7 +113,7 @@ class ProfileFragment : Fragment(), MainActivity.RefreshableFragment {
             if (!isAdded) return@launch
 
             when (status) {
-                MainActivity.STATUS_ONLINE_OK -> {
+                SessionManager.STATUS_ONLINE_OK -> {
                     atualizarPerfilOnline()
                 }
                 else -> {

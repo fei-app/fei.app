@@ -1,5 +1,6 @@
 [versions]
 biometric = "1.1.0"
+desugar_jdk_libs = "2.1.5"
 kotlin             = "2.4.21"
 agp                = "9.5.1"
 material           = "1.14.0"
@@ -20,6 +21,7 @@ kotlin-android      = { id = "org.jetbrains.kotlin.android", version.ref = "kotl
 
 [libraries]
 biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
+desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 material              = { group = "com.google.android.material",  name = "material",              version.ref = "material" }
 constraintlayout      = { group = "androidx.constraintlayout",    name = "constraintlayout",      version.ref = "constraintlayout" }
 navigation-fragment   = { group = "androidx.navigation",         name = "navigation-fragment-ktx", version.ref = "navigation" }

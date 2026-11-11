@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
@@ -23,7 +22,9 @@ import com.google.android.material.button.MaterialButton
 import com.marinov.openfei.R
 import com.marinov.openfei.network.NetworkChecker
 import com.marinov.openfei.ui.main.MainActivity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WebViewFragment : Fragment() {
 
@@ -49,16 +50,10 @@ class WebViewFragment : Fragment() {
         }
     }
 
-    @Suppress("DEPRECATION")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
-    }
+    // ★ BUG 25: retainInstance removido (deprecated e frágil com WebView).
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_webview, container, false)
         webView = view.findViewById(R.id.webview)
@@ -73,38 +68,35 @@ class WebViewFragment : Fragment() {
 
         val exitToHome = arguments?.getBoolean(ARG_EXIT_TO_HOME, false) ?: false
 
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (::webView.isInitialized && webView.canGoBack()) {
-                    webView.goBack()
-                } else {
-                    if (exitToHome) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            // dá tempo do container existir antes de procurar a bottom nav
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (::webView.isInitialized && webView.canGoBack()) {
+                        webView.goBack()
+                    } else if (exitToHome) {
                         (activity as? MainActivity)?.navigateToHome()
                     } else {
-                        requireActivity().supportFragmentManager.popBackStack()
+                        parentFragmentManager.popBackStack()
                     }
                 }
             }
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        )
 
         navigationController = WebViewNavigationController(
             context = requireContext(),
             webView = webView,
             scope = viewLifecycleOwner.lifecycleScope,
             ui = object : WebViewNavigationController.UiCallbacks {
-                override fun showLoading() {
-                    showLoadingUI()
-                }
-
-                override fun hideLoading() {
-                    hideLoadingUI()
-                }
+                override fun showLoading() = showLoadingUI()
+                override fun hideLoading() = hideLoadingUI()
             },
             navigation = object : WebViewNavigationController.NavigationCallbacks {
                 override fun shouldInterceptHome(): Boolean = true
-
                 override fun navigateHome() {
                     (activity as? MainActivity)?.navigateToHome()
                 }
@@ -123,13 +115,8 @@ class WebViewFragment : Fragment() {
     private fun checkConnectionAndLoad() {
         viewLifecycleOwner.lifecycleScope.launch {
             showLoadingUI()
-
             when (WebViewSessionHelper.checkSession()) {
-                is WebViewSessionHelper.SessionState.OnlineOk -> {
-                    // Importante: não ocultar o loading aqui.
-                    // Ele só deve sumir quando a página terminar de carregar.
-                    initializeWebView()
-                }
+                is WebViewSessionHelper.SessionState.OnlineOk -> initializeWebView()
 
                 is WebViewSessionHelper.SessionState.Offline -> {
                     hideLoadingUI()
@@ -138,11 +125,13 @@ class WebViewFragment : Fragment() {
 
                 is WebViewSessionHelper.SessionState.LoginNeeded -> {
                     hideLoadingUI()
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.sessao_expirada_login),
-                        Toast.LENGTH_LONG
-                    ).show()
+                    if (isAdded) {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.sessao_expirada_login),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                     WebViewSessionHelper.openLoginAndFinish(requireActivity())
                 }
             }
@@ -171,61 +160,43 @@ class WebViewFragment : Fragment() {
         setupBottomNavAutoHide()
 
         webView.visibility = View.INVISIBLE
-
         webView.webViewClient = @SuppressLint("MissingOnRenderProcessGone")
         object : WebViewClient() {
 
-            override fun shouldInterceptRequest(
-                view: WebView?,
-                request: WebResourceRequest?
-            ): WebResourceResponse? {
-                val headers = request?.requestHeaders?.toMutableMap()
-                headers?.remove("X-Requested-With")
-                return super.shouldInterceptRequest(view, request)
-            }
+            // ★ BUG 73: o override de shouldInterceptRequest era no-op — removido.
 
             override fun shouldOverrideUrlLoading(
-                view: WebView?,
-                request: WebResourceRequest?
-            ): Boolean {
-                return navigationController.handleUrl(request?.url.toString())
-            }
+                view: WebView?, request: WebResourceRequest?
+            ): Boolean = navigationController.handleUrl(request?.url?.toString())
 
             @Deprecated("Deprecated in Java")
-            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                return navigationController.handleUrl(url)
-            }
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean =
+                navigationController.handleUrl(url)
 
             override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
-
-                // Sempre que iniciar uma nova navegação, volta a exibir o loading
                 showLoadingUI()
-
                 navigationController.onPageStarted(url)
                 showBottomNav()
             }
 
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
-
-                // Loading só deve ser ocultado quando a página terminar de carregar
                 hideLoadingUI()
-
                 WebViewConfig.disableTransitions(view)
-                layoutSemInternet.visibility = View.GONE
+                if (isAdded) layoutSemInternet.visibility = View.GONE
                 showBottomNav()
             }
 
             override fun onReceivedError(
-                view: WebView,
-                request: WebResourceRequest,
-                error: WebResourceError
+                view: WebView, request: WebResourceRequest, error: WebResourceError
             ) {
+                // ★ BUG 46: ignora falhas de subrecursos.
+                if (!request.isForMainFrame) return
+                // ★ BUG 47: sonda nativa fora da main thread.
                 viewLifecycleOwner.lifecycleScope.launch {
-                    if (!NetworkChecker.isOnline()) {
-                        showNoInternetUI()
-                    }
+                    val online = withContext(Dispatchers.IO) { NetworkChecker.isOnline() }
+                    if (!online && isAdded) showNoInternetUI()
                 }
             }
         }
@@ -233,21 +204,18 @@ class WebViewFragment : Fragment() {
         arguments?.getString(ARG_URL)?.let { webView.loadUrl(it) }
     }
 
-    @SuppressLint("UseRequiresApi")
     private fun setupBottomNavAutoHide() {
-        val container = requireActivity().findViewById<View>(R.id.bottom_nav_container) ?: return
+        val container = activity?.findViewById<View>(R.id.bottom_nav_container) ?: return
         bottomNavContainer = container
 
         val params = container.layoutParams as? CoordinatorLayout.LayoutParams
-
         @Suppress("UNCHECKED_CAST")
         bottomNavBehavior = params?.behavior as? HideBottomViewOnScrollBehavior<View>
 
         webView.setOnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
-            if (scrollY > oldScrollY) {
-                bottomNavBehavior?.slideDown(container)
-            } else if (scrollY < oldScrollY) {
-                bottomNavBehavior?.slideUp(container)
+            when {
+                scrollY > oldScrollY -> bottomNavBehavior?.slideDown(container)
+                scrollY < oldScrollY -> bottomNavBehavior?.slideUp(container)
             }
         }
     }
@@ -262,22 +230,23 @@ class WebViewFragment : Fragment() {
         webView.visibility = View.GONE
         loadingContainer.visibility = View.GONE
         layoutSemInternet.visibility = View.VISIBLE
-        btnTentarNovamente.setOnClickListener {
-            checkConnectionAndLoad()
-        }
+        btnTentarNovamente.setOnClickListener { checkConnectionAndLoad() }
     }
 
+    /** ★ BUG 25: remove do pai ANTES de destruir (evita leak/crash). */
     override fun onDestroyView() {
         showBottomNav()
-
-        if (::navigationController.isInitialized) {
-            navigationController.onCleared()
-        }
-
+        if (::navigationController.isInitialized) navigationController.onCleared()
         if (::webView.isInitialized) {
-            webView.destroy()
+            runCatching {
+                webView.stopLoading()
+                webView.loadUrl("about:blank")
+                (webView.parent as? ViewGroup)?.removeView(webView)
+                webView.destroy()
+            }
         }
-
+        bottomNavContainer = null
+        bottomNavBehavior = null
         super.onDestroyView()
     }
 }

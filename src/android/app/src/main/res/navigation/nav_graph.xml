@@ -8,6 +8,6 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.marinov.openfei.ui.home.HomeFragment"
-        android:label="Início">
+        android:label="@string/menu_inicio">
     </fragment>
 </navigation>

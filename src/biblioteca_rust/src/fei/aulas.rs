@@ -7,6 +7,9 @@ use crate::fei::disciplinas::fetch_disciplinas;
 use crate::http::{execute_get_follow, http_client};
 use crate::models::Aula;
 
+use crate::fei::session::{ensure_authenticated, unexpected_page};
+
+
 const FEI_URL_AULAS: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/secretaria/consultas/horario/arquivo";
 
 fn sel(selector: &str) -> Selector {
@@ -15,15 +18,6 @@ fn sel(selector: &str) -> Selector {
 
 fn text(el: &ElementRef) -> String {
     el.text().collect::<String>().trim().to_string()
-}
-
-fn ensure_authenticated(doc: &Html) -> Result<(), CoreError> {
-    if doc.select(&sel("#btn-login")).next().is_some() {
-        return Err(CoreError::SessionExpired(
-            "Página de login detectada — sessão inválida".to_string(),
-        ));
-    }
-    Ok(())
 }
 
 fn extrair_horario(texto: &str) -> Option<(String, String)> {
@@ -42,12 +36,8 @@ pub fn fetch_aulas() -> Result<Vec<Aula>, CoreError> {
 
     ensure_authenticated(&doc)?;
 
-    let tabela = doc
-        .select(&sel("#tb_princ"))
-        .next()
-        .ok_or_else(|| {
-            CoreError::SessionExpired("Tabela de horários não encontrada - sessão inválida".into())
-        })?;
+    let tabela = doc.select(&sel("#tb_princ")).next()
+        .ok_or_else(|| unexpected_page("Tabela de horários não encontrada"))?;
 
     let tr_sel = sel("tr");
     let rows: Vec<ElementRef> = tabela.select(&tr_sel).collect();

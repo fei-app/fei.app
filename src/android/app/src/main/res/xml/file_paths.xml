@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <external-path name="downloads" path="Download/"/>
-    <external-path name="external_storage_root" path="."/>
+    <external-path
+        name="downloads"
+        path="Download/" />
+
+    <external-files-path
+        name="app_updates"
+        path="Download/Update/" />
+
+    <cache-path
+        name="boletos_cache"
+        path="boletos/" />
+
+    <external-files-path
+        name="boletos_fallback"
+        path="BoletosFEI/" />
 </paths>

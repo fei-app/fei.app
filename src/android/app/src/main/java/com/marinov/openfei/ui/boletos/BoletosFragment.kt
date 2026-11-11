@@ -1,8 +1,12 @@
 package com.marinov.openfei.ui.boletos
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +15,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -20,19 +25,40 @@ import com.marinov.openfei.R
 import com.marinov.openfei.app.AppMode
 import com.marinov.openfei.data.Boleto
 import com.marinov.openfei.data.BoletosRepository
+import com.marinov.openfei.data.SessionExpiredException
+import com.marinov.openfei.login.SessionManager
 import com.marinov.openfei.ui.main.MainActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
+
     private lateinit var recyclerBoletos: RecyclerView
     private lateinit var progressCircular: View
     private lateinit var barOffline: LinearLayout
     private lateinit var txtSemDados: TextView
     private lateinit var btnTentar: Button
+
     private var isRefreshing = false
+    private var boletoPendente: Boleto? = null
+
     private val adapter = BoletoAdapter(emptyList()) { boleto -> onBaixarBoleto(boleto) }
+
+    /** ★ BUG 12: em API <= 28 precisamos de WRITE_EXTERNAL_STORAGE para gravar em Downloads. */
+    private val storagePermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            val boleto = boletoPendente ?: return@registerForActivityResult
+            boletoPendente = null
+            if (!granted) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.boletos_permissao_negada),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            baixarBoleto(boleto)
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -40,6 +66,7 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         recyclerBoletos = view.findViewById(R.id.recyclerBoletos)
         progressCircular = view.findViewById(R.id.progress_circular)
         barOffline = view.findViewById(R.id.barOffline)
@@ -56,6 +83,11 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
                 override fun handleOnBackPressed() {
                     if (AppMode.isResponsavelFinanceiro) {
                         requireActivity().finishAffinity()
+                        return
+                    }
+                    // ★ BUG 52: se veio do "Mais", volta para o "Mais".
+                    if (parentFragmentManager.backStackEntryCount > 0) {
+                        parentFragmentManager.popBackStack()
                     } else {
                         (activity as? MainActivity)?.navigateToHome()
                     }
@@ -72,30 +104,31 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
     }
 
     private fun loadBoletos() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val mainActivity = activity as? MainActivity ?: return@launch
             showLoading()
+
             val status = mainActivity.checkConnectionAndSession()
-            // ★ PROTEÇÃO CONTRA CRASH: fragment pode ter sido desanexado durante checkConnectionAndSession
             if (!isAdded) return@launch
 
-            val online = status == MainActivity.STATUS_ONLINE_OK
+            val online = status == SessionManager.STATUS_ONLINE_OK
             if (online) hideOfflineBar() else showOfflineBar()
 
-            val boletos = withContext(Dispatchers.IO) {
-                runCatching { BoletosRepository.getBoletos(online = online) }.getOrElse { emptyList() }
+            val boletos = try {
+                withContext(Dispatchers.IO) { BoletosRepository.getBoletos(online = online) }
+            } catch (_: SessionExpiredException) {
+                // ★ BUG 42: sessão expirada não vira mais "lista vazia"
+                mainActivity.checkConnectionAndSession()
+                emptyList()
+            } catch (_: Exception) {
+                emptyList()
             }
 
-            // ★ PROTEÇÃO CONTRA CRASH: fragment pode ter sido desanexado durante fetch
             if (!isAdded) return@launch
 
             val boletosOrdenados = boletos.sortedByDescending { boleto ->
                 val partes = boleto.vencimento.split("/")
-                if (partes.size == 3) {
-                    "${partes[2]}-${partes[1]}-${partes[0]}"
-                } else {
-                    boleto.vencimento
-                }
+                if (partes.size == 3) "${partes[2]}-${partes[1]}-${partes[0]}" else boleto.vencimento
             }
 
             if (isRefreshing) {
@@ -103,9 +136,8 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
                 isRefreshing = false
             }
 
-            if (boletosOrdenados.isEmpty()) {
-                showEmptyState()
-            } else {
+            if (boletosOrdenados.isEmpty()) showEmptyState()
+            else {
                 adapter.update(boletosOrdenados)
                 showContent()
             }
@@ -114,41 +146,80 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
 
     private fun onBaixarBoleto(boleto: Boleto) {
         if (boleto.tituloId.isBlank()) {
-            Toast.makeText(requireContext(), getString(R.string.boletos_sem_id), Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.boletos_sem_id), Toast.LENGTH_SHORT)
+                .show()
             return
         }
-        lifecycleScope.launch {
-            Toast.makeText(requireContext(), getString(R.string.boletos_gerando), Toast.LENGTH_SHORT).show()
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P &&
+            ContextCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            boletoPendente = boleto
+            storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            return
+        }
+
+        baixarBoleto(boleto)
+    }
+
+    private fun baixarBoleto(boleto: Boleto) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            Toast.makeText(
+                requireContext(), getString(R.string.boletos_gerando), Toast.LENGTH_SHORT
+            ).show()
+
             val uri = withContext(Dispatchers.IO) {
-                runCatching { BoletosRepository.baixaBoleto(boleto.tituloId, boleto.vencimento) }.getOrNull()
+                runCatching {
+                    BoletosRepository.baixaBoleto(boleto.tituloId, boleto.vencimento)
+                }.getOrNull()
             }
 
-            // ★ PROTEÇÃO CONTRA CRASH: fragment pode ter sido desanexado durante download
             if (!isAdded) return@launch
 
             if (uri == null) {
-                Toast.makeText(requireContext(), getString(R.string.boletos_erro_gerar), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    requireContext(), getString(R.string.boletos_erro_gerar), Toast.LENGTH_LONG
+                ).show()
                 return@launch
             }
 
-            Toast.makeText(requireContext(), getString(R.string.boletos_salvo_em), Toast.LENGTH_SHORT).show()
+            val foiParaDownloads =
+                uri.scheme == "content" && uri.authority == MediaStore.AUTHORITY
+            Toast.makeText(
+                requireContext(),
+                getString(
+                    if (foiParaDownloads) R.string.boletos_salvo_em
+                    else R.string.boletos_salvo_em_app
+                ),
+                Toast.LENGTH_SHORT
+            ).show()
 
-            try {
-                val intent = Intent(Intent.ACTION_VIEW).apply {
+            abrirPdf(uri)
+        }
+    }
+
+    private fun abrirPdf(uri: android.net.Uri) {
+        try {
+            startActivity(
+                Intent(Intent.ACTION_VIEW).apply {
                     setDataAndType(uri, "application/pdf")
                     flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
                 }
-                startActivity(intent)
-            } catch (_: Exception) {
-                try {
-                    val fallback = Intent(Intent.ACTION_VIEW).apply {
+            )
+        } catch (_: Exception) {
+            try {
+                startActivity(
+                    Intent(Intent.ACTION_VIEW).apply {
                         setDataAndType(uri, "*/*")
                         flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
                     }
-                    startActivity(fallback)
-                } catch (_: Exception) {
-                    Toast.makeText(requireContext(), getString(R.string.boletos_nenhum_app_pdf), Toast.LENGTH_LONG).show()
-                }
+                )
+            } catch (_: Exception) {
+                Toast.makeText(
+                    requireContext(), getString(R.string.boletos_nenhum_app_pdf), Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -174,13 +245,19 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
         txtSemDados.visibility = View.VISIBLE
     }
 
-    private fun showOfflineBar() { if (isAdded) barOffline.visibility = View.VISIBLE }
-    private fun hideOfflineBar() { if (isAdded) barOffline.visibility = View.GONE }
+    private fun showOfflineBar() {
+        if (isAdded) barOffline.visibility = View.VISIBLE
+    }
+
+    private fun hideOfflineBar() {
+        if (isAdded) barOffline.visibility = View.GONE
+    }
 
     inner class BoletoAdapter(
         private var boletos: List<Boleto>,
         private val onBaixar: (Boleto) -> Unit
     ) : RecyclerView.Adapter<BoletoAdapter.ViewHolder>() {
+
         @SuppressLint("NotifyDataSetChanged")
         fun update(newList: List<Boleto>) {
             boletos = newList
@@ -193,9 +270,8 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
             return ViewHolder(view)
         }
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) =
             holder.bind(boletos[position])
-        }
 
         override fun getItemCount() = boletos.size
 

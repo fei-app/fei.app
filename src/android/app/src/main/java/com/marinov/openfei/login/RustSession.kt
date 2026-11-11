@@ -4,72 +4,103 @@ import android.content.Context
 import android.util.Log
 import com.marinov.openfei.core.CoreResult
 import com.marinov.openfei.core.OpenFeiCore
-import com.marinov.openfei.ui.login.LoginActivity
+import com.marinov.openfei.util.WebViewHelper
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+
+sealed class SessionResult {
+    data object Ok : SessionResult()
+    data object NoCredentials : SessionResult()
+    data class NetworkError(val message: String) : SessionResult()
+    data class AuthError(val message: String) : SessionResult()
+}
 
 object RustSession {
 
     private const val TAG = "RustSession"
+    private const val FEI_RENEW_INTERVAL_MS = 10L * 60 * 1000L
+
     private lateinit var appContext: Context
 
+    @Volatile
     private var lastFeiLoginTime = 0L
-    private const val FEI_RENEW_INTERVAL_MS = 10L * 60 * 1000L // 10 minutos
 
-    private val loginMutex = Mutex()
+    /**
+     * ★ Evita que o interceptador do OpenFeiCore entre em recursão:
+     * o próprio login não pode disparar renovação de sessão.
+     */
+    @Volatile
+    var isRenewing: Boolean = false
+        private set
 
     fun init(context: Context) {
         appContext = context.applicationContext
     }
 
-    // Invalida a sessão da FEI para forçar um novo login na próxima requisição.
-    // Usado quando o cliente HTTP do Rust é resetado (ex.: para limpar cookies velhos do Moodle).
-    fun resetFeiSession() {
+    fun invalidate() {
         lastFeiLoginTime = 0L
-        Log.d(TAG, "Sessão FEI invalidada no RustSession (cliente HTTP resetado)")
+        Log.d(TAG, "Cache de sessão FEI invalidado")
     }
 
-    suspend fun ensureFeiSession(): Boolean = withContext(Dispatchers.IO) {
-        val now = System.currentTimeMillis()
-        if (now - lastFeiLoginTime < FEI_RENEW_INTERVAL_MS) {
-            return@withContext true
-        }
-        loginMutex.withLock {
-            val nowInside = System.currentTimeMillis()
-            if (nowInside - lastFeiLoginTime < FEI_RENEW_INTERVAL_MS) {
-                return@withLock true
-            }
-            val prefs = runCatching {
-                LoginActivity.getEncryptedPrefs(appContext)
-            }.getOrNull()
-            if (prefs == null) {
-                Log.e(TAG, "Não conseguiu acessar credenciais criptografadas")
-                return@withLock false
-            }
-            val user = prefs.getString(LoginActivity.KEY_USER, "") ?: ""
-            val pass = prefs.getString(LoginActivity.KEY_PASS, "") ?: ""
+    fun markLoggedIn() {
+        lastFeiLoginTime = System.currentTimeMillis()
+        if (::appContext.isInitialized) AuthState.recordSuccess(appContext)
+    }
+
+    /** Zera o cache sem tocar no contador de falhas (usado no retry). */
+    fun invalidateCacheOnly() {
+        lastFeiLoginTime = 0L
+    }
+
+    private fun isFresh(): Boolean =
+        lastFeiLoginTime > 0 &&
+                System.currentTimeMillis() - lastFeiLoginTime < FEI_RENEW_INTERVAL_MS
+
+    suspend fun ensureFeiSession(): SessionResult = withContext(Dispatchers.IO) {
+        if (isFresh()) return@withContext SessionResult.Ok
+
+        SessionLock.mutex.withLock {
+            if (isFresh()) return@withLock SessionResult.Ok
+
+            val user = CredentialsStore.user(appContext)
+            val pass = CredentialsStore.pass(appContext)
             if (user.isEmpty() || pass.isEmpty()) {
-                Log.w(TAG, "Sem credenciais salvas para login Rust")
-                return@withLock false
+                return@withLock SessionResult.NoCredentials
             }
-            when (val result = OpenFeiCore.login(user, pass)) {
-                is CoreResult.Success -> {
-                    val loginData = result.data
-                    if (loginData.success) {
-                        lastFeiLoginTime = System.currentTimeMillis()
-                        Log.d(TAG, "Login FEI via Rust realizado com sucesso")
-                        true
-                    } else {
-                        Log.w(TAG, "Login FEI via Rust falhou: ${loginData.errorMessage}")
-                        false
+
+            isRenewing = true
+            try {
+                when (val result = OpenFeiCore.login(user, pass)) {
+                    is CoreResult.Success -> {
+                        val data = result.data
+                        when {
+                            data.success -> {
+                                markLoggedIn()
+                                withContext(Dispatchers.Main) {
+                                    WebViewHelper.ensureWebView(appContext)
+                                }
+                                LoginLogic.injectCookies(data.cookies)
+                                Log.d(TAG, "Sessão FEI renovada via Rust")
+                                SessionResult.Ok
+                            }
+
+                            data.isNetworkError ->
+                                SessionResult.NetworkError(data.errorMessage)
+
+                            else -> {
+                                // ★ PROBLEMA 3: conta a falha, mas NÃO desloga aqui.
+                                AuthState.recordAuthFailure(appContext)
+                                SessionResult.AuthError(data.errorMessage)
+                            }
+                        }
                     }
+
+                    is CoreResult.Error ->
+                        SessionResult.NetworkError(result.message)
                 }
-                is CoreResult.Error -> {
-                    Log.e(TAG, "Erro no login FEI via Rust: ${result.code} - ${result.message}")
-                    false
-                }
+            } finally {
+                isRenewing = false
             }
         }
     }

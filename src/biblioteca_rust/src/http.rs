@@ -10,9 +10,14 @@ use crate::models::CookieRecord;
 
 const USER_AGENT: &str = "Mozilla/5.0 (Linux; Android 16; sdk_gphone64_x86_64 Build/BE2A.250530.026.D1; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/133.0.6943.137 Mobile Safari/537.36";
 
-static CLIENT: OnceLock<Mutex<Client>> = OnceLock::new();
+// ★ CORREÇÃO (bugs 3/18): antes havia UM único Client com cookie_store(true)
+// compartilhado entre FEI e Moodle. Fazer login no Moodle (ou resetar o cliente)
+// derrubava a sessão da FEI, e vice-versa — causando SESSION_EXPIRED em fetches
+// concorrentes e o loop de login no WebView. Agora são jars independentes.
+static FEI_CLIENT: OnceLock<Mutex<Client>> = OnceLock::new();
+static MOODLE_CLIENT: OnceLock<Mutex<Client>> = OnceLock::new();
 
-pub fn build_client() -> Client {
+fn build_client() -> Client {
     Client::builder()
         .user_agent(USER_AGENT)
         .cookie_store(true)
@@ -22,17 +27,40 @@ pub fn build_client() -> Client {
         .expect("Falha ao criar cliente HTTP")
 }
 
-pub fn http_client() -> Client {
-    CLIENT
+pub fn fei_client() -> Client {
+    FEI_CLIENT
         .get_or_init(|| Mutex::new(build_client()))
         .lock()
         .unwrap()
         .clone()
 }
 
-pub fn reset_client() {
-    let mutex = CLIENT.get_or_init(|| Mutex::new(build_client()));
+pub fn moodle_client() -> Client {
+    MOODLE_CLIENT
+        .get_or_init(|| Mutex::new(build_client()))
+        .lock()
+        .unwrap()
+        .clone()
+}
+
+pub fn reset_fei_client() {
+    let mutex = FEI_CLIENT.get_or_init(|| Mutex::new(build_client()));
     *mutex.lock().unwrap() = build_client();
+}
+
+pub fn reset_moodle_client() {
+    let mutex = MOODLE_CLIENT.get_or_init(|| Mutex::new(build_client()));
+    *mutex.lock().unwrap() = build_client();
+}
+
+pub fn reset_all_clients() {
+    reset_fei_client();
+    reset_moodle_client();
+}
+
+/// Alias de compatibilidade: todo o módulo `fei::*` continua chamando http_client().
+pub fn http_client() -> Client {
+    fei_client()
 }
 
 pub fn collect_set_cookies(resp: &Response, origin: &str, out: &mut Vec<CookieRecord>) {
@@ -50,7 +78,6 @@ pub fn resolve_url(base: &str, location: &str) -> String {
     if location.starts_with("http") {
         return location.to_string();
     }
-
     match Url::parse(base) {
         Ok(base_url) => match base_url.join(location) {
             Ok(u) => u.to_string(),
@@ -66,7 +93,6 @@ pub fn execute_get_follow(
     cookies: &mut Vec<CookieRecord>,
 ) -> Result<(Response, String), CoreError> {
     let mut current = url.to_string();
-
     for _ in 0..10 {
         let resp = client.get(&current).send()?;
         collect_set_cookies(&resp, &current, cookies);
@@ -83,9 +109,7 @@ pub fn execute_get_follow(
                 continue;
             }
         }
-
         return Ok((resp, current));
     }
-
     Err(CoreError::Network("Muitos redirecionamentos".to_string()))
 }

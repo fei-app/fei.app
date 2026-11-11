@@ -7,10 +7,10 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.marinov.openfei.core.CoreResult
 import com.marinov.openfei.core.OpenFeiCore
-import com.marinov.openfei.login.RustSession
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import kotlin.coroutines.cancellation.CancellationException
 
 data class CarouselItem(val imageUrl: String?, val linkUrl: String?)
 
@@ -29,9 +29,11 @@ object HomeRepository {
             if (newCarousel.isNotEmpty()) {
                 saveCarouselCache(newCarousel, context)
                 newCarousel
-            } else {
-                getCarouselCache(context)
-            }
+            } else getCarouselCache(context)
+        } catch (e: SessionExpiredException) {
+            throw e
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.e("HomeRepository", "Erro ao buscar carrossel online, retornando cache", e)
             getCarouselCache(context)
@@ -44,6 +46,8 @@ object HomeRepository {
         val type = object : TypeToken<MutableList<CarouselItem>>() {}.type
         return try {
             Gson().fromJson(json, type) ?: emptyList()
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.e("HomeRepository", "Erro ao ler cache do carrossel", e)
             emptyList()
@@ -58,18 +62,17 @@ object HomeRepository {
     }
 
     private suspend fun fetchCarouselFromRust(): List<CarouselItem> = withContext(Dispatchers.IO) {
-        // ★ CORREÇÃO: Garante sessão FEI antes de buscar carrossel
-        if (!RustSession.ensureFeiSession()) {
-            throw SessionExpiredException("Não foi possível garantir sessão FEI para carrossel")
-        }
+        ensureFeiSessionOrThrow("carrossel")
         when (val result = OpenFeiCore.fetchCarousel()) {
             is CoreResult.Success -> {
-                result.data.map { core ->
-                    CarouselItem(
-                        imageUrl = core.imageUrl,
-                        linkUrl = core.linkUrl
-                    )
-                }
+                result.data
+                    .filter { !it.imageUrl.isNullOrEmpty() }
+                    .map { core ->
+                        CarouselItem(
+                            imageUrl = core.imageUrl,
+                            linkUrl = core.linkUrl
+                        )
+                    }
             }
             is CoreResult.Error -> {
                 if (result.code == "SESSION_EXPIRED") {

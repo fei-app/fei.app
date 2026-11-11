@@ -13,6 +13,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.marinov.openfei.R
 import com.marinov.openfei.data.Perfil
 import com.marinov.openfei.data.PerfilRepository
+import com.marinov.openfei.login.SessionManager
 import com.marinov.openfei.ui.boletos.BoletosFragment
 import com.marinov.openfei.ui.main.MainActivity
 import com.marinov.openfei.ui.profile.ProfileFragment
@@ -54,8 +55,12 @@ class MoreFragment : Fragment(), MainActivity.RefreshableFragment {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
+                if (parentFragmentManager.backStackEntryCount > 0) {
+                    parentFragmentManager.popBackStack()
+                } else {
                     (activity as? MainActivity)?.navigateToHome()
                 }
+            }
             }
         )
 
@@ -187,7 +192,7 @@ class MoreFragment : Fragment(), MainActivity.RefreshableFragment {
             if (!isAdded) return@launch
 
             when (status) {
-                MainActivity.STATUS_ONLINE_OK -> {
+                SessionManager.STATUS_ONLINE_OK -> {
                     atualizarPerfilOnline()
                 }
                 else -> {

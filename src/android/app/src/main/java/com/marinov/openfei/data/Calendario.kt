@@ -3,17 +3,16 @@ package com.marinov.openfei.data
 import android.content.Context
 import android.util.Log
 import com.marinov.openfei.cache.CacheHelper
+import com.marinov.openfei.cache.SyncBaseline
 import com.marinov.openfei.core.CoreResult
 import com.marinov.openfei.core.OpenFeiCore
-import com.marinov.openfei.login.RustSession
-import com.marinov.openfei.ui.login.LoginActivity
+import com.marinov.openfei.login.CredentialsStore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
 object CalendarioRepository {
-
     private const val TAG = "CalendarioRepository"
     private lateinit var appContext: Context
 
@@ -25,17 +24,16 @@ object CalendarioRepository {
         Log.d(TAG, "obterProvasFEI | online=$online")
         return if (online) {
             try {
-                val provas = fetchProvasFEIFromRust()
+                val provas = persistirProvas(fetchProvasFEIFromRust())
                 Log.d(TAG, "obterProvasFEI online sucesso | size=${provas.size}")
-                CacheHelper.saveProvasFEICache(provas)
                 provas
             } catch (e: SessionExpiredException) {
                 Log.w(TAG, "obterProvasFEI online: sessão expirada", e)
                 throw e
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                if (e !is CancellationException) {
-                    Log.e(TAG, "Erro ao buscar provas FEI online", e)
-                }
+                Log.e(TAG, "Erro ao buscar provas FEI online", e)
                 val cache = CacheHelper.getCachedProvasFEI()
                 Log.d(TAG, "obterProvasFEI fallback cache | size=${cache.size}")
                 cache
@@ -47,29 +45,38 @@ object CalendarioRepository {
         }
     }
 
+    /**
+     * ★ BUG 80: devolve null quando o online veio vazio e existe cache válido.
+     * Isso mantém o contrato "online ou null" e faz o CalendarSyncManager
+     * calcular allowDeleteMissing=false (não apaga a agenda com dados nulos).
+     */
     suspend fun obterProvasFEIOnlineOrNull(): List<ProvaCalendario>? {
         return try {
             val provas = fetchProvasFEIFromRust()
+            if (provas.isEmpty()) {
+                val cache = CacheHelper.getCachedProvasFEI()
+                if (cache.isNotEmpty()) {
+                    Log.w(TAG, "Provas FEI vazias online — preservando cache (${cache.size})")
+                    return null
+                }
+                Log.w(TAG, "Provas FEI: 0 registros online e cache vazio")
+                CacheHelper.saveProvasFEICache(provas)
+                return provas
+            }
             Log.d(TAG, "obterProvasFEIOnlineOrNull sucesso | size=${provas.size}")
             CacheHelper.saveProvasFEICache(provas)
+            marcarBaseline(SyncBaseline.PROVAS_FEI)
             provas
         } catch (e: SessionExpiredException) {
             Log.w(TAG, "obterProvasFEIOnlineOrNull: sessão expirada", e)
             null
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            if (e !is CancellationException) {
-                Log.e(TAG, "obterProvasFEIOnlineOrNull: erro", e)
-            }
+            Log.e(TAG, "obterProvasFEIOnlineOrNull: erro", e)
             null
         }
     }
-
-    suspend fun obterCalendarioProvas(online: Boolean): List<ProvaCalendario> {
-        return obterProvasFEI(online)
-    }
-
-    fun obterCalendarioProvasCache(): List<ProvaCalendario> =
-        CacheHelper.getCachedProvasFEI()
 
     fun obterProvasFEICache(): List<ProvaCalendario> =
         CacheHelper.getCachedProvasFEI()
@@ -78,17 +85,16 @@ object CalendarioRepository {
         Log.d(TAG, "obterEventosMoodle | online=$online")
         return if (online) {
             try {
-                val eventos = fetchEventosMoodleFromRust()
+                val eventos = persistirEventos(fetchEventosMoodleFromRust())
                 Log.d(TAG, "obterEventosMoodle online sucesso | size=${eventos.size}")
-                CacheHelper.saveEventosMoodleCache(eventos)
                 eventos
             } catch (e: SessionExpiredException) {
                 Log.w(TAG, "obterEventosMoodle online: sessão expirada", e)
                 throw e
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                if (e !is CancellationException) {
-                    Log.e(TAG, "Erro ao buscar eventos Moodle online", e)
-                }
+                Log.e(TAG, "Erro ao buscar eventos Moodle online", e)
                 val cache = CacheHelper.getCachedEventosMoodle()
                 Log.d(TAG, "obterEventosMoodle fallback cache | size=${cache.size}")
                 cache
@@ -103,16 +109,27 @@ object CalendarioRepository {
     suspend fun obterEventosMoodleOnlineOrNull(): List<ProvaCalendario>? {
         return try {
             val eventos = fetchEventosMoodleFromRust()
+            if (eventos.isEmpty()) {
+                val cache = CacheHelper.getCachedEventosMoodle()
+                if (cache.isNotEmpty()) {
+                    Log.w(TAG, "Eventos Moodle vazios online — preservando cache (${cache.size})")
+                    return null
+                }
+                Log.w(TAG, "Eventos Moodle: 0 registros online e cache vazio")
+                CacheHelper.saveEventosMoodleCache(eventos)
+                return eventos
+            }
             Log.d(TAG, "obterEventosMoodleOnlineOrNull sucesso | size=${eventos.size}")
             CacheHelper.saveEventosMoodleCache(eventos)
+            marcarBaseline(SyncBaseline.EVENTOS_MOODLE)
             eventos
         } catch (e: SessionExpiredException) {
             Log.w(TAG, "obterEventosMoodleOnlineOrNull: sessão expirada", e)
             null
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
-            if (e !is CancellationException) {
-                Log.e(TAG, "obterEventosMoodleOnlineOrNull: erro", e)
-            }
+            Log.e(TAG, "obterEventosMoodleOnlineOrNull: erro", e)
             null
         }
     }
@@ -120,11 +137,37 @@ object CalendarioRepository {
     fun obterEventosMoodleCache(): List<ProvaCalendario> =
         CacheHelper.getCachedEventosMoodle()
 
-    private suspend fun fetchProvasFEIFromRust(): List<ProvaCalendario> = withContext(Dispatchers.IO) {
-        // ★ CORREÇÃO: Garante sessão FEI antes de buscar provas
-        if (!RustSession.ensureFeiSession()) {
-            throw SessionExpiredException("Não foi possível garantir sessão FEI para provas")
+    // ------------------------------------------------------------------
+    // ★ BUG 80: guards de dados nulos
+    // ------------------------------------------------------------------
+    private fun marcarBaseline(tipo: String) {
+        if (::appContext.isInitialized) {
+            runCatching { SyncBaseline.markEstablished(appContext, tipo) }
         }
+    }
+
+    private fun persistirProvas(novas: List<ProvaCalendario>): List<ProvaCalendario> {
+        val cache = CacheHelper.getCachedProvasFEI()
+        if (novas.isEmpty() && cache.isNotEmpty()) {
+            Log.w(TAG, "Provas FEI vazias online — mantendo cache (${cache.size})")
+            return cache
+        }
+        CacheHelper.saveProvasFEICache(novas)
+        return novas
+    }
+
+    private fun persistirEventos(novos: List<ProvaCalendario>): List<ProvaCalendario> {
+        val cache = CacheHelper.getCachedEventosMoodle()
+        if (novos.isEmpty() && cache.isNotEmpty()) {
+            Log.w(TAG, "Eventos Moodle vazios online — mantendo cache (${cache.size})")
+            return cache
+        }
+        CacheHelper.saveEventosMoodleCache(novos)
+        return novos
+    }
+
+    private suspend fun fetchProvasFEIFromRust(): List<ProvaCalendario> = withContext(Dispatchers.IO) {
+        ensureFeiSessionOrThrow("provas FEI")
         when (val result = OpenFeiCore.fetchProvasFei()) {
             is CoreResult.Success -> {
                 result.data.map { core ->
@@ -149,14 +192,8 @@ object CalendarioRepository {
     }
 
     private suspend fun fetchEventosMoodleFromRust(): List<ProvaCalendario> = withContext(Dispatchers.IO) {
-        val prefs = try {
-            LoginActivity.getEncryptedPrefs(appContext)
-        } catch (e: Exception) {
-            Log.e(TAG, "Erro ao acessar credenciais salvas", e)
-            throw SessionExpiredException("Erro ao acessar credenciais")
-        }
-        val user = prefs.getString(LoginActivity.KEY_USER, "") ?: ""
-        val pass = prefs.getString(LoginActivity.KEY_PASS, "") ?: ""
+        val user = CredentialsStore.user(appContext)
+        val pass = CredentialsStore.pass(appContext)
         if (user.isEmpty() || pass.isEmpty()) {
             Log.d(TAG, "Sem credenciais salvas — impossível buscar eventos Moodle")
             throw SessionExpiredException("Sem credenciais salvas")

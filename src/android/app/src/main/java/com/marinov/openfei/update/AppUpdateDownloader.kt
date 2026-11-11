@@ -21,10 +21,6 @@ import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-/**
- * Centraliza o download do APK de atualização e os diálogos de progresso,
- * instalação e erro. Usado por MainActivity e SettingsActivity.
- */
 class AppUpdateDownloader(
     private val activity: AppCompatActivity,
     private val scope: CoroutineScope
@@ -39,13 +35,6 @@ class AppUpdateDownloader(
 
     private var progressBar: ProgressBar? = null
 
-    /**
-     * Inicia o download do APK e exibe os diálogos apropriados.
-     *
-     * @param apkUrl URL do APK da release.
-     * @param forced Se true, o botão negativo do diálogo de instalação fica
-     *               desabilitado (atualização obrigatória).
-     */
     fun startDownload(apkUrl: String, forced: Boolean) {
         if (isDownloading || activity.isFinishing || activity.isDestroyed) return
         isDownloading = true
@@ -76,9 +65,6 @@ class AppUpdateDownloader(
         }
     }
 
-    /**
-     * Limpa referências de UI. Deve ser chamado no onDestroy da Activity.
-     */
     fun destroy() {
         progressBar = null
     }
@@ -102,14 +88,28 @@ class AppUpdateDownloader(
             .create()
     }
 
+    /**
+     * ★ BUG 17: verifica responseCode antes de ler o corpo. Um 404/500/portal
+     * cativo antes salvava HTML como "app_release.apk" e oferecia "Instalar".
+     * ★ BUG 60: atualiza o progresso apenas quando o inteiro muda,
+     * evitando milhares de dispatches para a Main em APKs de 20+ MB.
+     */
     private suspend fun downloadApk(apkUrl: String): File? = withContext(Dispatchers.IO) {
+        var connection: HttpURLConnection? = null
         try {
-            val connection = URL(apkUrl).openConnection() as HttpURLConnection
+            connection = URL(apkUrl).openConnection() as HttpURLConnection
             connection.connectTimeout = 15000
-            connection.readTimeout = 15000
+            connection.readTimeout = 30000
             connection.connect()
 
+            val code = connection.responseCode
+            if (code !in 200..299) {
+                Log.e(TAG, "HTTP $code ao baixar APK de $apkUrl")
+                return@withContext null
+            }
+
             val downloadsDir = activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+                ?: return@withContext null
             val outputDir = File(downloadsDir, "Update").apply {
                 if (exists()) deleteRecursively()
                 mkdirs()
@@ -118,17 +118,21 @@ class AppUpdateDownloader(
 
             connection.inputStream.use { input ->
                 FileOutputStream(outputFile).use { output ->
-                    val buffer = ByteArray(4096)
+                    val buffer = ByteArray(8192)
                     var bytesRead: Int
                     var total: Long = 0
-                    val fileLength = connection.contentLength.toLong()
+                    var lastReportedProgress = -1
+                    val fileLength = connection.contentLengthLong
                     while (input.read(buffer).also { bytesRead = it } != -1) {
                         output.write(buffer, 0, bytesRead)
                         total += bytesRead
                         if (fileLength > 0) {
                             val progress = (total * 100 / fileLength).toInt()
-                            withContext(Dispatchers.Main) {
-                                progressBar?.progress = progress
+                            if (progress != lastReportedProgress) {
+                                lastReportedProgress = progress
+                                withContext(Dispatchers.Main) {
+                                    progressBar?.progress = progress
+                                }
                             }
                         }
                     }
@@ -138,6 +142,8 @@ class AppUpdateDownloader(
         } catch (e: Exception) {
             Log.e(TAG, "Erro no download.", e)
             null
+        } finally {
+            runCatching { connection?.disconnect() }
         }
     }
 

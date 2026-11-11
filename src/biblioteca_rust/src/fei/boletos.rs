@@ -6,6 +6,8 @@ use std::fs;
 use crate::error::CoreError;
 use crate::http::{execute_get_follow, http_client};
 use crate::models::{Boleto, DownloadBoletoResult};
+use crate::fei::session::{ensure_authenticated, unexpected_page};
+
 
 const FEI_URL_BOLETOS: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/tesouraria/consultas/boletos";
 const FEI_URL_GERAR_BOLETO: &str = "https://interage.fei.org.br/secureserver/portal/graduacao/tesouraria/consultas/boletos/titulos/gerar";
@@ -30,15 +32,6 @@ fn cell_text_by_class_contains(row: &ElementRef, needle: &str) -> Option<String>
     }).map(|c| text(&c))
 }
 
-fn ensure_authenticated(doc: &Html) -> Result<(), CoreError> {
-    if doc.select(&sel("#btn-login")).next().is_some() {
-        return Err(CoreError::SessionExpired(
-            "Página de login detectada — sessão inválida".to_string(),
-        ));
-    }
-    Ok(())
-}
-
 fn boleto_file_name(vencimento: &str, titulo_id: &str) -> String {
     let partes: Vec<&str> = vencimento.split('/').collect();
     if partes.len() == 3 {
@@ -58,17 +51,10 @@ pub fn fetch_boletos() -> Result<Vec<Boleto>, CoreError> {
 
     ensure_authenticated(&doc)?;
 
-    let form = doc
-        .select(&sel("#form-gerar-boletos"))
-        .next()
-        .ok_or_else(|| {
-            CoreError::SessionExpired("Formulário de boletos não encontrado — sessão inválida".into())
-        })?;
-
-    let tabela = form
-        .select(&sel("table.table"))
-        .next()
-        .ok_or_else(|| CoreError::SessionExpired("Tabela de boletos não encontrada".into()))?;
+    let form = doc.select(&sel("#form-gerar-boletos")).next()
+        .ok_or_else(|| unexpected_page("Formulário de boletos não encontrado"))?;
+    let tabela = form.select(&sel("table.table")).next()
+        .ok_or_else(|| unexpected_page("Tabela de boletos não encontrada"))?;
 
     let mut boletos = Vec::new();
 
@@ -112,7 +98,7 @@ pub fn download_boleto(
         .select(&sel("#form-gerar-boletos input[name=__RequestVerificationToken]"))
         .next()
         .and_then(|i| i.value().attr("value").map(|v| v.to_string()))
-        .ok_or_else(|| CoreError::SessionExpired("CSRF token não encontrado na página de boletos".into()))?;
+        .ok_or_else(|| unexpected_page("CSRF token ausente na página de boletos"))?;
 
     let form: Vec<(String, String)> = vec![
         ("__RequestVerificationToken".to_string(), csrf),

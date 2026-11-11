@@ -1,5 +1,6 @@
 package com.marinov.openfei.ui.provas
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -105,34 +106,48 @@ class MateriadeProva : Fragment() {
     private fun compartilharConteudo(pacoteApp: String) {
         try {
             val texto = if (pacoteApp == "com.whatsapp") {
-                "${txtTitulo.text}\n${txtConteudo.text}"
+                "${txtTitulo.text}\n${txtConteudo.text}"          // ★ BUG 79: "\n" de verdade
             } else {
-                getString(R.string.materia_resumo_prompt, txtTitulo.text.toString(), txtConteudo.text.toString())
+                getString(
+                    R.string.materia_resumo_prompt,
+                    txtTitulo.text.toString(),
+                    txtConteudo.text.toString()
+                )
             }
 
-            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+            val sendIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
                 type = "text/plain"
                 putExtra(android.content.Intent.EXTRA_TEXT, texto)
-                `package` = pacoteApp
             }
 
             if (isAppInstalled(pacoteApp)) {
-                startActivity(intent)
+                sendIntent.`package` = pacoteApp
+                startActivity(sendIntent)
             } else {
-                val shareIntent = android.content.Intent.createChooser(intent, getString(R.string.compartilhar_via))
-                startActivity(shareIntent)
+                startActivity(
+                    android.content.Intent.createChooser(
+                        sendIntent, getString(R.string.compartilhar_via)
+                    )
+                )
             }
         } catch (e: Exception) {
             android.util.Log.e("Compartilhamento", getString(R.string.materia_erro_compartilhar, e.message ?: ""))
         }
     }
 
-    private fun isAppInstalled(packageName: String): Boolean {
-        return try {
-            requireContext().packageManager.getApplicationInfo(packageName, 0)
-            true
-        } catch (_: android.content.pm.PackageManager.NameNotFoundException) {
-            false
+    private fun isAppInstalled(packageName: String): Boolean = try {
+        val pm = requireContext().packageManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pm.getApplicationInfo(
+                packageName,
+                android.content.pm.PackageManager.ApplicationInfoFlags.of(0)
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            pm.getApplicationInfo(packageName, 0)
         }
+        true
+    } catch (_: android.content.pm.PackageManager.NameNotFoundException) {
+        false
     }
 }

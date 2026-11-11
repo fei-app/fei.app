@@ -3,33 +3,30 @@ package com.marinov.openfei.app
 import android.app.Application
 import android.os.Build
 import com.google.android.material.color.DynamicColors
-import com.marinov.openfei.core.OpenFeiCore
+import com.marinov.openfei.background.Notifications
+import com.marinov.openfei.background.SyncScheduler
 import com.marinov.openfei.data.DataInitializer
+import com.marinov.openfei.util.WebViewHelper
 
 class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
 
-        // ★ Inicializa o estado do Modo Responsável Financeiro o quanto antes ★
         AppMode.init(this)
-
-        // ★ Inicializa cache, sessões (FEI/Moodle), repositórios, SyncPrefs e WebView ★
         DataInitializer.init(this)
+        Notifications.ensureChannels(this)
+
+        // ★ BUG 64: removido o bloco Thread { RUST_TEST }.
+        // Ele chamava fetchDisciplinas() sem sessão garantida a cada start,
+        // gerava log de erro e carregava a lib nativa antes do necessário.
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             DynamicColors.applyToActivitiesIfAvailable(this)
         }
 
-        Thread {
-            try {
-                val isOnline = OpenFeiCore.isOnline()
-                android.util.Log.d("RUST_TEST", "isOnline: $isOnline")
-                val disciplinas = OpenFeiCore.fetchDisciplinas()
-                android.util.Log.d("RUST_TEST", "disciplinas: $disciplinas")
-            } catch (e: Throwable) {
-                android.util.Log.e("RUST_TEST", "Erro", e)
-            }
-        }.start()
+        // Garante o WebView (para o CookieManager) e os agendamentos de sync.
+        WebViewHelper.ensureWebView(this)
+        SyncScheduler.scheduleAll(this)
     }
 }

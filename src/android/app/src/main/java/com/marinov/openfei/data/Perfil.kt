@@ -4,7 +4,6 @@ import android.util.Log
 import com.marinov.openfei.cache.CacheHelper
 import com.marinov.openfei.core.CoreResult
 import com.marinov.openfei.core.OpenFeiCore
-import com.marinov.openfei.login.RustSession
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -46,10 +45,7 @@ object PerfilRepository {
     }
 
     private suspend fun fetchPerfilFromRust(): Perfil = withContext(Dispatchers.IO) {
-        // ★ CORREÇÃO: Garante sessão FEI antes de buscar perfil
-        if (!RustSession.ensureFeiSession()) {
-            throw SessionExpiredException("Não foi possível garantir sessão FEI para perfil")
-        }
+        ensureFeiSessionOrThrow("perfil")
         when (val result = OpenFeiCore.fetchPerfil()) {
             is CoreResult.Success -> {
                 Perfil(

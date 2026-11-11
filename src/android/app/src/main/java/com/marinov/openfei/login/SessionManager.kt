@@ -2,38 +2,25 @@ package com.marinov.openfei.login
 
 import android.content.Context
 import android.util.Log
-import com.marinov.openfei.data.SessionExpiredException
+import android.webkit.CookieManager
+import com.marinov.openfei.cache.CacheHelper
+import com.marinov.openfei.core.OpenFeiCore
 import com.marinov.openfei.network.NetworkChecker
 import com.marinov.openfei.util.WebViewHelper
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import kotlin.time.Duration.Companion.milliseconds
 
 object SessionManager {
 
     private const val TAG = "SessionManager"
-    private lateinit var appContext: Context
 
-    // Mutexes separados para FEI e Moodle
-    private val sessionMutex = Mutex()
-    private val moodleSessionMutex = Mutex()
-
-    // Timestamps de última renovação
-    private var lastRenewalTime = 0L
-    private var lastMoodleRenewalTime = 0L
-
-    // Intervalos de renovação
-    private const val RENEWAL_INTERVAL_MS = 600_000        // 10 minutos para FEI
-
-    // Constantes de status para compatibilidade
     const val STATUS_OFFLINE = "0"
     const val STATUS_ONLINE_OK = "1"
     const val STATUS_LOGIN_NEEDED = "A"
 
-    // Proteção de cookies do Moodle durante uso ativo do WebView
+    private lateinit var appContext: Context
+
     @Volatile
     private var moodleCookiesProtected = false
 
@@ -42,106 +29,89 @@ object SessionManager {
         WebViewHelper.ensureWebView(appContext)
     }
 
-    fun protegerCookiesMoodle() {
-        moodleCookiesProtected = true
-        Log.d(TAG, "Cookies do Moodle protegidos (WebView em uso)")
-    }
+    fun protegerCookiesMoodle() { moodleCookiesProtected = true }
 
-    fun desprotegerCookiesMoodle() {
-        moodleCookiesProtected = false
-        Log.d(TAG, "Cookies do Moodle desprotegidos")
-    }
+    fun desprotegerCookiesMoodle() { moodleCookiesProtected = false }
 
+    /**
+     * ★ PROBLEMA 3: só devolve LOGIN_NEEDED quando
+     *  (a) não há credenciais salvas, ou
+     *  (b) o servidor recusou as credenciais MAX_AUTH_FAILURES vezes seguidas.
+     *
+     * Falha de rede, HTML inesperado, 502, portal cativo → OFFLINE (nunca logout).
+     * Assim o app continua tentando renovar em segundo plano a cada request.
+     */
     suspend fun checkConnectionAndSession(): String = withContext(Dispatchers.IO) {
-        val isOnline = NetworkChecker.isOnline()
-        if (!isOnline) {
-            Log.d(TAG, "checkConnectionAndSession → NCSI diz que está offline")
+        if (!CredentialsStore.hasCredentials(appContext)) {
+            return@withContext STATUS_LOGIN_NEEDED
+        }
+
+        if (!NetworkChecker.isOnline()) {
             return@withContext STATUS_OFFLINE
         }
-        try {
-            renewSession()
-            Log.d(TAG, "checkConnectionAndSession → sessão FEI renovada com sucesso")
-            STATUS_ONLINE_OK
-        } catch (_: SessionExpiredException) {
-            Log.w(TAG, "checkConnectionAndSession → sessão FEI expirada mas está online → precisa login")
-            STATUS_LOGIN_NEEDED
-        } catch (e: Exception) {
-            Log.e(TAG, "checkConnectionAndSession → erro inesperado", e)
-            STATUS_LOGIN_NEEDED
-        }
-    }
 
-    suspend fun renewSession() {
-        val now = System.currentTimeMillis()
-        if (now - lastRenewalTime < RENEWAL_INTERVAL_MS) {
-            Log.d(TAG, "Sessão FEI já renovada recentemente, pulando login completo.")
-            return
-        }
-        sessionMutex.withLock {
-            val nowInside = System.currentTimeMillis()
-            if (nowInside - lastRenewalTime < RENEWAL_INTERVAL_MS) {
-                return@withLock
+        when (val result = RustSession.ensureFeiSession()) {
+            is SessionResult.Ok -> STATUS_ONLINE_OK
+
+            is SessionResult.NetworkError -> {
+                Log.w(TAG, "Rede instável ao validar sessão: ${result.message}")
+                STATUS_OFFLINE
             }
 
-            // ★ CORREÇÃO: Tentar login silencioso primeiro, mas se falhar,
-            // tentar RustSession como fallback antes de decidir que precisa de login manual
-            val loginResult = try {
-                LoginLogic.performLoginSilent(appContext)
-            } catch (e: Exception) {
-                Log.e(TAG, "Erro no login silencioso FEI", e)
-                LoginResult(false, e.message ?: "", isNetworkError = true)
+            is SessionResult.AuthError -> {
+                if (AuthState.isAuthBlocked(appContext)) {
+                    Log.w(TAG, "Credenciais recusadas repetidamente → login manual")
+                    STATUS_LOGIN_NEEDED
+                } else {
+                    // Ainda dentro da tolerância: deixa os fetches tentarem
+                    // de novo (o interceptador do OpenFeiCore cuida disso).
+                    STATUS_ONLINE_OK
+                }
             }
 
-            if (loginResult.success) {
-                // Login silencioso funcionou
-                lastRenewalTime = System.currentTimeMillis()
-                Log.d(TAG, "Login silencioso FEI bem-sucedido")
-                return@withLock
-            }
-
-            // ★ Login silencioso falhou. Tentar RustSession como fallback
-            // Isso evita chamar a LoginActivity desnecessariamente quando há race conditions
-            Log.w(TAG, "Login silencioso falhou: ${loginResult.errorMessage}. Tentando RustSession como fallback...")
-
-            // Pequeno delay para evitar race conditions com outras tentativas de login
-            delay(100.milliseconds)
-
-            val rustSessionSuccess = try {
-                RustSession.ensureFeiSession()
-            } catch (e: Exception) {
-                Log.e(TAG, "Erro ao tentar RustSession como fallback", e)
-                false
-            }
-
-            if (rustSessionSuccess) {
-                // RustSession conseguiu logar com sucesso
-                lastRenewalTime = System.currentTimeMillis()
-                Log.d(TAG, "RustSession conseguiu logar com sucesso após falha do login silencioso")
-                return@withLock
-            }
-
-            // Ambos falharam - realmente precisa de login manual
-            Log.w(TAG, "Ambos login silencioso e RustSession falharam - precisa de login manual")
-            throw SessionExpiredException("Não foi possível renovar a sessão FEI — login silencioso falhou")
+            SessionResult.NoCredentials -> STATUS_LOGIN_NEEDED
         }
     }
 
     suspend fun forcarRenovacaoCookiesMoodle(): Boolean = withContext(Dispatchers.IO) {
-        moodleSessionMutex.withLock {
-            Log.d(TAG, "Forçando renovação REAL dos cookies do Moodle (login completo via formulário)")
-            com.marinov.openfei.core.OpenFeiCore.clearSession()
-            RustSession.resetFeiSession()
+        SessionLock.mutex.withLock {
+            OpenFeiCore.clearMoodleSession()
             val result = LoginLogic.forcarLoginCookiesMoodle(appContext)
-            if (result.success) {
-                lastMoodleRenewalTime = System.currentTimeMillis()
-                Log.d(TAG, "Cookies do Moodle renovados com sucesso via login completo | token=${result.token != null}")
-                // ★ Log de verificação: mostra os cookies que o CookieManager tem para o Moodle
-                val cookieStr = android.webkit.CookieManager.getInstance().getCookie("https://moodle.fei.edu.br")
-                Log.d(TAG, "Cookies atuais no CookieManager para moodle.fei.edu.br: ${cookieStr?.take(200) ?: "NENHUM"}")
-            } else {
+            if (!result.success) {
                 Log.w(TAG, "Falha ao renovar cookies do Moodle: ${result.errorMessage}")
             }
             result.success
+        }
+    }
+
+    /**
+     * ★ PROBLEMA 3: `markLoggedOut` agora é explícito.
+     * Limpar cache/cookies NÃO implica mais perder o estado de login.
+     */
+    suspend fun invalidateLocalSession(
+        clearData: Boolean = true,
+        markLoggedOut: Boolean = false
+    ) = withContext(Dispatchers.IO) {
+        SessionLock.mutex.withLock {
+            OpenFeiCore.clearSession()
+            RustSession.invalidate()
+
+            if (markLoggedOut) {
+                CredentialsStore.setLoggedIn(appContext, false)
+            }
+
+            if (clearData) {
+                runCatching { CacheHelper.clearAllCacheFiles() }
+            }
+
+            if (!moodleCookiesProtected) {
+                runCatching {
+                    val cm = CookieManager.getInstance()
+                    cm.removeAllCookies(null)
+                    cm.flush()
+                }
+            }
+            Log.d(TAG, "Sessão local invalidada (clearData=$clearData, markLoggedOut=$markLoggedOut)")
         }
     }
 }

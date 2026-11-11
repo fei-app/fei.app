@@ -21,14 +21,6 @@ static jstring call_rust_no_args(JNIEnv* env, char* (*fn)()) {
     return result;
 }
 
-static jstring call_rust_one_arg(JNIEnv* env, jstring a, char* (*fn)(const char*)) {
-    std::string arg = jstring_to_string(env, a);
-    char* raw = fn(arg.c_str());
-    jstring result = char_to_jstring(env, raw);
-    openfei_free_string(raw);
-    return result;
-}
-
 static jstring call_rust_two_args(
         JNIEnv* env,
         jstring a,
@@ -37,12 +29,15 @@ static jstring call_rust_two_args(
 ) {
     std::string arg1 = jstring_to_string(env, a);
     std::string arg2 = jstring_to_string(env, b);
-
     char* raw = fn(arg1.c_str(), arg2.c_str());
     jstring result = char_to_jstring(env, raw);
     openfei_free_string(raw);
     return result;
 }
+
+// ---------------------------------------------------------------------
+// Rede / login
+// ---------------------------------------------------------------------
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_marinov_openfei_core_OpenFeiCore_nativeIsOnline(JNIEnv* env, jobject) {
@@ -51,33 +46,21 @@ Java_com_marinov_openfei_core_OpenFeiCore_nativeIsOnline(JNIEnv* env, jobject) {
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_marinov_openfei_core_OpenFeiCore_nativeLogin(
-        JNIEnv* env,
-        jobject,
-        jstring user,
-        jstring pass
+        JNIEnv* env, jobject, jstring user, jstring pass
 ) {
     return call_rust_two_args(env, user, pass, openfei_login);
 }
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_marinov_openfei_core_OpenFeiCore_nativeMoodleLogin(
-        JNIEnv* env,
-        jobject,
-        jstring user,
-        jstring pass
+        JNIEnv* env, jobject, jstring user, jstring pass
 ) {
     return call_rust_two_args(env, user, pass, openfei_moodle_login);
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_marinov_openfei_core_OpenFeiCore_nativeMoodleToken(
-        JNIEnv* env,
-        jobject,
-        jstring user,
-        jstring pass
-) {
-    return call_rust_two_args(env, user, pass, openfei_moodle_token);
-}
+// ---------------------------------------------------------------------
+// FEI
+// ---------------------------------------------------------------------
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_marinov_openfei_core_OpenFeiCore_nativeFetchDisciplinas(JNIEnv* env, jobject) {
@@ -121,43 +104,38 @@ Java_com_marinov_openfei_core_OpenFeiCore_nativeFetchCarousel(JNIEnv* env, jobje
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_marinov_openfei_core_OpenFeiCore_nativeDownloadBoleto(
-        JNIEnv* env,
-        jobject,
-        jstring tituloId,
-        jstring vencimento,
-        jstring outDir
+        JNIEnv* env, jobject, jstring tituloId, jstring vencimento, jstring outDir
 ) {
     std::string arg1 = jstring_to_string(env, tituloId);
     std::string arg2 = jstring_to_string(env, vencimento);
     std::string arg3 = jstring_to_string(env, outDir);
-
     char* raw = openfei_download_boleto(arg1.c_str(), arg2.c_str(), arg3.c_str());
     jstring result = char_to_jstring(env, raw);
     openfei_free_string(raw);
-
     return result;
 }
 
+// ---------------------------------------------------------------------
+// Moodle
+// ---------------------------------------------------------------------
+
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_marinov_openfei_core_OpenFeiCore_nativeFetchEventosMoodle(
-        JNIEnv* env,
-        jobject,
-        jstring user,
-        jstring pass
+        JNIEnv* env, jobject, jstring user, jstring pass
 ) {
     return call_rust_two_args(env, user, pass, openfei_fetch_eventos_moodle);
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_marinov_openfei_core_OpenFeiCore_nativeFetchEventosMoodleWithToken(
-        JNIEnv* env,
-        jobject,
-        jstring token
-) {
-    return call_rust_one_arg(env, token, openfei_fetch_eventos_moodle_with_token);
-}
+// ---------------------------------------------------------------------
+// Sessões
+// ---------------------------------------------------------------------
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_marinov_openfei_core_OpenFeiCore_nativeClearSession(JNIEnv*, jobject) {
     openfei_clear_session();
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_marinov_openfei_core_OpenFeiCore_nativeClearMoodleSession(JNIEnv*, jobject) {
+    openfei_clear_moodle_session();
 }

@@ -6,6 +6,7 @@ pub mod perfil;
 pub mod provas;
 pub mod boletos;
 pub mod carousel;
+pub mod session;
 
 pub use login::login_fei;
 pub use disciplinas::fetch_disciplinas;

@@ -4,29 +4,34 @@ import android.util.Log
 import com.marinov.openfei.cache.CacheHelper
 import com.marinov.openfei.core.CoreResult
 import com.marinov.openfei.core.OpenFeiCore
-import com.marinov.openfei.login.RustSession
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.util.Calendar
+
+/**
+ * ★ BUG 80: o diff de horário precisa saber se os NOMES foram resolvidos.
+ * Sem disciplinas, `nomeDisciplina` cai para o código — comparar isso com um
+ * snapshot posterior (já com nomes) gerava notificação falsa de "novo horário".
+ */
+internal data class AulasComNomes(
+    val aulas: List<Aula>,
+    val nomesResolvidos: Boolean
+)
 
 object AulasRepository {
-
     private const val TAG = "AulasRepository"
 
     suspend fun aulas(online: Boolean): List<Aula> {
         return if (online) {
             try {
-                val aulasComNomes = fetchAulasComNomes()
-                CacheHelper.saveAulasCache(aulasComNomes)
-                aulasComNomes
+                persistirAulas(fetchAulasComNomesDetalhado())
             } catch (e: SessionExpiredException) {
                 throw e
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                if (e !is CancellationException) {
-                    Log.e(TAG, "Erro ao buscar horários online", e)
-                }
+                Log.e(TAG, "Erro ao buscar horários online", e)
                 CacheHelper.getCachedAulas()
             }
         } else {
@@ -46,20 +51,55 @@ object AulasRepository {
      * Compartilhado com HorariosRepository.novoHorario(), que precisa comparar
      * os dados novos com o cache antigo antes de sobrescrevê-lo.
      */
-    internal suspend fun fetchAulasComNomes(): List<Aula> {
+    internal suspend fun fetchAulasComNomes(): List<Aula> = fetchAulasComNomesDetalhado().aulas
+
+    /** ★ BUG 80: variante que informa se as disciplinas estavam disponíveis. */
+    internal suspend fun fetchAulasComNomesDetalhado(): AulasComNomes {
         val aulasBrutas = fetchAulasFromRust()
         val disciplinas = DisciplinasRepository.obterDisciplinas(online = true)
-        val mapaNomes = disciplinas.associate { it.codigo to it.nome }
-        return aulasBrutas.map { aula ->
-            aula.copy(nomeDisciplina = mapaNomes[aula.codigoDisciplina] ?: aula.codigoDisciplina)
+
+        // ★ BUG 81: mapa DETERMINÍSTICO.
+        // `associate { codigo to nome }` fica com o ÚLTIMO duplicado. Se o core
+        // devolve códigos repetidos em ordem variável, o nome resolvido muda
+        // entre duas leituras e o diff acusa "novo horário" sem nada mudar.
+        // Agora: agrupa, remove vazios, ordena e escolhe sempre o mesmo nome.
+        val mapaNomes: Map<String, String> = disciplinas
+            .filter { it.codigo.isNotBlank() && it.nome.isNotBlank() }
+            .groupBy { it.codigo.trim() }
+            .mapValues { (_, lista) ->
+                lista.map { it.nome.trim() }.distinct().sorted().first()
+            }
+
+        val aulas = aulasBrutas.map { aula ->
+            val codigo = aula.codigoDisciplina.trim()
+            aula.copy(
+                nomeDisciplina = mapaNomes[codigo] ?: aula.nomeDisciplina.ifBlank { codigo }
+            )
         }
+        return AulasComNomes(aulas = aulas, nomesResolvidos = disciplinas.isNotEmpty())
+    }
+
+    /**
+     * ★ BUG 80: cache válido nunca é substituído por lista vazia nem por
+     * versão sem nomes resolvidos (que envenenaria o baseline do worker).
+     */
+    private fun persistirAulas(resultado: AulasComNomes): List<Aula> {
+        val cache = CacheHelper.getCachedAulas()
+        val novas = resultado.aulas
+        if (novas.isEmpty() && cache.isNotEmpty()) {
+            Log.w(TAG, "Aulas vazias online — mantendo cache (${cache.size})")
+            return cache
+        }
+        if (!resultado.nomesResolvidos && cache.isNotEmpty()) {
+            Log.w(TAG, "Disciplinas indisponíveis — mantendo cache de aulas com nomes")
+            return cache
+        }
+        CacheHelper.saveAulasCache(novas)
+        return novas
     }
 
     private suspend fun fetchAulasFromRust(): List<Aula> = withContext(Dispatchers.IO) {
-        // ★ CORREÇÃO: Garante sessão FEI antes de buscar aulas
-        if (!RustSession.ensureFeiSession()) {
-            throw SessionExpiredException("Não foi possível garantir sessão FEI para aulas")
-        }
+        ensureFeiSessionOrThrow("aulas")
         when (val result = OpenFeiCore.fetchAulas()) {
             is CoreResult.Success -> {
                 result.data.map { core ->
@@ -82,16 +122,5 @@ object AulasRepository {
         }
     }
 
-    private fun getDiaSemanaAtual(): String {
-        val calendar = Calendar.getInstance()
-        return when (calendar.get(Calendar.DAY_OF_WEEK)) {
-            Calendar.MONDAY -> "Segunda"
-            Calendar.TUESDAY -> "Terça"
-            Calendar.WEDNESDAY -> "Quarta"
-            Calendar.THURSDAY -> "Quinta"
-            Calendar.FRIDAY -> "Sexta"
-            Calendar.SATURDAY -> "Sábado"
-            else -> ""
-        }
-    }
+    private fun getDiaSemanaAtual(): String = DiasSemana.hoje() ?: ""
 }

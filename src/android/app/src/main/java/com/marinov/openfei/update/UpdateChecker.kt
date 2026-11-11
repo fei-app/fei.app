@@ -25,14 +25,20 @@ object UpdateChecker {
 
     fun checkForUpdate(context: Context, isManualCheck: Boolean, listener: UpdateListener) {
         Thread {
+            var conn: HttpURLConnection? = null
             runCatching {
                 val url = URL("https://gitlab.com/api/v4/projects/fei.app%2Ffei.app/releases")
-                val conn = url.openConnection() as HttpURLConnection
-                conn.apply {
+                conn = (url.openConnection() as HttpURLConnection).apply {
                     requestMethod = "GET"
                     setRequestProperty("Accept", "application/json")
-                    setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:149.0) Gecko/20100101 Firefox/149.0")
+                    setRequestProperty(
+                        "User-Agent",
+                        "Mozilla/5.0 (X11; Linux x86_64; rv:149.0) Gecko/20100101 Firefox/149.0"
+                    )
                     connectTimeout = 10000
+                    // ★ BUG 59: readTimeout evita que uma conexão "aceita mas sem resposta"
+                    // pendure a thread para sempre.
+                    readTimeout = 10000
                 }
                 when (conn.responseCode) {
                     HttpURLConnection.HTTP_OK -> {
@@ -44,9 +50,11 @@ object UpdateChecker {
                         }
                         val latestRelease = jsonArray.getJSONObject(0)
                         val latestVersion = latestRelease.getString("tag_name")
-                        val releaseNotes = latestRelease.optString("description", "Sem notas de lançamento.")
+                        val releaseNotes =
+                            latestRelease.optString("description", "Sem notas de lançamento.")
                         val currentVersion = BuildConfig.VERSION_NAME
-                        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                        val prefs =
+                            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                         val lastNotifiedVersion = prefs.getString(KEY_LAST_VERSION, "") ?: ""
 
                         if (isVersionGreater(latestVersion, currentVersion)) {
@@ -68,7 +76,9 @@ object UpdateChecker {
                                     }
                                 }
                                 if (apkUrl.isNullOrEmpty()) {
-                                    listener.onError("Arquivo APK não foi encontrado nos assets da release da versão $latestVersion.")
+                                    listener.onError(
+                                        "Arquivo APK não foi encontrado nos assets da release da versão $latestVersion."
+                                    )
                                     return@runCatching
                                 }
                                 if (!isManualCheck) {
@@ -82,12 +92,15 @@ object UpdateChecker {
                             listener.onUpToDate()
                         }
                     }
+
                     else -> listener.onError("HTTP error: ${conn.responseCode}")
                 }
             }.onFailure { e ->
                 Log.e(TAG, "Erro na verificação", e)
                 listener.onError(e.message ?: "Erro desconhecido")
             }
+            // ★ BUG 59: libera socket sempre.
+            runCatching { conn?.disconnect() }
         }.start()
     }
 

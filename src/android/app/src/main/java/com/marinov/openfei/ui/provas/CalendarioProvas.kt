@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.marinov.openfei.data.CalendarioRepository
-import com.marinov.openfei.background.CalendarSyncManager
 import com.marinov.openfei.data.ProvaCalendario
 import com.marinov.openfei.data.SessionExpiredException
 import com.marinov.openfei.ui.main.MainActivity
@@ -27,6 +26,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
+import com.marinov.openfei.background.CalendarSyncManager
+import com.marinov.openfei.login.SessionManager
+import kotlinx.coroutines.DelicateCoroutinesApi
 
 class CalendarioProvas : Fragment() {
 
@@ -173,37 +175,18 @@ class CalendarioProvas : Fragment() {
             putString("data", prova.dataProva)
             putString("tipo", prova.tipoProva)
         }
-
-        val fragment = MateriadeProva().apply {
-            arguments = args
-        }
-
-        val transaction = parentFragmentManager.beginTransaction()
+        val fragment = MateriadeProva().apply { arguments = args }
 
         if (resources.getBoolean(com.marinov.openfei.R.bool.isTablet)) {
-            val currentDetail = parentFragmentManager.findFragmentById(
-                com.marinov.openfei.R.id.detail_container
-            )
-
-            if (currentDetail != null) {
-                transaction.remove(currentDetail)
-            }
-
-            transaction.replace(
-                com.marinov.openfei.R.id.detail_container,
-                fragment
-            )
+            val transaction = parentFragmentManager.beginTransaction()
+            parentFragmentManager.findFragmentById(com.marinov.openfei.R.id.detail_container)
+                ?.let { transaction.remove(it) }
+            transaction.replace(com.marinov.openfei.R.id.detail_container, fragment).commit()
         } else {
-            transaction.replace(
-                com.marinov.openfei.R.id.nav_host_fragment,
-                fragment
-            )
-            transaction.addToBackStack(null)
+            // ★ BUG 51: passa pela MainActivity para currentFragment/swipe ficarem coerentes
+            (activity as? MainActivity)?.openCustomFragment(fragment)
         }
-
-        transaction.commit()
     }
-
     private fun mostrarMenuFiltro(anchor: View) {
         if (!isAdded) return
 
@@ -285,17 +268,17 @@ class CalendarioProvas : Fragment() {
             Log.d(TAG, "carregarDados status=$status")
 
             when (status) {
-                MainActivity.STATUS_ONLINE_OK -> {
+                SessionManager.STATUS_ONLINE_OK -> {
                     esconderBarraOffline()
                     atualizarProvasOnline()
                 }
 
-                MainActivity.STATUS_OFFLINE -> {
+                SessionManager.STATUS_OFFLINE -> {
                     exibirBarraOffline()
                     if (!temCache) exibirSemDados()
                 }
 
-                MainActivity.STATUS_LOGIN_NEEDED -> {
+                SessionManager.STATUS_LOGIN_NEEDED -> {
                     exibirBarraOffline()
                     if (!temCache) exibirSemDados()
                 }
@@ -368,23 +351,14 @@ class CalendarioProvas : Fragment() {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun sincronizarAgendaSeNecessario(force: Boolean) {
-        val ctx = context ?: return
-
-        Log.d(
-            TAG,
-            "sincronizarAgendaSeNecessario | force=$force"
-        )
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            CalendarSyncManager.syncIfNeeded(
-                context = ctx,
-                fetchOnline = false,
-                force = force
-            )
+        val ctx = context?.applicationContext ?: return
+        Log.d(TAG, "sincronizarAgendaSeNecessario | force=$force")
+        kotlinx.coroutines.GlobalScope.launch(Dispatchers.IO) {
+            CalendarSyncManager.syncIfNeeded(context = ctx, fetchOnline = false, force = force)
         }
     }
-
     private fun aplicarFiltros() {
         if (!::adapter.isInitialized) return
         if (!dadosCarregados) return

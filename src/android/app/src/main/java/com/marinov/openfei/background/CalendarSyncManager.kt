@@ -319,13 +319,12 @@ object CalendarSyncManager {
             }
         }
 
-        if (allowDeleteMissing) {
-            // Remove eventos antigos sem UID ou duplicados
-            for (eventId in invalidOrDuplicateIds) {
-                addDeleteEventOps(ops, eventId)
-                deleteCount++
-            }
-            // Remove eventos que não existem mais na FEI/Moodle
+        for (eventId in invalidOrDuplicateIds) {
+            addDeleteEventOps(ops, eventId)
+            deleteCount++
+        }
+
+        if (allowDeleteMissing && currentItems.isNotEmpty()) {
             for (existing in existingByUid.values) {
                 val uid = existing.uid ?: continue
                 if (!currentUids.contains(uid)) {
@@ -333,11 +332,15 @@ object CalendarSyncManager {
                     deleteCount++
                 }
             }
+        } else if (allowDeleteMissing) {
+            Log.w(TAG, "allowDeleteMissing ignorado: 0 eventos válidos (proteção de dados nulos)")
         }
 
         try {
             if (ops.isNotEmpty()) {
-                context.contentResolver.applyBatch(CalendarContract.AUTHORITY, ops)
+                ops.chunked(200).forEach { chunk ->
+                    context.contentResolver.applyBatch(CalendarContract.AUTHORITY, ArrayList(chunk))
+                }
             }
             Log.d(
                 TAG,

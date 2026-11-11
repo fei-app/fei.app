@@ -2,6 +2,7 @@ use scraper::{Element, ElementRef, Html, Selector};
 use crate::error::CoreError;
 use crate::http::{execute_get_follow, http_client};
 use crate::models::Perfil;
+use crate::fei::session::{ensure_authenticated, unexpected_page};
 
 const FEI_URL_PERFIL: &str =
     "https://interage.fei.org.br/secureserver/portal/graduacao/secretaria/dados-pessoais";
@@ -12,15 +13,6 @@ fn sel(selector: &str) -> Selector {
 
 fn text(el: &ElementRef) -> String {
     el.text().collect::<String>().trim().to_string()
-}
-
-fn ensure_authenticated(doc: &Html) -> Result<(), CoreError> {
-    if doc.select(&sel("#btn-login")).next().is_some() {
-        return Err(CoreError::SessionExpired(
-            "Página de login detectada — sessão inválida".to_string(),
-        ));
-    }
-    Ok(())
 }
 
 pub fn fetch_perfil() -> Result<Perfil, CoreError> {
@@ -38,7 +30,7 @@ pub fn fetch_perfil() -> Result<Perfil, CoreError> {
             let t = el.text().collect::<String>();
             t.contains("Nome") && t.contains("Matrícula")
         })
-        .ok_or_else(|| CoreError::SessionExpired("Painel de perfil não encontrado".into()))?;
+        .ok_or_else(|| unexpected_page("Painel de perfil não encontrado"))?;
 
     let mut nome = String::new();
     let mut matricula = String::new();

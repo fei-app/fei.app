@@ -14,7 +14,6 @@ import com.marinov.openfei.data.ProvaCalendario
 import java.io.File
 
 object CacheHelper {
-
     private const val PREFS_NAME = "DadosFEI"
     private lateinit var appContext: Context
 
@@ -170,16 +169,16 @@ object CacheHelper {
 
     // ===================== LIMPEZA =====================
     /**
-     * ★ BUGFIX: a versão antiga tentava apagar arquivos .json que nunca existiram
-     * (disciplinas, aulas, provas, boletos e perfil ficam no SharedPreferences)
-     * e não removia as chaves de dados — só os timestamps.
-     * Agora remove TODOS os caches (arquivos + SharedPreferences) de verdade.
+     * ★ BUGFIX: remove TODOS os caches (arquivos + SharedPreferences).
+     * ★ BUG 80: também apaga os baselines — sem isso, o próximo sync
+     * compararia dados novos com um cache que acabou de ser destruído.
      */
     fun clearAllCacheFiles() {
         // Caches em arquivo
         listOf("notas_cache.json", "medias_cache.json").forEach { nome ->
             File(appContext.filesDir, nome).delete()
         }
+
         // Caches em SharedPreferences + todos os timestamps
         prefs.edit {
             remove(KEY_DISCIPLINAS)
@@ -198,5 +197,8 @@ object CacheHelper {
             remove(KEY_LAST_UPDATE_BOLETOS)
             remove(KEY_LAST_UPDATE_MEDIAS)
         }
+
+        // ★ BUG 80: próxima sincronização volta a ser "primeira execução".
+        runCatching { SyncBaseline.resetAll(appContext) }
     }
 }
