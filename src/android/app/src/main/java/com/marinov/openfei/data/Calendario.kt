@@ -138,28 +138,34 @@ object CalendarioRepository {
         CacheHelper.getCachedEventosMoodle()
 
     /**
-     * Baixa um anexo de tarefa do Moodle para cache/anexos_moodle e devolve o arquivo
-     * (o chamador abre via FileProvider). Lança SessionExpiredException / IOException.
+     * Baixa um anexo de tarefa do Moodle (Rust grava no cache) e o publica em
+     * Download/OpenFEI/Moodle. Devolve a Uri para abrir o arquivo; se a publicação falhar,
+     * devolve a Uri do arquivo em cache. Lança SessionExpiredException / IOException.
      */
-    suspend fun baixarAnexoMoodle(anexo: AnexoMoodle): java.io.File = withContext(Dispatchers.IO) {
-        val user = CredentialsStore.user(appContext)
-        val pass = CredentialsStore.pass(appContext)
-        if (user.isEmpty() || pass.isEmpty()) {
-            throw SessionExpiredException("Sem credenciais salvas")
-        }
-        val dir = java.io.File(appContext.cacheDir, "anexos_moodle").apply { mkdirs() }
-        when (val result = OpenFeiCore.downloadAnexoMoodle(user, pass, anexo.url, anexo.nome, dir.absolutePath)) {
-            is CoreResult.Success -> {
-                val file = java.io.File(result.data.path)
-                if (!file.exists()) throw IOException("Arquivo não encontrado após o download")
-                file
+    suspend fun baixarAnexoMoodle(anexo: AnexoMoodle, mimeType: String): android.net.Uri =
+        withContext(Dispatchers.IO) {
+            val user = CredentialsStore.user(appContext)
+            val pass = CredentialsStore.pass(appContext)
+            if (user.isEmpty() || pass.isEmpty()) {
+                throw SessionExpiredException("Sem credenciais salvas")
             }
-            is CoreResult.Error -> {
-                if (result.code == "SESSION_EXPIRED") throw SessionExpiredException(result.message)
-                throw IOException(result.message)
+            val dir = java.io.File(appContext.cacheDir, "anexos_moodle").apply { mkdirs() }
+
+            val file = when (val result = OpenFeiCore.downloadAnexoMoodle(
+                user, pass, anexo.url, anexo.nome, dir.absolutePath
+            )) {
+                is CoreResult.Success -> java.io.File(result.data.path)
+                is CoreResult.Error -> {
+                    if (result.code == "SESSION_EXPIRED") throw SessionExpiredException(result.message)
+                    throw IOException(result.message)
+                }
             }
+            if (!file.exists()) throw IOException("Arquivo não encontrado após o download")
+
+            DownloadsPublisher.publicar(
+                appContext, file, file.name, mimeType, DownloadsPublisher.SUB_MOODLE
+            ) ?: DownloadsPublisher.uriFileProvider(appContext, file)
         }
-    }
 
     // ------------------------------------------------------------------
     // ★ BUG 80: guards de dados nulos

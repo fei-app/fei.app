@@ -25,6 +25,9 @@ import com.marinov.openfei.data.AnexoMoodle
 import com.marinov.openfei.data.CalendarioRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import androidx.activity.result.contract.ActivityResultContracts
+import android.Manifest
+import com.marinov.openfei.data.DownloadsPublisher
 
 class MateriadeProva : Fragment() {
     companion object {
@@ -185,11 +188,30 @@ class MateriadeProva : Fragment() {
                 setBackgroundResource(outValue.resourceId)
                 isClickable = true
                 isFocusable = true
-                setOnClickListener { baixarEAbrirAnexo(anexo, this) }
+                setOnClickListener { aoTocarAnexo(anexo, this) }
             })
         }
 
         containerAnexos.visibility = View.VISIBLE
+    }
+
+    // API <= 28 precisa de WRITE_EXTERNAL_STORAGE para gravar em Download/OpenFEI/Moodle.
+    // Se o usuário negar, o download segue e o arquivo abre direto do cache do app.
+    private var anexoPendente: Pair<AnexoMoodle, View>? = null
+
+    private val storagePermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            anexoPendente?.let { (anexo, item) -> baixarEAbrirAnexo(anexo, item) }
+            anexoPendente = null
+        }
+
+    private fun aoTocarAnexo(anexo: AnexoMoodle, item: View) {
+        if (DownloadsPublisher.precisaPermissaoLegado(requireContext())) {
+            anexoPendente = anexo to item
+            storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        } else {
+            baixarEAbrirAnexo(anexo, item)
+        }
     }
 
     private fun baixarEAbrirAnexo(anexo: AnexoMoodle, item: View) {
@@ -203,9 +225,15 @@ class MateriadeProva : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val arquivo = CalendarioRepository.baixarAnexoMoodle(anexo)
+                val mime = mimeDoAnexo(anexo)
+                val uri = CalendarioRepository.baixarAnexoMoodle(anexo, mime)
                 if (!isAdded) return@launch
-                abrirArquivo(arquivo, anexo)
+                if (DownloadsPublisher.foiParaDownloads(uri)) {
+                    Toast.makeText(
+                        requireContext(), getString(R.string.materia_anexo_salvo), Toast.LENGTH_SHORT
+                    ).show()
+                }
+                abrirArquivo(uri, mime)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -234,14 +262,9 @@ class MateriadeProva : Fragment() {
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext) ?: "*/*"
     }
 
-    private fun abrirArquivo(arquivo: java.io.File, anexo: AnexoMoodle) {
-        val uri = FileProvider.getUriForFile(
-            requireContext(),
-            "${requireContext().packageName}.fileprovider",
-            arquivo
-        )
+    private fun abrirArquivo(uri: android.net.Uri, mime: String) {
         val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, mimeDoAnexo(anexo))
+            setDataAndType(uri, mime)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         try {

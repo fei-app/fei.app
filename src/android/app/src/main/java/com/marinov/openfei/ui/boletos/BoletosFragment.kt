@@ -25,6 +25,7 @@ import com.marinov.openfei.R
 import com.marinov.openfei.app.AppMode
 import com.marinov.openfei.data.Boleto
 import com.marinov.openfei.data.BoletosRepository
+import com.marinov.openfei.data.DownloadsPublisher
 import com.marinov.openfei.data.SessionExpiredException
 import com.marinov.openfei.login.SessionManager
 import com.marinov.openfei.ui.main.MainActivity
@@ -185,8 +186,7 @@ class BoletosFragment : Fragment(), MainActivity.RefreshableFragment {
                 return@launch
             }
 
-            val foiParaDownloads =
-                uri.scheme == "content" && uri.authority == MediaStore.AUTHORITY
+            val foiParaDownloads = DownloadsPublisher.foiParaDownloads(uri)
             Toast.makeText(
                 requireContext(),
                 getString(

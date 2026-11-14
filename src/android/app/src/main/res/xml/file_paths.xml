@@ -15,8 +15,4 @@
     <cache-path
         name="anexos_moodle"
         path="anexos_moodle/" />
-
-    <external-files-path
-        name="boletos_fallback"
-        path="BoletosFEI/" />
 </paths>

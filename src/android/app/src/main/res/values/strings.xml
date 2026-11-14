@@ -91,7 +91,7 @@
     <string name="materia_anexo_baixando">Baixando %1$s…</string>
     <string name="materia_anexo_erro">Não foi possível baixar o anexo: %1$s</string>
     <string name="materia_anexo_sem_app">Nenhum aplicativo instalado consegue abrir este tipo de arquivo.</string>
-
+    <string name="materia_anexo_salvo">Salvo em Downloads/OpenFEI/Moodle/</string>
     <string name="materia_erro_compartilhar">Erro: %1$s</string>
     <string name="filtrar_provas">Filtrar provas</string>
     <string name="sem_provas_esse_mes">Nenhuma prova/tarefa a ser mostrada nesse mês.</string>

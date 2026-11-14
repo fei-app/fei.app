@@ -1,13 +1,8 @@
 package com.marinov.openfei.data
 
-import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import android.os.Build
-import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
-import androidx.core.content.FileProvider
 import com.marinov.openfei.cache.CacheHelper
 import com.marinov.openfei.cache.SyncBaseline
 import com.marinov.openfei.core.CoreResult
@@ -116,12 +111,9 @@ object BoletosRepository {
     }
 
     /**
-     * ★ BUG 12: geração de boleto funciona em Android 10+ (scoped storage).
-     *
-     * - Rust grava o PDF no cache interno do app (sempre permitido).
-     * - API 29+: copiamos para MediaStore.Downloads → aparece no app Arquivos.
-     * - API 24–28: copiamos para Downloads/BoletosFEI (legacy).
-     * - Em todos os casos retornamos uma Uri legível para abrir via Intent.
+     * Rust grava o PDF no cache interno do app (sempre permitido) e depois o publicamos em
+     * Download/OpenFEI/Boletos via [DownloadsPublisher]. Se a publicação falhar (p.ex. API <= 28
+     * sem permissão), devolvemos uma Uri do arquivo em cache para o PDF ainda poder ser aberto.
      */
     suspend fun baixaBoleto(tituloId: String, vencimento: String): Uri? = withContext(Dispatchers.IO) {
         try {
@@ -131,24 +123,11 @@ object BoletosRepository {
                 is CoreResult.Success -> {
                     val srcFile = File(result.data.path)
                     if (!srcFile.exists()) return@withContext null
-                    val fileName = srcFile.name
 
-                    android.media.MediaScannerConnection.scanFile(
-                        appContext, arrayOf(srcFile.absolutePath),
-                        arrayOf("application/pdf"), null
-                    )
-
-                    val publishedUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        publishViaMediaStore(srcFile, fileName)
-                    } else {
-                        publishLegacy(srcFile, fileName)
-                    }
-
-                    publishedUri ?: FileProvider.getUriForFile(
-                        appContext,
-                        "${appContext.packageName}.fileprovider",
-                        srcFile
-                    )
+                    DownloadsPublisher.publicar(
+                        appContext, srcFile, srcFile.name,
+                        "application/pdf", DownloadsPublisher.SUB_BOLETOS
+                    ) ?: DownloadsPublisher.uriFileProvider(appContext, srcFile)
                 }
                 is CoreResult.Error -> {
                     Log.e(TAG, "Erro ao baixar boleto: ${result.code} - ${result.message}")
@@ -159,53 +138,6 @@ object BoletosRepository {
             throw e
         } catch (e: Exception) {
             Log.e(TAG, "Erro ao baixar boleto $tituloId", e)
-            null
-        }
-    }
-
-    private fun publishViaMediaStore(src: File, fileName: String): Uri? {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return null
-        return try {
-            val resolver = appContext.contentResolver
-            val values = ContentValues().apply {
-                put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-                put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
-                put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/BoletosFEI")
-                put(MediaStore.Downloads.IS_PENDING, 1)
-            }
-            val collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-            val itemUri = resolver.insert(collection, values) ?: return null
-            resolver.openOutputStream(itemUri)?.use { out ->
-                src.inputStream().use { it.copyTo(out) }
-            }
-            values.clear()
-            values.put(MediaStore.Downloads.IS_PENDING, 0)
-            resolver.update(itemUri, values, null, null)
-            itemUri
-        } catch (e: Exception) {
-            Log.e(TAG, "Falha ao publicar via MediaStore", e)
-            null
-        }
-    }
-
-    private fun publishLegacy(src: File, fileName: String): Uri? {
-        return try {
-            val dstDir = File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                "BoletosFEI"
-            ).apply { mkdirs() }
-            val dst = File(dstDir, fileName)
-            src.copyTo(dst, overwrite = true)
-            android.media.MediaScannerConnection.scanFile(
-                appContext, arrayOf(dst.absolutePath), arrayOf("application/pdf"), null
-            )
-            FileProvider.getUriForFile(
-                appContext,
-                "${appContext.packageName}.fileprovider",
-                dst
-            )
-        } catch (e: Exception) {
-            Log.e(TAG, "Falha ao publicar em modo legacy", e)
             null
         }
     }
