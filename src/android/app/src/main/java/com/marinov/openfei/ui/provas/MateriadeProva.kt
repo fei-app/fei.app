@@ -12,6 +12,19 @@ import com.google.android.material.button.MaterialButton
 import com.marinov.openfei.R
 import com.marinov.openfei.ui.main.MainActivity
 import android.text.util.Linkify
+import android.content.Intent
+import android.graphics.Paint
+import android.webkit.MimeTypeMap
+import android.widget.Toast
+import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.color.MaterialColors
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.marinov.openfei.data.AnexoMoodle
+import com.marinov.openfei.data.CalendarioRepository
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 
 class MateriadeProva : Fragment() {
     companion object {
@@ -20,6 +33,7 @@ class MateriadeProva : Fragment() {
         private const val ARG_DATA = "data"
         private const val ARG_TIPO = "tipo"
         private const val ARG_DESCRICAO = "descricao"
+        private const val ARG_ANEXOS = "anexos"
     }
 
     private lateinit var barraCompartilhamento: LinearLayout
@@ -27,6 +41,7 @@ class MateriadeProva : Fragment() {
     private lateinit var txtErro: TextView
     private lateinit var txtTitulo: TextView
     private lateinit var txtConteudo: TextView
+    private lateinit var containerAnexos: LinearLayout
     private lateinit var btnWhatsapp: MaterialButton
     private lateinit var btnClaude: MaterialButton
     private lateinit var btnChatgpt: MaterialButton
@@ -36,6 +51,7 @@ class MateriadeProva : Fragment() {
     private var dataProva: String = ""
     private var tipoProva: String = ""
     private var descricao: String = ""
+    private var anexos: List<AnexoMoodle> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,6 +65,7 @@ class MateriadeProva : Fragment() {
         txtErro = root.findViewById(R.id.txt_erro)
         txtTitulo = root.findViewById(R.id.txt_titulo)
         txtConteudo = root.findViewById(R.id.txt_conteudo)
+        containerAnexos = root.findViewById(R.id.container_anexos)
         btnWhatsapp = root.findViewById(R.id.btn_whatsapp)
         btnClaude = root.findViewById(R.id.btn_claude)
         btnChatgpt = root.findViewById(R.id.btn_chatgpt)
@@ -60,6 +77,7 @@ class MateriadeProva : Fragment() {
             dataProva = it.getString(ARG_DATA) ?: ""
             tipoProva = it.getString(ARG_TIPO) ?: ""
             descricao = it.getString(ARG_DESCRICAO) ?: ""
+            anexos = parseAnexos(it.getString(ARG_ANEXOS))
         }
 
         exibirConteudo()
@@ -102,11 +120,139 @@ class MateriadeProva : Fragment() {
             Linkify.addLinks(txtConteudo, Linkify.WEB_URLS)
         }
 
+        exibirAnexos()
+
         progressBar.visibility = View.GONE
         txtErro.visibility = View.GONE
         barraCompartilhamento.visibility = View.VISIBLE
         txtTitulo.visibility = View.VISIBLE
         txtConteudo.visibility = View.VISIBLE
+    }
+
+    private fun parseAnexos(json: String?): List<AnexoMoodle> {
+        if (json.isNullOrBlank()) return emptyList()
+        return try {
+            val type = object : TypeToken<List<AnexoMoodle>>() {}.type
+            Gson().fromJson<List<AnexoMoodle>>(json, type).orEmpty()
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Anexos (lista de textos clicáveis, mesmo tamanho do texto da descrição)
+    // ------------------------------------------------------------------
+
+    private fun exibirAnexos() {
+        containerAnexos.removeAllViews()
+
+        if (tipoProva != "Moodle" || anexos.isEmpty()) {
+            containerAnexos.visibility = View.GONE
+            return
+        }
+
+        val ctx = requireContext()
+        val corLink = MaterialColors.getColor(containerAnexos, androidx.appcompat.R.attr.colorPrimary)
+        val dp = resources.displayMetrics.density
+
+        val outValue = android.util.TypedValue()
+        ctx.theme.resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
+
+        containerAnexos.addView(TextView(ctx).apply {
+            text = getString(R.string.materia_anexos_titulo)
+            textSize = 16f
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
+            setTextColor(MaterialColors.getColor(containerAnexos, com.google.android.material.R.attr.colorOnSurface))
+            setLineSpacing(0f, 1.25f)
+            setPadding(0, (4 * dp).toInt(), 0, (4 * dp).toInt())
+        })
+
+        anexos.forEach { anexo ->
+            val tamanho = if (anexo.tamanho > 0) {
+                " (${android.text.format.Formatter.formatShortFileSize(ctx, anexo.tamanho)})"
+            } else {
+                ""
+            }
+
+            containerAnexos.addView(TextView(ctx).apply {
+                text = "${anexo.nome}$tamanho"
+                textSize = 16f
+                setLineSpacing(0f, 1.25f)
+                setTextColor(corLink)
+                paintFlags = paintFlags or Paint.UNDERLINE_TEXT_FLAG
+                minHeight = (48 * dp).toInt()
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                setBackgroundResource(outValue.resourceId)
+                isClickable = true
+                isFocusable = true
+                setOnClickListener { baixarEAbrirAnexo(anexo, this) }
+            })
+        }
+
+        containerAnexos.visibility = View.VISIBLE
+    }
+
+    private fun baixarEAbrirAnexo(anexo: AnexoMoodle, item: View) {
+        item.isEnabled = false
+        item.alpha = 0.5f
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.materia_anexo_baixando, anexo.nome),
+            Toast.LENGTH_SHORT
+        ).show()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val arquivo = CalendarioRepository.baixarAnexoMoodle(anexo)
+                if (!isAdded) return@launch
+                abrirArquivo(arquivo, anexo)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (isAdded) {
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.materia_anexo_erro, e.message ?: ""),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            } finally {
+                item.isEnabled = true
+                item.alpha = 1f
+            }
+        }
+    }
+
+    private fun mimeDoAnexo(anexo: AnexoMoodle): String {
+        val doServidor = anexo.mimeType.lowercase()
+        // O Moodle às vezes devolve "document/unknown" ou vazio.
+        if (doServidor.isNotBlank() && !doServidor.startsWith("document/") &&
+            doServidor != "application/octet-stream"
+        ) return doServidor
+
+        val ext = anexo.nome.substringAfterLast('.', "").lowercase()
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext) ?: "*/*"
+    }
+
+    private fun abrirArquivo(arquivo: java.io.File, anexo: AnexoMoodle) {
+        val uri = FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.fileprovider",
+            arquivo
+        )
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, mimeDoAnexo(anexo))
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        try {
+            startActivity(intent)
+        } catch (_: Exception) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.materia_anexo_sem_app),
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
     private fun configurarAcoesCompartilhamento() {

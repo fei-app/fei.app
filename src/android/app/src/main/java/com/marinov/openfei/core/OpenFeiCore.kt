@@ -40,6 +40,10 @@ object OpenFeiCore {
     private external fun nativeFetchCarousel(): String
     private external fun nativeDownloadBoleto(tituloId: String, vencimento: String, outDir: String): String
     private external fun nativeFetchEventosMoodle(user: String, pass: String): String
+
+    private external fun nativeDownloadAnexoMoodle(
+        user: String, pass: String, url: String, nome: String, outDir: String
+    ): String
     private external fun nativeClearSession()
     private external fun nativeClearMoodleSession()
 
@@ -179,6 +183,15 @@ object OpenFeiCore {
 
     fun fetchEventosMoodle(user: String, pass: String): CoreResult<List<CoreProvaCalendario>> =
         guarded { parseList(nativeFetchEventosMoodle(user, pass)) }
+
+    fun downloadAnexoMoodle(
+        user: String,
+        pass: String,
+        url: String,
+        nome: String,
+        outDir: String
+    ): CoreResult<CoreDownloadAnexoResult> =
+        guarded { parseObject(nativeDownloadAnexoMoodle(user, pass, url, nome, outDir)) }
 
     /** Limpa FEI + Moodle. */
     fun clearSession() {

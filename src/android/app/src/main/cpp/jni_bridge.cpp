@@ -126,10 +126,25 @@ Java_com_marinov_openfei_core_OpenFeiCore_nativeFetchEventosMoodle(
     return call_rust_two_args(env, user, pass, openfei_fetch_eventos_moodle);
 }
 
+extern "C" JNIEXPORT jstring JNICALL
+Java_com_marinov_openfei_core_OpenFeiCore_nativeDownloadAnexoMoodle(
+        JNIEnv* env, jobject, jstring user, jstring pass, jstring url, jstring nome, jstring outDir
+) {
+    std::string arg1 = jstring_to_string(env, user);
+    std::string arg2 = jstring_to_string(env, pass);
+    std::string arg3 = jstring_to_string(env, url);
+    std::string arg4 = jstring_to_string(env, nome);
+    std::string arg5 = jstring_to_string(env, outDir);
+    char* raw = openfei_download_anexo_moodle(
+            arg1.c_str(), arg2.c_str(), arg3.c_str(), arg4.c_str(), arg5.c_str());
+    jstring result = char_to_jstring(env, raw);
+    openfei_free_string(raw);
+    return result;
+}
+
 // ---------------------------------------------------------------------
 // Sessões
 // ---------------------------------------------------------------------
-
 extern "C" JNIEXPORT void JNICALL
 Java_com_marinov_openfei_core_OpenFeiCore_nativeClearSession(JNIEnv*, jobject) {
     openfei_clear_session();

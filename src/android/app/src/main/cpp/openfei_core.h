@@ -32,6 +32,13 @@ char* openfei_download_boleto(
 
 /* ---------------- Moodle ---------------- */
 char* openfei_fetch_eventos_moodle(const char* user, const char* pass);
+char* openfei_download_anexo_moodle(
+        const char* user,
+        const char* pass,
+        const char* url,
+        const char* nome,
+        const char* out_dir
+);
 
 #ifdef __cplusplus
 }

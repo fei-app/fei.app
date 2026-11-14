@@ -110,6 +110,15 @@ pub struct MoodleTokenData {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
+pub struct DownloadAnexoResult {
+    pub path: String,
+    pub size: u64,
+    /// Content-Type devolvido pelo servidor (sem parâmetros); vazio se ausente.
+    pub mime_type: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct DownloadBoletoResult {
     pub path: String,
     pub size: usize,

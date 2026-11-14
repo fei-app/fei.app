@@ -253,6 +253,26 @@ pub extern "C" fn openfei_fetch_eventos_moodle(
 }
 
 #[no_mangle]
+pub extern "C" fn openfei_download_anexo_moodle(
+    user: *const c_char,
+    pass: *const c_char,
+    url: *const c_char,
+    nome: *const c_char,
+    out_dir: *const c_char,
+) -> *mut c_char {
+    let user = unsafe { ptr_to_string(user) };
+    let pass = unsafe { ptr_to_string(pass) };
+    let url = unsafe { ptr_to_string(url) };
+    let nome = unsafe { ptr_to_string(nome) };
+    let out_dir = unsafe { ptr_to_string(out_dir) };
+
+    match moodle::download_anexo_moodle(&user, &pass, &url, &nome, &out_dir) {
+        Ok(data) => into_raw_json(ok_json(data)),
+        Err(e) => into_raw_json(error_json(e)),
+    }
+}
+
+#[no_mangle]
 pub extern "C" fn openfei_fetch_eventos_moodle_with_token(token: *const c_char) -> *mut c_char {
     let token = unsafe { ptr_to_string(token) };
 

@@ -175,6 +175,7 @@ class CalendarioProvas : Fragment() {
             putString("data", prova.dataProva)
             putString("tipo", prova.tipoProva)
             putString("descricao", prova.descricao)
+            putString("anexos", com.google.gson.Gson().toJson(prova.anexos))
         }
         val fragment = MateriadeProva().apply { arguments = args }
 

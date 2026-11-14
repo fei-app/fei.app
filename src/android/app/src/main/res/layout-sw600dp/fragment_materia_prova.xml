@@ -74,14 +74,29 @@
         android:paddingHorizontal="16dp"
         android:paddingBottom="0dp">
 
-        <TextView
-            android:id="@+id/txt_conteudo"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:lineSpacingMultiplier="1.25"
-            android:textColor="?attr/colorOnSurface"
-            android:paddingBottom="18dp" />
+            android:orientation="vertical">
+
+            <!-- Anexos (preenchido por código; fica abaixo da barra de ícones) -->
+            <LinearLayout
+                android:id="@+id/container_anexos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="12dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/txt_conteudo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:lineSpacingMultiplier="1.25"
+                android:textColor="?attr/colorOnSurface"
+                android:paddingBottom="18dp" />
+        </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 

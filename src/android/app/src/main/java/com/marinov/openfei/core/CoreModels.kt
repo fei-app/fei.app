@@ -90,6 +90,12 @@ data class CoreCarouselItem(
     val linkUrl: String? = null
 )
 
+data class CoreDownloadAnexoResult(
+    val path: String = "",
+    val size: Long = 0L,
+    val mimeType: String = ""
+)
+
 data class CoreDownloadBoletoResult(
     val path: String = "",
     val size: Int = 0

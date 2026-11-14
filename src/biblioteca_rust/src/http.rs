@@ -58,6 +58,25 @@ pub fn reset_all_clients() {
     reset_moodle_client();
 }
 
+/// Cliente para downloads de arquivos grandes: sem cookies, timeout longo e
+/// redirects SOMENTE dentro do host do Moodle (a URL carrega o token do usuário,
+/// então nunca pode ser seguida para outro domínio).
+pub fn download_client() -> Client {
+    Client::builder()
+        .user_agent(USER_AGENT)
+        .redirect(Policy::custom(|attempt| {
+            let mesmo_host = attempt.url().host_str() == Some("moodle.fei.edu.br");
+            if mesmo_host && attempt.previous().len() < 10 {
+                attempt.follow()
+            } else {
+                attempt.stop()
+            }
+        }))
+        .timeout(Duration::from_secs(600))
+        .build()
+        .expect("Falha ao criar cliente de download")
+}
+
 /// Alias de compatibilidade: todo o módulo `fei::*` continua chamando http_client().
 pub fn http_client() -> Client {
     fei_client()
