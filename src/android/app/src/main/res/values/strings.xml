@@ -84,7 +84,8 @@
     <string name="senha">Senha</string>
     <!-- ==================== PROVAS / MATÉRIA ==================== -->
     <string name="materia_descricao_breve">Em breve será possível ver uma breve descrição da prova/tarefa.</string>
-    <string name="materia_resumo_prompt">Faça um resumo para minha prova: %1$s\n%2$s</string>
+    <string name="materia_resumo_prompt">Faça um resumo para minha prova: %1$s
+%2$s</string>
     <string name="materia_erro_compartilhar">Erro: %1$s</string>
     <string name="filtrar_provas">Filtrar provas</string>
     <string name="sem_provas_esse_mes">Nenhuma prova/tarefa a ser mostrada nesse mês.</string>
@@ -93,7 +94,9 @@
     <string name="settings_base_apagada">Base de dados apagada com sucesso!</string>
     <string name="settings_autofill_apagado">Dados de preenchimento automático apagados com sucesso!</string>
     <string name="settings_update_titulo">Atualização Disponível (%1$s)</string>
-    <string name="settings_update_mensagem">O que há de novo:\n%1$s\nDeseja baixar e instalar agora?</string>
+    <string name="settings_update_mensagem">O que há de novo:
+%1$s
+Deseja baixar e instalar agora?</string>
     <string name="settings_update_erro_download">Falha ao baixar o arquivo. Tente usar um VPN ou proxy ou baixar a atualização manualmente.</string>
     <string name="settings_update_erro_download_msg">Falha no download: %1$s. Tente usar um VPN ou proxy ou baixar a atualização manualmente</string>
     <string name="settings_download_concluido">Download concluído</string>
@@ -137,6 +140,13 @@
     <string name="notif_boletos_titulo">Boleto atualizado!</string>
     <string name="notif_boletos_texto">Houve alteração nos seus boletos. Toque para ver.</string>
     <string name="notif_boletos_big_text">Há novidades nos seus boletos da FEI. Confira se há algum boleto em aberto ou recém-pago.</string>
+    <!-- ★ Lembrar mais tarde (snooze) do boleto -->
+    <string name="notif_boletos_lembrar_mais_tarde">Lembrar mais tarde</string>
+    <string name="notif_boletos_lembrar_titulo">Lembrar boleto</string>
+    <string name="notif_boletos_lembrar_texto">Em quanto tempo devo te lembrar?</string>
+    <string name="notif_boletos_opcao_horas">%1$d h</string>
+    <string name="notif_boletos_voltar">Voltar</string>
+    <string name="notif_boletos_lembrete_agendado">Lembrete agendado para daqui a %1$d h</string>
     <string name="notif_horario_titulo">Novo horário de aula disponível!</string>
     <string name="notif_horario_texto">Clique para ver detalhes</string>
     <string name="notif_horario_big_text">O horário de aulas foi atualizado. Confira as mudanças.</string>
@@ -196,16 +206,11 @@
     <string name="settings_agenda_ativada">Eventos adicionados à agenda do sistema</string>
     <string name="settings_agenda_removida">Eventos removidos da agenda do sistema</string>
     <string name="settings_agenda_permissao_necessaria">Permissão de calendário necessária para ativar este recurso</string>
-
     <string name="calendario_nome">OpenFEI - Provas e Tarefas</string>
-
     <string name="erro_biblioteca_nativa">Falha ao carregar a biblioteca nativa do aplicativo. Reinstale o app.</string>
     <string name="update_apk_invalido">O arquivo baixado não é um APK válido do OpenFEI.</string>
     <string name="download_nao_suportado">Este tipo de download não é suportado pelo aplicativo.</string>
-
     <string name="boletos_permissao_negada">Sem permissão de armazenamento. O boleto será salvo na pasta do aplicativo.</string>
     <string name="boletos_salvo_em_app">Boleto salvo na pasta do aplicativo</string>
-
     <string name="login_conta_reconectar">Sua sessão expirou. Confirme sua senha para continuar.</string>
-
 </resources>

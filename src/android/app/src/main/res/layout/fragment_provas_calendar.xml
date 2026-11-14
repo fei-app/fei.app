@@ -6,19 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fundocartao">
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <!-- Barra Offline (global: layout/include_offline_bar.xml) -->
         <include
             android:id="@+id/barOffline"
             layout="@layout/include_offline_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
         <!-- Banner AdMob (Abaixo da barra offline e acima do seletor) -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,7 +24,6 @@
             android:paddingTop="8dp"
             android:paddingBottom="4dp">
         </LinearLayout>
-
         <!-- Contêiner para Spinner e Botão de Filtro -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -37,7 +33,6 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:gravity="center_vertical">
-
             <!-- Card do Spinner -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
@@ -46,7 +41,6 @@
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
                 app:cardBackgroundColor="@color/fundocartao">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -54,7 +48,6 @@
                     android:paddingEnd="12dp"
                     android:gravity="center_vertical"
                     tools:ignore="RtlSymmetry">
-
                     <Spinner
                         android:id="@+id/spinner_mes"
                         android:layout_width="0dp"
@@ -62,7 +55,6 @@
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
                         android:padding="12dp"/>
-
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
@@ -71,7 +63,6 @@
                         app:tint="?attr/colorOnSurface" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
             <!-- Botão de Filtro -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="48dp"
@@ -81,7 +72,6 @@
                 app:cardElevation="0dp"
                 app:strokeColor="@color/fundocartao"
                 app:cardBackgroundColor="@color/fundocartao">
-
                 <ImageButton
                     android:id="@+id/btnFiltro"
                     android:layout_width="match_parent"
@@ -92,7 +82,6 @@
                     app:tint="?attr/colorOnSurface" />
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
-
         <!-- Mensagens e RecyclerView -->
         <TextView
             android:id="@+id/txt_sem_provas"
@@ -103,7 +92,6 @@
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:visibility="gone"
             android:padding="24dp"/>
-
         <TextView
             android:id="@+id/txt_sem_dados"
             android:layout_width="match_parent"
@@ -113,15 +101,20 @@
             android:textAppearance="?attr/textAppearanceBodyLarge"
             android:visibility="gone"
             android:padding="24dp"/>
-
+        <!--
+            ★ Espaço inferior para a barra de navegação flutuante não cobrir
+            a última prova (mesmo efeito do spacer do fragment_home.xml):
+            paddingBottom = actionBarSize (rolável, clipToPadding=false)
+            marginBottom  = 32dp (20dp de margin da barra + 8dp padding + folga)
+        -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerProvas"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="32dp"
             android:clipToPadding="false"
-            android:paddingBottom="16dp"/>
+            android:paddingBottom="?attr/actionBarSize"/>
     </LinearLayout>
-
     <!-- Loading (global: layout/include_loading.xml) -->
     <include
         android:id="@+id/progress_circular"
