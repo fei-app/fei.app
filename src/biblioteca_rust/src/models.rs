@@ -46,6 +46,24 @@ pub struct ProvaCalendario {
     pub sala: Option<String>,
     pub coordenador: String,
     pub tipo_prova: String,
+    /// Descrição da tarefa/evento (texto puro). Só preenchido para eventos do Moodle.
+    #[serde(default)]
+    pub descricao: String,
+    /// Anexos da tarefa (arquivos colocados pelo professor). Só para eventos do Moodle.
+    #[serde(default)]
+    pub anexos: Vec<AnexoMoodle>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct AnexoMoodle {
+    pub nome: String,
+    /// URL do arquivo SEM o token (o token nunca é persistido no cache do app).
+    pub url: String,
+    pub tamanho: i64,
+    pub mime_type: String,
+    /// Unix timestamp (segundos) da última modificação; 0 se desconhecido.
+    pub modificado: i64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]

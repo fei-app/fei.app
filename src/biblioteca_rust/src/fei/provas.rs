@@ -102,6 +102,7 @@ pub fn fetch_provas_fei() -> Result<Vec<ProvaCalendario>, CoreError> {
                 sala: Some(sala),
                 coordenador,
                 tipo_prova: tipo_prova.clone(),
+                ..Default::default()
             });
         }
     }

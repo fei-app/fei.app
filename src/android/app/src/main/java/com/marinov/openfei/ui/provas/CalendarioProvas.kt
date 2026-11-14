@@ -174,6 +174,7 @@ class CalendarioProvas : Fragment() {
             putString("nome", prova.nomeDisciplina)
             putString("data", prova.dataProva)
             putString("tipo", prova.tipoProva)
+            putString("descricao", prova.descricao)
         }
         val fragment = MateriadeProva().apply { arguments = args }
 

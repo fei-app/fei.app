@@ -83,8 +83,8 @@
     <string name="usuario">Usuário</string>
     <string name="senha">Senha</string>
     <!-- ==================== PROVAS / MATÉRIA ==================== -->
-    <string name="materia_descricao_breve">Em breve será possível ver uma breve descrição da prova/tarefa.</string>
-    <string name="materia_resumo_prompt">Faça um resumo para minha prova: %1$s
+    <string name="materia_sem_descricao">O professor não adicionou uma descrição para esta tarefa no Moodle.</string>
+    <string name="materia_resumo_prompt">Faça um resumo para minha prova/tarefa: %1$s
 %2$s</string>
     <string name="materia_erro_compartilhar">Erro: %1$s</string>
     <string name="filtrar_provas">Filtrar provas</string>
@@ -213,4 +213,5 @@ Deseja baixar e instalar agora?</string>
     <string name="boletos_permissao_negada">Sem permissão de armazenamento. O boleto será salvo na pasta do aplicativo.</string>
     <string name="boletos_salvo_em_app">Boleto salvo na pasta do aplicativo</string>
     <string name="login_conta_reconectar">Sua sessão expirou. Confirme sua senha para continuar.</string>
+    <string name="materia_descricao_breve">Em breve será possível obter uma breve descrição da prova.</string>
 </resources>

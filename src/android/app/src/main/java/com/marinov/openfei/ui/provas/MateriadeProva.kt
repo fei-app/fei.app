@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.button.MaterialButton
 import com.marinov.openfei.R
 import com.marinov.openfei.ui.main.MainActivity
+import android.text.util.Linkify
 
 class MateriadeProva : Fragment() {
     companion object {
@@ -18,6 +19,7 @@ class MateriadeProva : Fragment() {
         private const val ARG_NOME = "nome"
         private const val ARG_DATA = "data"
         private const val ARG_TIPO = "tipo"
+        private const val ARG_DESCRICAO = "descricao"
     }
 
     private lateinit var barraCompartilhamento: LinearLayout
@@ -33,6 +35,7 @@ class MateriadeProva : Fragment() {
     private var nomeDisciplina: String = ""
     private var dataProva: String = ""
     private var tipoProva: String = ""
+    private var descricao: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,6 +59,7 @@ class MateriadeProva : Fragment() {
             nomeDisciplina = it.getString(ARG_NOME) ?: ""
             dataProva = it.getString(ARG_DATA) ?: ""
             tipoProva = it.getString(ARG_TIPO) ?: ""
+            descricao = it.getString(ARG_DESCRICAO) ?: ""
         }
 
         exibirConteudo()
@@ -87,7 +91,16 @@ class MateriadeProva : Fragment() {
         }
 
         txtTitulo.text = titulo
-        txtConteudo.text = getString(R.string.materia_descricao_breve)
+        val temDescricaoMoodle = tipoProva == "Moodle" && descricao.isNotBlank()
+        txtConteudo.text = when {
+            temDescricaoMoodle -> descricao
+            tipoProva == "Moodle" -> getString(R.string.materia_sem_descricao)
+            else -> getString(R.string.materia_descricao_breve)
+        }
+        if (temDescricaoMoodle) {
+            txtConteudo.setTextIsSelectable(true)
+            Linkify.addLinks(txtConteudo, Linkify.WEB_URLS)
+        }
 
         progressBar.visibility = View.GONE
         txtErro.visibility = View.GONE

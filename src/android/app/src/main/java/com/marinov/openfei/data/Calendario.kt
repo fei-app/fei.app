@@ -208,7 +208,17 @@ object CalendarioRepository {
                         hora = core.hora,
                         sala = core.sala,
                         coordenador = core.coordenador,
-                        tipoProva = core.tipoProva
+                        tipoProva = core.tipoProva,
+                        descricao = core.descricao,
+                        anexos = core.anexos.map { a ->
+                            AnexoMoodle(
+                                nome = a.nome,
+                                url = a.url,
+                                tamanho = a.tamanho,
+                                mimeType = a.mimeType,
+                                modificado = a.modificado
+                            )
+                        }
                     )
                 }
             }

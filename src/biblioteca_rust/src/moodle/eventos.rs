@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use crate::error::CoreError;
 use crate::http::moodle_client;
 use crate::models::ProvaCalendario;
+use crate::moodle::detalhes::{ChaveEvento, ResolvedorDetalhes};
 use crate::moodle::login::get_moodle_token;
 
 const MOODLE_API_URL: &str = "https://moodle.fei.edu.br/webservice/rest/server.php";
@@ -21,9 +22,18 @@ struct MoodleEvent {
     name: String,
     courseid: Option<i64>,
     timestart: i64,
+    /// HTML da descrição do evento (para eventos de tarefa costuma ser o `intro`).
+    #[serde(default)]
+    description: String,
+    /// Nome do módulo que gerou o evento: "assign", "quiz", "forum"... (vazio em eventos manuais).
+    #[serde(default)]
+    modulename: String,
+    /// ID da INSTÂNCIA do módulo (p.ex. o id da tarefa), não o cmid.
+    #[serde(default)]
+    instance: i64,
 }
 
-fn moodle_api(
+pub(crate) fn moodle_api(
     token: &str,
     function: &str,
     extra: Vec<(String, String)>,
@@ -138,42 +148,55 @@ pub fn fetch_eventos_moodle_with_token(token: &str) -> Result<Vec<ProvaCalendari
     let events: Vec<MoodleEvent> =
         serde_json::from_value(serde_json::Value::Array(events_array.clone())).unwrap_or_default();
 
+    let course_ids: Vec<i64> = courses.iter().map(|c| c.id).collect();
+
     let mapa: HashMap<i64, MoodleCourse> = courses
         .into_iter()
         .map(|c| (c.id, c))
         .collect();
 
-    let mapped = events
-        .into_iter()
-        .map(|event| {
-            let course = event.courseid.and_then(|id| mapa.get(&id));
+    // Enriquecimento (descrição + anexos). Best effort: nunca derruba os eventos.
+    let mut resolvedor = ResolvedorDetalhes::new(token, &course_ids);
 
-            let codigo = course
-                .map(|c| c.shortname.clone())
-                .unwrap_or_else(|| "Moodle".to_string());
+    let mut mapped = Vec::with_capacity(events.len());
 
-            let sala = course.map(|c| c.fullname.clone());
+    for event in events {
+        let course = event.courseid.and_then(|id| mapa.get(&id));
 
-            let nome_limpo = event
-                .name
-                .replace("está marcado(a) para esta data", "")
-                .trim()
-                .to_string();
+        let codigo = course
+            .map(|c| c.shortname.clone())
+            .unwrap_or_else(|| "Moodle".to_string());
 
-            let (data, hora) = format_moodle_timestamp(event.timestart)
-                .unwrap_or_else(|_| ("--/--".to_string(), "--:--".to_string()));
+        let sala = course.map(|c| c.fullname.clone());
 
-            ProvaCalendario {
-                disciplina: codigo,
-                nome_disciplina: nome_limpo,
-                data_prova: data,
-                hora,
-                sala,
-                coordenador: String::new(),
-                tipo_prova: "Moodle".to_string(),
-            }
-        })
-        .collect();
+        let nome_limpo = event
+            .name
+            .replace("está marcado(a) para esta data", "")
+            .trim()
+            .to_string();
+
+        let (data, hora) = format_moodle_timestamp(event.timestart)
+            .unwrap_or_else(|_| ("--/--".to_string(), "--:--".to_string()));
+
+        let detalhe = resolvedor.resolver(&ChaveEvento {
+            course_id: event.courseid.filter(|id| *id > 0),
+            modulename: event.modulename.clone(),
+            instance: event.instance,
+            description_html: event.description.clone(),
+        });
+
+        mapped.push(ProvaCalendario {
+            disciplina: codigo,
+            nome_disciplina: nome_limpo,
+            data_prova: data,
+            hora,
+            sala,
+            coordenador: String::new(),
+            tipo_prova: "Moodle".to_string(),
+            descricao: detalhe.descricao,
+            anexos: detalhe.anexos,
+        });
+    }
 
     Ok(mapped)
 }

@@ -65,7 +65,17 @@ data class CoreProvaCalendario(
     val hora: String = "",
     val sala: String? = null,
     val coordenador: String = "",
-    val tipoProva: String = ""
+    val tipoProva: String = "",
+    val descricao: String = "",
+    val anexos: List<CoreAnexoMoodle> = emptyList()
+)
+
+data class CoreAnexoMoodle(
+    val nome: String = "",
+    val url: String = "",
+    val tamanho: Long = 0L,
+    val mimeType: String = "",
+    val modificado: Long = 0L
 )
 
 data class CoreBoleto(
