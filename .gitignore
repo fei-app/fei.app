@@ -16,3 +16,4 @@
 /src/iOS/.build/
 /src/iOS/.swiftpm/
 /src/iOS/xtool/
+/src/android/app/src/main/assets/adi-registration.properties
