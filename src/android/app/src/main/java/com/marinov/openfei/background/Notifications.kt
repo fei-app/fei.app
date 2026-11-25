@@ -24,12 +24,14 @@ import com.marinov.openfei.ui.main.MainActivity
  * Centraliza o envio de notificações de sync, separando-as do ciclo de vida
  * do antigo BackgroundService (agora inexistente).
  *
- * ★ NOVO: lembrete de boleto ("Lembrar mais tarde").
- *  - sendBoletos() ganha a ação "Lembrar mais tarde";
+ * ★ Lembrar boleto ("Lembrar mais tarde"):
+ *  - sendBoletos() tem a ação "Lembrar mais tarde";
  *  - sendBoletosSnoozeOptions() reposta a MESMA notificação (ID_BOLETOS)
  *    com layout customizado expandido: 1h / 2h / 3h / 6h / 12h + Voltar;
- *  - snoozeBoletos() agenda o reenvio via AlarmManager (exato quando
- *    permitido, fallback inexact — mesmo padrão do SyncScheduler);
+ *  - snoozeBoletos() agenda o reenvio via AlarmHelper
+ *    (★ inexact com setAndAllowWhileIdle — SEM permissões de alarme exato;
+ *    o disparo pode atrasar alguns minutos em Doze, o que é aceitável
+ *    para um lembrete de boleto);
  *  - o horário agendado é persistido para sobreviver a reboot
  *    (rearmBoletoReminderIfNeeded, chamado pelo BootReceiver).
  */
@@ -89,6 +91,7 @@ object Notifications {
                 append("${n.nomeDisciplina} (${n.codigoDisciplina}) - ${n.tipoProva}: ${n.valor}\n")
             }
         }.trim()
+
         val pi = mainPendingIntent(context, 0, "notas")
         val notif = NotificationCompat.Builder(context, CH_NOTAS)
             .setSmallIcon(R.drawable.ic_notification)
@@ -187,7 +190,6 @@ object Notifications {
             .setAutoCancel(true)
             .setOnlyAlertOnce(true) // não repete som/vibração ao trocar o layout
             .build()
-
         notifySafely(context, ID_BOLETOS, notif)
     }
 
@@ -197,11 +199,9 @@ object Notifications {
      */
     fun snoozeBoletos(context: Context, horas: Int) {
         NotificationManagerCompat.from(context).cancel(ID_BOLETOS)
-
         val triggerAt = System.currentTimeMillis() + horas * 60L * 60L * 1000L
         reminderPrefs(context).edit { putLong(KEY_REMINDER_TRIGGER_AT, triggerAt) }
         scheduleBoletoReminderAt(context, triggerAt)
-
         Toast.makeText(
             context,
             context.getString(R.string.notif_boletos_lembrete_agendado, horas),
@@ -248,20 +248,13 @@ object Notifications {
     // Alarme do lembrete de boleto
     // ------------------------------------------------------------------
 
+    /**
+     * ★ Inexact via AlarmHelper (setAndAllowWhileIdle): dispara mesmo em
+     * Doze, sem SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM. O sistema pode
+     * atrasar o disparo em alguns minutos — aceitável para este lembrete.
+     */
     private fun scheduleBoletoReminderAt(context: Context, triggerAtMillis: Long) {
-        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val pi = boletosLembretePendingIntent(context)
-        try {
-            if (SyncScheduler.canUseExactAlarms(context)) {
-                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pi)
-            } else {
-                Log.w(TAG, "Alarme exato indisponível — lembrete de boleto será inexact")
-                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pi)
-            }
-        } catch (e: SecurityException) {
-            Log.w(TAG, "SecurityException no alarme do lembrete; fallback inexact", e)
-            am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pi)
-        }
+        AlarmHelper.schedule(context, triggerAtMillis, boletosLembretePendingIntent(context))
     }
 
     private fun cancelBoletoReminder(context: Context) {

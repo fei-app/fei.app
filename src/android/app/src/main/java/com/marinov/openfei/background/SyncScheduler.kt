@@ -4,7 +4,6 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.util.Log
 import com.marinov.openfei.app.AppMode
 import com.marinov.openfei.network.NetworkChecker
@@ -20,14 +19,16 @@ import java.util.concurrent.atomic.AtomicLong
  *
  * - 1 alarme FEI (próxima janela) + 1 alarme Moodle. Não mais 9 alarmes.
  * - Cada disparo RE-ARMA a próxima janela (bug C).
- * - Alarmes exatos quando permitido; fallback inexact caso contrário (bug A).
+ * - ★ Alarmes SEMPRE inexact (setAndAllowWhileIdle via AlarmHelper):
+ *   SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM foram removidas do Manifest.
+ *   O atraso típico é de poucos minutos — irrelevante para janelas de 2h.
  * - WorkManager periódico é apenas rede de segurança.
  */
 object SyncScheduler {
 
     private const val TAG = "SyncScheduler"
-    private const val BRASALIA_TZ = "America/Sao_Paulo"
 
+    private const val BRASALIA_TZ = "America/Sao_Paulo"
     private val FEI_HOURS = intArrayOf(7, 9, 11, 13, 15, 17, 19, 21, 23)
     private const val FEI_MINUTE = 10
     private const val MOODLE_START_HOUR = 7
@@ -40,6 +41,7 @@ object SyncScheduler {
     /** Request codes da versão antiga (8000..8008) — limpos uma vez. */
     private const val LEGACY_REQ_BASE = 8000
     private const val LEGACY_REQ_COUNT = 9
+
     private const val PREFS = "sync_scheduler_prefs"
     private const val KEY_LEGACY_CLEANED = "legacy_alarms_cleaned_v2"
 
@@ -103,13 +105,6 @@ object SyncScheduler {
         scheduleAll(app, force = true)
     }
 
-    /** true se o sistema permite alarme exato (USE_EXACT_ALARM ou appop). */
-    fun canUseExactAlarms(context: Context): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return true
-        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        return runCatching { am.canScheduleExactAlarms() }.getOrDefault(false)
-    }
-
     // ------------------------------------------------------------------
     // Cálculo das janelas (Brasília)
     // ------------------------------------------------------------------
@@ -130,6 +125,7 @@ object SyncScheduler {
                 if (c.after(now)) return c.timeInMillis
             }
         }
+
         return (now.clone() as Calendar).apply {
             add(Calendar.DAY_OF_YEAR, 1)
             while (get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) add(Calendar.DAY_OF_YEAR, 1)
@@ -157,6 +153,7 @@ object SyncScheduler {
             if (c.after(now)) return c.timeInMillis
             hour += freq
         }
+
         return (now.clone() as Calendar).apply {
             add(Calendar.DAY_OF_YEAR, 1)
             set(Calendar.HOUR_OF_DAY, MOODLE_START_HOUR)
@@ -174,30 +171,13 @@ object SyncScheduler {
     }
 
     // ------------------------------------------------------------------
-    // AlarmManager
+    // AlarmManager — sempre inexact, sem permissões especiais
     // ------------------------------------------------------------------
 
     private fun setAlarm(app: Context, requestCode: Int, type: String, atMillis: Long) {
-        val am = app.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val pi = pendingIntent(app, requestCode, type)
-        try {
-            when {
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.M ->
-                    am.setExact(AlarmManager.RTC_WAKEUP, atMillis, pi)
-
-                canUseExactAlarms(app) ->
-                    am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, atMillis, pi)
-
-                else -> {
-                    Log.w(TAG, "Alarme exato indisponível — usando inexact para $type")
-                    am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, atMillis, pi)
-                }
-            }
-            Log.d(TAG, "Alarme $type -> ${Date(atMillis)} (exato=${canUseExactAlarms(app)})")
-        } catch (e: SecurityException) {
-            Log.w(TAG, "SecurityException no alarme exato; fallback inexact", e)
-            am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, atMillis, pi)
-        }
+        AlarmHelper.schedule(app, atMillis, pi)
+        Log.d(TAG, "Alarme $type -> ${Date(atMillis)} (inexact)")
     }
 
     private fun pendingIntent(app: Context, requestCode: Int, type: String): PendingIntent =
